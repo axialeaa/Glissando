@@ -1,0 +1,74 @@
+plugins {
+	id 'fabric-loom' version '1.7-SNAPSHOT'
+	id 'maven-publish'
+}
+
+def mcVersion = stonecutter.current.version
+
+version = property("mod_version") + "+" + mcVersion
+group = property("maven_group")
+
+base {
+	archivesName = property("archives_base_name")
+}
+
+dependencies {
+	// To change the versions see the gradle.properties file
+	minecraft "com.mojang:minecraft:${mcVersion}"
+	mappings "net.fabricmc:yarn:${property("yarn_mappings")}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${property("loader_version")}"
+
+	// Fabric API. This is technically optional, but you probably want it anyway.
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}"
+}
+
+if (stonecutter.current.isActive) { // run configs for non-active version would be invalid
+	loom {
+		runConfigs.all {
+			ideConfigGenerated = true // generate IDE tasks for running client, server and testmod, datagen if those are present
+			runDir "../../run" // use a global run directory for all versions
+		}
+	}
+}
+
+stonecutter {
+	swap("identifier", eval(mcVersion, ">=1.21") ? "Identifier.of(MOD_ID, name);" : "new Identifier(MOD_ID, name);")
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version,
+			"target": project.property("target_version")
+	}
+}
+
+def javaVersion = stonecutter.eval(mcVersion, ">=1.20.6") ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = javaVersion.ordinal() + 1
+}
+
+java {
+	withSourcesJar()
+
+	sourceCompatibility = javaVersion
+	targetCompatibility = javaVersion
+}
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${project.base.archivesName.get()}"}
+	}
+}
+
+// configure the maven publication
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			artifactId = project.archives_base_name
+			from components.java
+		}
+	}
+}

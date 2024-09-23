@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "mod-id",
+	"version": "${version}",
+	"name": "Example Mod",
+	"description": "description",
+	"authors": [
+		"axialeaa"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/mod-id",
+		"sources": "https://github.com/axialeaa/ExampleMod",
+		"issues": "https://github.com/axialeaa/ExampleMod/issues"
+	},
+	"license": "LGPLv3",
+	"icon": "assets/mod-id/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.axialeaa.modid.ExampleMod"
+		]
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.github_releases": "https://github.com/axialeaa/ExampleMod/releases",
+				"modmenu.modrinth": "https://modrinth.com/mod/mod-id"
+			}
+		}
+	},
+	"mixins": [
+		"mod-id.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.10",
+		"minecraft": "${target}",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
