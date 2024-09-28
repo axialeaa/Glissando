@@ -1,0 +1,5 @@
+click + hold cooldown time (preventing sending packets every tick)
+"accuracy mode" option to play notes on the client side, only sending a tune note block packet once the inventory is closed
+toggle noteKey colours
+toggle tooltip text colours
+toggle tooltips

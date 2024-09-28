@@ -1,0 +1,1 @@
+Glissando's textures were designed with various existing GUI elements in mind, most of which were contributed to Faithful 32x by Skottify and Cituation.

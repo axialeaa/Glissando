@@ -1,40 +1,48 @@
 {
 	"schemaVersion": 1,
-	"id": "mod-id",
+	"id": "glissando",
 	"version": "${version}",
-	"name": "Example Mod",
-	"description": "description",
+	"name": "Glissando",
+	"description": "Tune your note blocks with ease and comfort!",
 	"authors": [
 		"axialeaa"
 	],
 	"contact": {
-		"homepage": "https://modrinth.com/mod/mod-id",
-		"sources": "https://github.com/axialeaa/ExampleMod",
-		"issues": "https://github.com/axialeaa/ExampleMod/issues"
+		"homepage": "https://modrinth.com/mod/glissando",
+		"sources": "https://github.com/axialeaa/Glissando",
+		"issues": "https://github.com/axialeaa/Glissando/issues"
 	},
 	"license": "LGPLv3",
-	"icon": "assets/mod-id/icon.png",
+	"icon": "assets/glissando/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.axialeaa.modid.ExampleMod"
+			"com.axialeaa.glissando.Glissando"
+		],
+		"client": [
+			"com.axialeaa.glissando.GlissandoClient"
+		],
+		"modmenu": [
+			"com.axialeaa.glissando.config.ModMenuIntegration"
 		]
 	},
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.github_releases": "https://github.com/axialeaa/ExampleMod/releases",
-				"modmenu.modrinth": "https://modrinth.com/mod/mod-id"
+				"modmenu.github_releases": "https://github.com/axialeaa/Glissando/releases",
+				"modmenu.modrinth": "https://modrinth.com/mod/glissando"
 			}
 		}
 	},
 	"mixins": [
-		"mod-id.mixins.json"
+		"glissando.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.15.10",
 		"minecraft": "${target}",
-		"java": ">=21",
-		"fabric-api": "*"
+		"java": ">=17",
+		"fabric-api": "*",
+		"yet_another_config_lib_v3": ">=3.5.0",
+		"modmenu": "*"
 	}
 }

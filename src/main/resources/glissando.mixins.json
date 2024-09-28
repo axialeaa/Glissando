@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "com.axialeaa.glissando.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AbstractBlockMixin",
+    "BlockMixin",
+    "NoteBlockMixin",
+    "accessor.NoteBlockAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "ClientPlayerEntityMixin",
+    "accessor.ClickableWidgetAccessor",
+    "accessor.ScreenAccessor"
+  ]
+}

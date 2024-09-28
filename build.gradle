@@ -12,14 +12,25 @@ base {
 	archivesName = property("archives_base_name")
 }
 
+repositories {
+	maven {
+		name 'Xander Maven'
+		url 'https://maven.isxander.dev/releases'
+	}
+	maven {
+		name = "Terraformers"
+		url = "https://maven.terraformersmc.com/"
+	}
+}
+
 dependencies {
-	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${mcVersion}"
 	mappings "net.fabricmc:yarn:${property("yarn_mappings")}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${property("loader_version")}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}"
+	modImplementation "dev.isxander:yet-another-config-lib:${property("yacl_version")}-fabric"
+	modImplementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
 }
 
 if (stonecutter.current.isActive) { // run configs for non-active version would be invalid
@@ -33,6 +44,9 @@ if (stonecutter.current.isActive) { // run configs for non-active version would 
 
 stonecutter {
 	swap("identifier", eval(mcVersion, ">=1.21") ? "Identifier.of(MOD_ID, name);" : "new Identifier(MOD_ID, name);")
+	swap("instrument", eval(mcVersion, ">=1.21") ? "NoteBlockInstrument" : "Instrument")
+	swap("payload_server", eval(mcVersion, ">=1.21") ? "ctx.server();" : "player.server;")
+	swap("can_be_pitched", eval(mcVersion, ">=1.21") ? ".canBePitched()" : ".shouldSpawnNoteParticles()")
 }
 
 processResources {
