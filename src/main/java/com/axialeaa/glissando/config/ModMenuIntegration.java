@@ -7,7 +7,7 @@ public class ModMenuIntegration implements ModMenuApi {
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> GlissandoConfigScreen.configure().generateScreen(parent);
+        return GlissandoConfigScreen::create;
     }
 
 }

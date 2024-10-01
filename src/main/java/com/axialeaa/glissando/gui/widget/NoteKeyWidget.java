@@ -1,42 +1,36 @@
 package com.axialeaa.glissando.gui.widget;
 
 import com.axialeaa.glissando.config.GlissandoConfig;
-import com.axialeaa.glissando.config.option.InteractionMode;
-import com.axialeaa.glissando.packet.UpdateNoteBlockC2SPayload;
-import com.axialeaa.glissando.util.NoteKey;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 
+import com.axialeaa.glissando.packet. /*$ payload >>*/ TuneNoteBlockC2SPayload ;
 import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
 
-@Environment(EnvType.CLIENT)
 public class NoteKeyWidget extends AbstractNoteKeyWidget {
 
-    private final ClientWorld world;
     private final BlockPos pos;
 
-    public NoteKeyWidget(int x, int y, NoteKey noteKey, BlockPos pos, MinecraftClient client, ClientWorld world) {
-        super(x, y, noteKey, client, button -> {
-            if (GlissandoConfig.get().interactionMode == InteractionMode.RECLUSIVE)
-                return;
-
-            int pitch = noteKey.getPitch();
-            UpdateNoteBlockC2SPayload.sendNew(pos, pitch);
+    public NoteKeyWidget(int x, int y, int pitch, BlockPos pos) {
+        super(x, y, pitch, button -> {
+            if (!GlissandoConfig.get().interactionMode.isReclusive())
+                /*$ payload >>*/ TuneNoteBlockC2SPayload .sendNew(pos, pitch, false);
         });
 
-        this.world = world;
         this.pos = pos;
     }
 
     @Override
     public /*$ instrument >>*/ NoteBlockInstrument getInstrument() {
-        BlockState blockState = this.world.getBlockState(this.pos);
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        if (client == null || client.world == null)
+            return /*$ instrument >>*/ NoteBlockInstrument .HARP;
+
+        BlockState blockState = client.world.getBlockState(this.pos);
 
         if (!(blockState.getBlock() instanceof NoteBlock))
             return /*$ instrument >>*/ NoteBlockInstrument .HARP;
@@ -46,7 +40,7 @@ public class NoteKeyWidget extends AbstractNoteKeyWidget {
 
     @Override
     public void playDownSound(SoundManager soundManager) {
-        if (GlissandoConfig.get().interactionMode == InteractionMode.RECLUSIVE)
+        if (GlissandoConfig.get().interactionMode.isReclusive())
             super.playDownSound(soundManager);
     }
 

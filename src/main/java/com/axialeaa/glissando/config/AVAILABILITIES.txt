@@ -1,0 +1,21 @@
+restoreVanilla ? !value ->
+    openScreenPredicate
+    openScreenOnPlaced
+    keybindInputs
+    mouseInputs
+    configButton
+    configButtonPosition
+    noteTooltips
+    keybindTooltips
+    backgroundColorStart
+    backgroundColorEnd
+    titleColors
+    keyboardColorPredicate
+    tooltipColors
+
+openScreenPredicate ? value != NEVER ->
+    configButton
+    openOnPlaced
+
+keybindInputs ? value ->
+    keybindTooltips

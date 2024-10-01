@@ -43,10 +43,12 @@ if (stonecutter.current.isActive) { // run configs for non-active version would 
 }
 
 stonecutter {
+	swap("icon_button", eval(mcVersion, ">=1.20.4") ? "TextIconButtonWidget" : "IconButtonWidget")
+	swap("payload", eval(mcVersion, ">=1.20.6") ? "TuneNoteBlockC2SPayload" : "TuneNoteBlockC2SPayloadPre1205")
 	swap("identifier", eval(mcVersion, ">=1.21") ? "Identifier.of(MOD_ID, name);" : "new Identifier(MOD_ID, name);")
-	swap("instrument", eval(mcVersion, ">=1.21") ? "NoteBlockInstrument" : "Instrument")
 	swap("payload_server", eval(mcVersion, ">=1.21") ? "ctx.server();" : "player.server;")
 	swap("can_be_pitched", eval(mcVersion, ">=1.21") ? ".canBePitched()" : ".shouldSpawnNoteParticles()")
+	swap("instrument", eval(mcVersion, ">=1.21") ? "NoteBlockInstrument" : "Instrument")
 }
 
 processResources {
