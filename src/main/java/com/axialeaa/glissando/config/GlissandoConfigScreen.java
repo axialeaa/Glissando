@@ -28,10 +28,6 @@ public class GlissandoConfigScreen {
         return OptionDescription.of(getOptionName(name, true));
     }
 
-    public static Text getLabelTranslation(String name) {
-        return Text.translatable("%s.config.label.%s".formatted(Glissando.MOD_ID, name));
-    }
-
     private static Text getGroupName(String name, boolean desc) {
         return Text.translatable("%s.config.group.%s.%s".formatted(Glissando.MOD_ID, name, desc ? "desc" : "name"));
     }
