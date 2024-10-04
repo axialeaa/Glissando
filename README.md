@@ -1,9 +1,7 @@
-<!--suppress HtmlDeprecatedAttribute -->
-<h1 align="center">
+<p align="center">
   <img width="20%" src="https://github.com/user-attachments/assets/df1c2749-0b7b-44a0-b70c-6ea936628c33" alt="Glissando's logo">
   <br>
-  Hi there! Thank you for checking out Glissando!
-</h1>
+  <h1>Hi there! Thank you for checking out Glissando!</h1>
 
 <p align="center">
   <!-- MODRINTH DOWNLOADS --->
@@ -51,7 +49,7 @@ Check out [the wiki][wiki] for a more in-depth overview of **Glissando**'s featu
 - If you're not using a third-party launcher with in-built mod installation, you'll need to download the latest version of **Glissando** for your game version from the [GitHub releases][github-releases] page or on [Modrinth][modrinth-versions]. Drag the `.jar` file into your mods folder and launch the game!
 
 > [!IMPORTANT]
-> **Florum Sporum** requires both [Fabric API][fabric-api] and YetAnotherConfigLib. Without them, the game will fail to start!
+> **Glissando** requires both [Fabric API][fabric-api] and YetAnotherConfigLib. Without them, the game will fail to start!
 ***
 
 ### Configuration
