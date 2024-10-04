@@ -69,7 +69,6 @@ Alternatively, you can access the configuration screen via [Mod Menu][modmenu] d
 
 > [!TIP]
 > You can preview any graphical changes you may have made to the GUI by clicking the "Preview GUI" button at the top of the Visuals tab!
-***
 
 [wiki]: https://github.com/axialeaa/Glissando/wiki/Features
 [fabric]: https://fabricmc.net
