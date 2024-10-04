@@ -77,7 +77,7 @@ Alternatively, you can access the configuration screen via [Mod Menu][modmenu] d
 - [x] Configuration
 - [ ] Data-driven instrument base blocks
 - [ ] Scale control
-- [ ] MIDI input (?)
+- [ ] MIDI device support (?)
 
 [wiki]: https://github.com/axialeaa/Glissando/wiki/Features
 [fabric]: https://fabricmc.net
