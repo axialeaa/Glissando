@@ -3,28 +3,28 @@ package com.axialeaa.glissando.gui.screen;
 import com.axialeaa.glissando.gui.widget.PreviewNoteKeyWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * The "fake" note block screen opened when clicking the "Preview GUI" button in the {@link com.axialeaa.glissando.config.GlissandoConfig config}. Opening this screen pauses the game in singleplayer mode, blurs the background, and returns to the config screen when closed.
  */
 public class PreviewNoteBlockScreen extends AbstractNoteBlockScreen<PreviewNoteKeyWidget> {
 
-    private final Screen parent;
+    private final Screen screen;
 
-    public PreviewNoteBlockScreen(Screen parent) {
-        super(Text.translatable("glissando.note_block_screen.title.preview"));
-        this.parent = parent;
+    public PreviewNoteBlockScreen(Screen screen) {
+        super("note_block_screen_preview");
+        this.screen = screen;
     }
 
     @Override
-    protected PreviewNoteKeyWidget createNewWidget(int x, int y, int pitch) {
-        return new PreviewNoteKeyWidget(x, y, pitch);
+    protected PreviewNoteKeyWidget createNewWidget(int x, int y, int pitch, BlockPos pos) {
+        return new PreviewNoteKeyWidget(x, y, pitch, this);
     }
 
     @Override
     protected Screen getConfigScreen() {
-        return this.parent;
+        return this.screen;
     }
 
     @Override
@@ -32,8 +32,6 @@ public class PreviewNoteBlockScreen extends AbstractNoteBlockScreen<PreviewNoteK
         //? if >=1.20.6 {
         if (this.client == null || this.client.world == null)
             this.renderPanoramaBackground(context, delta);
-
-        this.applyBlur(delta);
         //?} else
         /*this.renderBackgroundTexture(context);*/
 
@@ -45,7 +43,7 @@ public class PreviewNoteBlockScreen extends AbstractNoteBlockScreen<PreviewNoteK
         super.close();
 
         if (this.client != null)
-            this.client.setScreen(parent);
+            this.client.setScreen(this.screen);
     }
 
 }

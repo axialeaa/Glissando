@@ -21,7 +21,7 @@ public interface GlissandoNameableEnum extends NameableEnum {
 
     default Text getTranslation(boolean desc) {
         String enumName = ((Enum<?>) this).name().toLowerCase(Locale.ROOT);
-        return GlissandoConfigScreen.getOptionName(this.getOptionName() + "." + enumName, desc);
+        return GlissandoConfigScreen.getOptionTranslation(this.getOptionName() + "." + enumName, desc);
     }
 
 }

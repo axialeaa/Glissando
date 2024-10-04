@@ -18,22 +18,29 @@ import static com.axialeaa.glissando.config.GlissandoConfig.*;
 
 public class GlissandoConfigScreen {
 
-    public static final Text CONFIG_TITLE = Text.translatable("%s.config.title".formatted(Glissando.MOD_ID));
+    private static final Text CONFIG_TITLE = Glissando.translate("config.title");
 
-    public static Text getOptionName(String name, boolean desc) {
-        return Text.translatable("%s.config.option.%s.%s".formatted(Glissando.MOD_ID, name, desc ? "desc" : "name"));
+    private static final Text GENERIC_ENABLED = Glissando.translate("config.generic_enabled");
+    private static final Text GENERIC_COLORS = Glissando.translate("config.generic_colors");
+
+    static Text getOptionTranslation(String name, boolean desc) {
+        return Glissando.translate("config.option.%s.%s".formatted(name, desc ? "desc" : "name"));
     }
 
-    public static OptionDescription getOptionDesc(String name) {
-        return OptionDescription.of(getOptionName(name, true));
+    private static Text getOptionName(String name) {
+        return getOptionTranslation(name, false);
+    }
+
+    private static OptionDescription getOptionDesc(String name) {
+        return OptionDescription.of(getOptionTranslation(name, true));
     }
 
     private static Text getGroupName(String name, boolean desc) {
-        return Text.translatable("%s.config.group.%s.%s".formatted(Glissando.MOD_ID, name, desc ? "desc" : "name"));
+        return Glissando.translate("config.group.%s.%s".formatted(name, desc ? "desc" : "name"));
     }
 
     private static Text getCategoryName(String name) {
-        return Text.translatable("%s.config.category.%s".formatted(Glissando.MOD_ID, name));
+        return Glissando.translate("config.category.%s".formatted(name));
     }
 
     private static ConfigCategory createCategory(String name, Option<?> option, OptionGroup... groups) {
@@ -65,29 +72,29 @@ public class GlissandoConfigScreen {
 
     public static YetAnotherConfigLib configure() {
         return YetAnotherConfigLib.create(CONFIG, (defaults, config, builder) -> {
-            var openScreenOnPlaced = Option.<Boolean>createBuilder()
-                .name(getOptionName(OPEN_SCREEN_ON_PLACED, false))
-                .description(getOptionDesc(OPEN_SCREEN_ON_PLACED))
-                .binding(defaults.openScreenOnPlaced, () -> config.openScreenOnPlaced, value -> config.openScreenOnPlaced = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
-                .build();
-
             var interactionMode = Option.<InteractionMode>createBuilder()
-                .name(getOptionName(INTERACTION_MODE, false))
+                .name(getOptionName(INTERACTION_MODE))
                 .description(GlissandoNameableEnum::getOptionDesc)
                 .binding(defaults.interactionMode, () -> config.interactionMode, value -> config.interactionMode = value)
                 .controller(option -> EnumControllerBuilder.create(option).enumClass(InteractionMode.class))
                 .build();
 
+            var openScreenWhenPlaced = Option.<Boolean>createBuilder()
+                .name(getOptionName(OPEN_SCREEN_WHEN_PLACED))
+                .description(getOptionDesc(OPEN_SCREEN_WHEN_PLACED))
+                .binding(defaults.openScreenWhenPlaced, () -> config.openScreenWhenPlaced, value -> config.openScreenWhenPlaced = value)
+                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
+                .build();
+
             var mouseInputs = Option.<Boolean>createBuilder()
-                .name(getOptionName(MOUSE_INPUTS, false))
+                .name(getOptionName(MOUSE_INPUTS))
                 .description(getOptionDesc(MOUSE_INPUTS))
                 .binding(defaults.mouseInputs, () -> config.mouseInputs, value -> config.mouseInputs = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).onOffFormatter())
+                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
                 .build();
 
             var previewGui = ButtonOption.createBuilder()
-                .name(getOptionName(PREVIEW_GUI, false))
+                .name(getOptionName(PREVIEW_GUI))
                 .description(getOptionDesc(PREVIEW_GUI))
                 .action((screen, option) -> {
                     screen.finishOrSave();
@@ -95,51 +102,68 @@ public class GlissandoConfigScreen {
                 })
                 .build();
 
-            var configButtonPosition = Option.<ConfigButtonPosition>createBuilder()
-                .name(getOptionName(CONFIG_BUTTON_POSITION, false))
-                .description(getOptionDesc(CONFIG_BUTTON_POSITION))
-                .binding(defaults.configButtonPosition, () -> config.configButtonPosition, value -> config.configButtonPosition = value)
-                .controller(option -> EnumControllerBuilder.create(option).enumClass(ConfigButtonPosition.class))
+            //? if >=1.20.6 {
+            var backgroundBlur = Option.<Boolean>createBuilder()
+                .name(getOptionName(BACKGROUND_BLUR))
+                .description(getOptionDesc(BACKGROUND_BLUR))
+                .binding(defaults.backgroundBlur, () -> config.backgroundBlur, value -> config.backgroundBlur = value)
+                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
                 .build();
-
-            var configButton = Option.<Boolean>createBuilder()
-                .name(getOptionName(CONFIG_BUTTON, false))
-                .description(getOptionDesc(CONFIG_BUTTON))
-                .binding(defaults.configButton, () -> config.configButton, value -> config.configButton = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).onOffFormatter())
-                .available(Glissando.LOADER.isDevelopmentEnvironment() || Glissando.MOD_MENU_INSTALLED)
-                .build();
+            //?}
 
             var backgroundStartColor = Option.<Color>createBuilder()
-                .name(getOptionName(BACKGROUND_START_COLOR, false))
+                .name(getOptionName(BACKGROUND_START_COLOR))
                 .description(getOptionDesc(BACKGROUND_START_COLOR))
                 .binding(defaults.backgroundStartColor, () -> config.backgroundStartColor, value -> config.backgroundStartColor = value)
                 .controller(option -> ColorControllerBuilder.create(option).allowAlpha(true))
                 .build();
 
             var backgroundEndColor = Option.<Color>createBuilder()
-                .name(getOptionName(BACKGROUND_END_COLOR, false))
+                .name(getOptionName(BACKGROUND_END_COLOR))
                 .description(getOptionDesc(BACKGROUND_END_COLOR))
                 .binding(defaults.backgroundEndColor, () -> config.backgroundEndColor, value -> config.backgroundEndColor = value)
                 .controller(option -> ColorControllerBuilder.create(option).allowAlpha(true))
                 .build();
 
             var titleColors = Option.<Boolean>createBuilder()
-                .name(getOptionName(TITLE_COLORS, false))
+                .name(GENERIC_COLORS)
                 .description(getOptionDesc(TITLE_COLORS))
                 .binding(defaults.titleColors, () -> config.titleColors, value -> config.titleColors = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
                 .build();
 
+            var showInstrument = Option.<Boolean>createBuilder()
+                .name(getOptionName(SHOW_INSTRUMENT))
+                .description(getOptionDesc(SHOW_INSTRUMENT))
+                .binding(defaults.showInstrument, () -> config.showInstrument, value -> config.showInstrument = value)
+                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
+                .build();
+
+            var configButtonPosition = Option.<ConfigButtonPosition>createBuilder()
+                .name(getOptionName(CONFIG_BUTTON_POSITION))
+                .description(getOptionDesc(CONFIG_BUTTON_POSITION))
+                .binding(defaults.configButtonPosition, () -> config.configButtonPosition, value -> config.configButtonPosition = value)
+                .controller(option -> EnumControllerBuilder.create(option).enumClass(ConfigButtonPosition.class))
+                .build();
+
+            var configButton = Option.<Boolean>createBuilder()
+                .name(GENERIC_ENABLED)
+                .description(getOptionDesc(CONFIG_BUTTON))
+                .binding(defaults.configButton, () -> config.configButton, value -> config.configButton = value)
+                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
+                .available(Glissando.LOADER.isDevelopmentEnvironment() || Glissando.MOD_MENU_LOADED)
+                .listener((option, value) -> configButtonPosition.setAvailable(value || !option.available()))
+                .build();
+
             var keyboardColorPredicate = Option.<KeyboardColorPredicate>createBuilder()
-                .name(getOptionName(KEYBOARD_COLOR_PREDICATE, false))
+                .name(getOptionName(KEYBOARD_COLOR_PREDICATE))
                 .description(GlissandoNameableEnum::getOptionDesc)
                 .binding(defaults.keyboardColorPredicate, () -> config.keyboardColorPredicate, value -> config.keyboardColorPredicate = value)
                 .controller(option -> EnumControllerBuilder.create(option).enumClass(KeyboardColorPredicate.class))
                 .build();
 
             var tooltipColors = Option.<Boolean>createBuilder()
-                .name(getOptionName(TOOLTIP_COLORS, false))
+                .name(GENERIC_COLORS)
                 .description(getOptionDesc(TOOLTIP_COLORS))
                 .binding(defaults.tooltipColors, () -> config.tooltipColors, value -> config.tooltipColors = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
@@ -151,40 +175,40 @@ public class GlissandoConfigScreen {
             AtomicBoolean keybindInputsEnabled = new AtomicBoolean(config.keybindInputs);
 
             var noteTooltips = Option.<Boolean>createBuilder()
-                .name(getOptionName(NOTE_TOOLTIPS, false))
+                .name(getOptionName(NOTE_TOOLTIPS))
                 .description(getOptionDesc(NOTE_TOOLTIPS))
                 .binding(defaults.noteTooltips, () -> config.noteTooltips, value -> config.noteTooltips = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
                 .listener((option, value) -> tooltipColors.setAvailable(value || keybindTooltipsEnabled.get() || pitchTooltipsEnabled.get()))
                 .build();
 
-            var keybindTooltips = Option.<Boolean>createBuilder()
-                .name(getOptionName(KEYBIND_TOOLTIPS, false))
-                .description(getOptionDesc(KEYBIND_TOOLTIPS))
-                .binding(defaults.keybindTooltips, () -> config.keybindTooltips, value -> config.keybindTooltips = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
-                .listener((option, value) -> {
-                    keybindTooltipsEnabled.set(keybindInputsEnabled.get() && value);
-                    tooltipColors.setAvailable(noteTooltips.pendingValue() || pitchTooltipsEnabled.get() || value);
-                })
-                .build();
-
             var pitchTooltips = Option.<Boolean>createBuilder()
-                .name(getOptionName(PITCH_TOOLTIPS, false))
+                .name(getOptionName(PITCH_TOOLTIPS))
                 .description(getOptionDesc(PITCH_TOOLTIPS))
                 .binding(defaults.pitchTooltips, () -> config.pitchTooltips, value -> config.pitchTooltips = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
                 .listener((option, value) -> {
                     pitchTooltipsEnabled.set(value);
-                    tooltipColors.setAvailable(noteTooltips.pendingValue() || keybindTooltips.pendingValue() || value);
+                    tooltipColors.setAvailable(noteTooltips.pendingValue() || keybindTooltipsEnabled.get() || value);
+                })
+                .build();
+
+            var keybindTooltips = Option.<Boolean>createBuilder()
+                .name(getOptionName(KEYBIND_TOOLTIPS))
+                .description(getOptionDesc(KEYBIND_TOOLTIPS))
+                .binding(defaults.keybindTooltips, () -> config.keybindTooltips, value -> config.keybindTooltips = value)
+                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
+                .listener((option, value) -> {
+                    keybindTooltipsEnabled.set(keybindInputsEnabled.get() && value);
+                    tooltipColors.setAvailable(noteTooltips.pendingValue() || pitchTooltips.pendingValue() || value);
                 })
                 .build();
 
             var keybindInputs = Option.<Boolean>createBuilder()
-                .name(getOptionName(KEYBIND_INPUTS, false))
+                .name(getOptionName(KEYBIND_INPUTS))
                 .description(getOptionDesc(KEYBIND_INPUTS))
                 .binding(defaults.keybindInputs, () -> config.keybindInputs, value -> config.keybindInputs = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).onOffFormatter())
+                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
                 .listener((option, value) -> {
                     keybindInputsEnabled.set(value);
                     keybindTooltipsEnabled.set(keybindTooltips.pendingValue() && value);
@@ -192,27 +216,11 @@ public class GlissandoConfigScreen {
                 })
                 .build();
 
-            var openScreenPredicate = Option.<OpenScreenPredicate>createBuilder()
-                .name(getOptionName(OPEN_SCREEN_PREDICATE, false))
-                .description(GlissandoNameableEnum::getOptionDesc)
-                .binding(defaults.openScreenPredicate, () -> config.openScreenPredicate, value -> config.openScreenPredicate = value)
-                .controller(option -> EnumControllerBuilder.create(option).enumClass(OpenScreenPredicate.class))
-                .listener((option, value) -> {
-                    boolean available = value != OpenScreenPredicate.NEVER;
-
-                    configButton.setAvailable(available);
-                    openScreenOnPlaced.setAvailable(available);
-                })
-                .build();
-
             return builder.title(CONFIG_TITLE)
                 .categories(List.of(
                     createCategory("behaviors",
                         interactionMode,
-                        createGroup("screen",
-                            new Pair<>(true, openScreenPredicate),
-                            new Pair<>(true, openScreenOnPlaced)
-                        ),
+                        createGroup("screen", openScreenWhenPlaced),
                         createGroup("inputs",
                             keybindInputs,
                             mouseInputs
@@ -220,21 +228,26 @@ public class GlissandoConfigScreen {
                     ),
                     createCategory("visuals",
                         previewGui,
+                        createGroup("background",
+                            //? if >=1.20.6
+                            backgroundBlur,
+                            backgroundStartColor,
+                            backgroundEndColor
+                        ),
+                        createGroup("title",
+                            titleColors,
+                            showInstrument
+                        ),
                         createGroup("config_button",
-                            new Pair<>(Glissando.LOADER.isDevelopmentEnvironment() || Glissando.MOD_MENU_INSTALLED, configButton),
+                            new Pair<>(Glissando.LOADER.isDevelopmentEnvironment() || Glissando.MOD_MENU_LOADED, configButton),
                             new Pair<>(true, configButtonPosition)
                         ),
+                        createGroup("keyboard", keyboardColorPredicate),
                         createGroup("tooltips",
+                            tooltipColors,
                             noteTooltips,
                             pitchTooltips,
                             keybindTooltips
-                        ),
-                        createGroup("colors",
-                            backgroundStartColor,
-                            backgroundEndColor,
-                            titleColors,
-                            keyboardColorPredicate,
-                            tooltipColors
                         )
                     )
                 ))

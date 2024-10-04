@@ -1,16 +1,11 @@
 package com.axialeaa.glissando.gui.widget;
 
-import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
+import com.axialeaa.glissando.gui.screen.PreviewNoteBlockScreen;
 
 public class PreviewNoteKeyWidget extends AbstractNoteKeyWidget {
 
-    public PreviewNoteKeyWidget(int x, int y, int pitch) {
-        super(x, y, pitch);
-    }
-
-    @Override
-    public /*$ instrument >>*/ NoteBlockInstrument getInstrument() {
-        return /*$ instrument >>*/ NoteBlockInstrument .HARP;
+    public PreviewNoteKeyWidget(int x, int y, int pitch, PreviewNoteBlockScreen screen) {
+        super(x, y, pitch, screen);
     }
 
 }

@@ -18,9 +18,4 @@ public class ClientPlayerEntityMixin implements NoteBlockScreenOpener {
         this.client.setScreen(screen);
     }
 
-    @Override
-    public ClientPlayerEntity getPlayer() {
-        return ClientPlayerEntity.class.cast(this);
-    }
-
 }

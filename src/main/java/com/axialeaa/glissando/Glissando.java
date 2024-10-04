@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ public class Glissando implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
 	public static final Identifier TUNE_NOTE_BLOCK = Glissando.id("tune_note_block");
-	public static final boolean MOD_MENU_INSTALLED = LOADER.isModLoaded("modmenu");
+	public static final boolean MOD_MENU_LOADED = LOADER.isModLoaded("modmenu");
 
 	@Override
 	public void onInitialize() {
@@ -31,6 +32,10 @@ public class Glissando implements ModInitializer {
 
 	public static Identifier id(String name) {
 		return /*$ identifier*/ Identifier.of(MOD_ID, name);
+	}
+
+	public static Text translate(String name) {
+		return Text.translatable(MOD_ID + "." + name);
 	}
 
 }

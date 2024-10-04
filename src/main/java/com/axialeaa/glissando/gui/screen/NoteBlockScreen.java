@@ -8,15 +8,14 @@ import com.axialeaa.glissando.util.GlissandoUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
 import java.util.OptionalInt;
 
 import com.axialeaa.glissando.packet. /*$ payload >>*/ TuneNoteBlockC2SPayload ;
+import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
 
 /**
  * The "normal" note block screen opened when interacting with a note block.
@@ -24,10 +23,10 @@ import com.axialeaa.glissando.packet. /*$ payload >>*/ TuneNoteBlockC2SPayload ;
 public class NoteBlockScreen extends AbstractNoteBlockScreen<NoteKeyWidget> {
 
     private final ClientWorld world;
-    public final BlockPos pos;
+    private final BlockPos pos;
 
-    public NoteBlockScreen(ClientWorld world, BlockPos pos) {
-        super(Text.translatable("glissando.note_block_screen.title"));
+    public NoteBlockScreen(ClientWorld world, BlockPos pos, /*$ instrument >>*/ NoteBlockInstrument instrument) {
+        super("note_block_screen", pos, instrument);
 
         this.world = world;
         this.pos = pos;
@@ -39,8 +38,8 @@ public class NoteBlockScreen extends AbstractNoteBlockScreen<NoteKeyWidget> {
     }
 
     @Override
-    protected NoteKeyWidget createNewWidget(int x, int y, int pitch) {
-        return new NoteKeyWidget(x, y, pitch, this.pos);
+    protected NoteKeyWidget createNewWidget(int x, int y, int pitch, BlockPos pos) {
+        return new NoteKeyWidget(x, y, pitch, pos, this);
     }
 
     @Override
@@ -71,33 +70,36 @@ public class NoteBlockScreen extends AbstractNoteBlockScreen<NoteKeyWidget> {
             return;
 
         if (optional.isPresent() && optional.get() != pitch.getAsInt())
-            /*$ payload >>*/ TuneNoteBlockC2SPayload .sendNew(this.pos, pitch.getAsInt(), mode == InteractionMode.SILENT);
+            /*$ payload >>*/ TuneNoteBlockC2SPayload .sendNew(this.pos, pitch.getAsInt(), mode == InteractionMode.RECLUSIVE);
     }
 
     @Override
     public void tick() {
         if (!this.canEdit())
             this.close();
+
+        BlockState blockState = this.world.getBlockState(this.pos);
+        /*$ instrument >>*/ NoteBlockInstrument instrument = GlissandoUtils.getInstrument(blockState).orElse(/*$ instrument >>*/ NoteBlockInstrument .HARP);
+
+        if (this.instrument == instrument)
+            return;
+
+        this.instrument = instrument;
+
+        for (NoteKeyWidget widget : this.widgets)
+            widget.updateTooltip();
     }
 
     /**
      * @return true if this note block screen has a valid note block to edit. Fails if it's too far away or not a note block anymore.
      */
     public boolean canEdit() {
-        if (this.client == null)
-            return false;
-
-        ClientPlayerEntity player = this.client.player;
-
-        if (player == null)
+        if (this.client == null || this.client.player == null)
             return false;
 
         BlockState blockState = this.world.getBlockState(this.pos);
 
-        if (!(blockState.getBlock() instanceof NoteBlock))
-            return false;
-
-        return !GlissandoUtils.isPlayerTooFar(this.pos, player);
+        return !GlissandoUtils.isPlayerTooFar(this.pos, this.client.player) && GlissandoUtils.isValidNoteBlock(blockState);
     }
 
 }

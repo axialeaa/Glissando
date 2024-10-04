@@ -22,6 +22,8 @@ import org.spongepowered.asm.mixin.Mixin;
 //? if <=1.20.4
 /*import net.minecraft.util.Hand;*/
 
+import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
+
 @Mixin(NoteBlock.class)
 public class NoteBlockClientMixin extends BlockMixin {
 
@@ -31,29 +33,33 @@ public class NoteBlockClientMixin extends BlockMixin {
 		/*Hand hand,*/
 		BlockHitResult hit, Operation<ActionResult> original
 	) {
-		if (!world.isClient() || !GlissandoConfig.get().openScreenPredicate.canOpenScreen(world, pos, state))
+		if (!world.isClient() || !GlissandoUtils.isValidNoteBlock(state))
 			return ActionResult.CONSUME;
 
 		if (!(world instanceof ClientWorld clientWorld) || GlissandoUtils.isPlayerTooFar(pos, (ClientPlayerEntity) player))
-			return ActionResult.CONSUME;
+			return ActionResult.SUCCESS;
 
-		((NoteBlockScreenOpener) player).openScreen(new NoteBlockScreen(clientWorld, pos));
+		/*$ instrument >>*/ NoteBlockInstrument instrument = GlissandoUtils.getInstrument(state).orElse(/*$ instrument >>*/ NoteBlockInstrument .HARP);
+		((NoteBlockScreenOpener) player).openScreen(new NoteBlockScreen(clientWorld, pos, instrument));
+
 		return ActionResult.SUCCESS;
 	}
 
 	@Override
 	public void onPlacedImpl(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack, Operation<Void> original) {
-		if (!world.isClient() || !GlissandoConfig.get().openScreenPredicate.canOpenScreen(world, pos, state)) {
+		if (!world.isClient() || !GlissandoUtils.isValidNoteBlock(state)) {
 			super.onPlacedImpl(world, pos, state, placer, itemStack, original);
 			return;
 		}
 
-		if (!(placer instanceof NoteBlockScreenOpener screenOpener) || !GlissandoConfig.get().openScreenOnPlaced) {
+		if (!(placer instanceof NoteBlockScreenOpener screenOpener) || !GlissandoConfig.get().openScreenWhenPlaced) {
 			super.onPlacedImpl(world, pos, state, placer, itemStack, original);
 			return;
 		}
 
-		screenOpener.openScreen(new NoteBlockScreen((ClientWorld) world, pos));
+		/*$ instrument >>*/ NoteBlockInstrument instrument = GlissandoUtils.getInstrument(state).orElse(/*$ instrument >>*/ NoteBlockInstrument .HARP);
+		screenOpener.openScreen(new NoteBlockScreen((ClientWorld) world, pos, instrument));
+
 		super.onPlacedImpl(world, pos, state, placer, itemStack, original);
 	}
 

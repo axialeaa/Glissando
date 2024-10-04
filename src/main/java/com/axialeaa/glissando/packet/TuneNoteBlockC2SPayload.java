@@ -19,16 +19,16 @@ import net.minecraft.server.network.ServerPlayerEntity;
  * Allows us to sends a packet to the server to tune a note block from a button press. <strong>Only works in versions since 1.20.5.</strong>
  * @param pos The position of the note block.
  * @param pitch The {@link net.minecraft.block.NoteBlock#NOTE note} to tune the note block to.
- * @param silent Whether the note block should resist playing a sound upon changing state.
+ * @param playOnChange Whether the note block should play a sound upon changing state.
  */
-public record TuneNoteBlockC2SPayload(BlockPos pos, int pitch, boolean silent) implements CustomPayload {
+public record TuneNoteBlockC2SPayload(BlockPos pos, int pitch, boolean playOnChange) implements CustomPayload {
 
     public static final CustomPayload.Id<TuneNoteBlockC2SPayload> ID = new CustomPayload.Id<>(Glissando.TUNE_NOTE_BLOCK);
 
     public static final PacketCodec<RegistryByteBuf, TuneNoteBlockC2SPayload> CODEC = PacketCodec.tuple(
         BlockPos.PACKET_CODEC, TuneNoteBlockC2SPayload::pos,
         PacketCodecs.INTEGER, TuneNoteBlockC2SPayload::pitch,
-        PacketCodecs.BOOL, TuneNoteBlockC2SPayload::silent,
+        PacketCodecs.BOOL, TuneNoteBlockC2SPayload::playOnChange,
         TuneNoteBlockC2SPayload::new
     );
 
@@ -37,8 +37,8 @@ public record TuneNoteBlockC2SPayload(BlockPos pos, int pitch, boolean silent) i
         return ID;
     }
 
-    public static void sendNew(BlockPos pos, int pitch, boolean silent) {
-        ClientPlayNetworking.send(new TuneNoteBlockC2SPayload(pos, pitch, silent));
+    public static void sendNew(BlockPos pos, int pitch, boolean playOnChange) {
+        ClientPlayNetworking.send(new TuneNoteBlockC2SPayload(pos, pitch, playOnChange));
     }
 
     public static void register() {
@@ -50,9 +50,9 @@ public record TuneNoteBlockC2SPayload(BlockPos pos, int pitch, boolean silent) i
 
             BlockPos blockPos = payload.pos;
             int pitch = payload.pitch;
-            boolean silent = payload.silent;
+            boolean playOnChange = payload.playOnChange;
 
-            server.execute(() -> GlissandoUtils.tuneToPitch(blockPos, player, pitch, silent));
+            server.execute(() -> GlissandoUtils.tuneToPitch(blockPos, player, pitch, playOnChange));
         });
     }
 

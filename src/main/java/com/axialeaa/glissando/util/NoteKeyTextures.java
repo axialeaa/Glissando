@@ -19,7 +19,7 @@ import static com.axialeaa.glissando.util.GlissandoUtils.*;
  * @param outlineHovered The identifier of the outline texture to use when the key is being hovered over.
  * @param width The width of the key textures.
  * @param height The height of the key textures.
- * @param mouseOverPredicate T
+ * @param mouseOverPredicate The boolean-returning function calculating whether a mouse position should register as being "over" the note key. This is important because {@link NoteKeyTextures#NATURAL_LEFT} and {@link NoteKeyTextures#NATURAL_RIGHT} are compound rectangles which, with the vanilla behaviour, would overlap with the adjacent accidental unless special padding is applied.
  */
 public record NoteKeyTextures(Identifier released, Identifier pressed, Identifier outline, Identifier outlineHovered, int width, int height, MouseOverWidgetFunction mouseOverPredicate) {
 

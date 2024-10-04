@@ -1,11 +1,15 @@
 package com.axialeaa.glissando.util;
 
+import net.minecraft.util.StringIdentifiable;
+
+import java.util.Locale;
+
 import static com.axialeaa.glissando.util.NoteKeyTextures.*;
 
 /**
- * A simple enumerator storing the list of all possible notes from C through B, along with their textures.
+ * A simple enumerator storing the list of all possible notes from C through B, along with their {@link NoteKeyTextures textures} .
  */
-public enum Note {
+public enum Note implements StringIdentifiable {
 
     C       (false, NATURAL_LEFT),
     C_SHARP (true),
@@ -42,6 +46,11 @@ public enum Note {
 
     public boolean isTall() {
         return this.getHeight() == GlissandoUtils.KEYBOARD_HEIGHT;
+    }
+
+    @Override
+    public String asString() {
+        return this.name().toLowerCase(Locale.ROOT);
     }
 
 }
