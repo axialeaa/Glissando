@@ -1,7 +1,7 @@
 <p align="center">
   <img width="20%" src="https://github.com/user-attachments/assets/df1c2749-0b7b-44a0-b70c-6ea936628c33" alt="Glissando's logo">
   <br>
-  <h1>Hi there! Thank you for checking out Glissando!</h1>
+<h1 align="center">Hi there! Thank you for checking out Glissando!</h1>
 
 <p align="center">
   <!-- MODRINTH DOWNLOADS --->
