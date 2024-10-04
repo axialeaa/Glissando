@@ -48,7 +48,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
     }
 
     protected AbstractNoteBlockScreen(String name, BlockPos pos, /*$ instrument >>*/ NoteBlockInstrument instrument) {
-        super(Glissando.translate("%s.title"));
+        super(Glissando.translate(name + ".title"));
         this.name = name;
         this.pos = pos;
         this.instrument = instrument;

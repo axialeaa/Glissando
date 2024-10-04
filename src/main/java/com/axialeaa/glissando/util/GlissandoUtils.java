@@ -165,11 +165,11 @@ public class GlissandoUtils {
     public static int getRgbColor(int pitch) {
         float delta = pitch / 24.0F;
 
-        float red = Math.max(0.0F, MathHelper.sin(delta * MathHelper.TAU) * 0.65F + 0.35F) * 255;
-        float green = Math.max(0.0F, MathHelper.sin((delta + (1.0F / 3.0F)) * MathHelper.TAU) * 0.65F + 0.35F) * 255;
-        float blue = Math.max(0.0F, MathHelper.sin((delta + (2.0F / 3.0F)) * MathHelper.TAU) * 0.65F + 0.35F) * 255;
+        int red = (int) (Math.max(0.0F, MathHelper.sin(delta * MathHelper.TAU) * 0.65F + 0.35F) * 255);
+        int green = (int) (Math.max(0.0F, MathHelper.sin((delta + (1.0F / 3.0F)) * MathHelper.TAU) * 0.65F + 0.35F) * 255);
+        int blue = (int) (Math.max(0.0F, MathHelper.sin((delta + (2.0F / 3.0F)) * MathHelper.TAU) * 0.65F + 0.35F) * 255);
 
-        return (int) (red * 255) << 16 | (int) (green * 255) << 8 | (int) (blue * 255);
+        return red << 16 | green << 8 | blue;
     }
 
     public static boolean isCoordinateInsideRect(double x, double y, int minX, int minY, int maxX, int maxY) {
