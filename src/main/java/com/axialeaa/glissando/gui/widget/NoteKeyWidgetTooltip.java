@@ -8,6 +8,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -83,6 +84,7 @@ public class NoteKeyWidgetTooltip {
     /**
      * @return a {@link Tooltip} object with the {@link #getTooltipContents() tooltip contents}, colored if the config allows it.
      */
+    @Nullable
     private Tooltip getTooltip() {
         MutableText mutableText = this.getTooltipContents();
 
