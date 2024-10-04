@@ -68,6 +68,16 @@ Alternatively, you can access the configuration screen via [Mod Menu][modmenu] d
 
 > [!TIP]
 > You can preview any graphical changes you may have made to the GUI by clicking the "Preview GUI" button at the top of the Visuals tab!
+***
+
+### Roadmap
+- [x] Basic keyboard functionality
+- [x] Widget tooltips
+- [x] Note coloring 
+- [x] Configuration
+- [ ] Data-driven instrument base blocks
+- [ ] Scale control
+- [ ] MIDI input (?)
 
 [wiki]: https://github.com/axialeaa/Glissando/wiki/Features
 [fabric]: https://fabricmc.net
