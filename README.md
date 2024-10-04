@@ -44,7 +44,7 @@ Check out [the wiki][wiki] for a more in-depth overview of **Glissando**'s featu
 ***
 
 ### Getting Started
-**Glissando** operates on [Stonecutter][stonecutter], allowing for easy multi-version scheming. Every release will be available for all the same game versions as the latest release of [YetAnotherConfigLib][yacl], the API used to build **Glissando**'s configuration screen.
+**Glissando**'s production operates on [Stonecutter][stonecutter], allowing for easy multi-version scheming. Every release will be available for all the same game versions as the latest release of [YetAnotherConfigLib][yacl], the API used to build **Glissando**'s configuration screen.
 
 - Make sure you're running a Fabric instance of the game. If you're playing from the vanilla launcher, follow the [Fabric installation guide][fabric-guide]. If you're playing from a third-party launcher like [Prism][prism], you'll need to follow their own instructions which you can often find on their respective websites. For example, [here][prism-guide] is Prism's guide to downloading mods.
 - If you're not using a third-party launcher with in-built mod installation, you'll need to download the latest version of **Glissando** for your game version from the [GitHub releases][github-releases] page or on [Modrinth][modrinth-versions]. Drag the `.jar` file into your mods folder and launch the game!
