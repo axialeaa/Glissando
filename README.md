@@ -1,5 +1,6 @@
+<!--suppress HtmlDeprecatedAttribute -->
 <h1 align="center">
-  <img width="20%" src="https://github.com/user-attachments/assets/df1c2749-0b7b-44a0-b70c-6ea936628c33">
+  <img width="20%" src="https://github.com/user-attachments/assets/df1c2749-0b7b-44a0-b70c-6ea936628c33" alt="Glissando's logo">
   <br>
   Hi there! Thank you for checking out Glissando!
 </h1>
@@ -57,7 +58,7 @@ Check out [the wiki][wiki] for a more in-depth overview of **Glissando**'s featu
 **Glissando** prides itself on its extensive feature customizability, which is why there is a button to bring up the menu right inside the interface itself! It looks like this, iconized by a tiny keyboard with a gear in the corner:
 
 <p align="center">
-  <img width="15%" src="https://github.com/user-attachments/assets/e773a81c-3fda-4c35-b440-8b8216c3ff54">
+  <img width="15%" src="https://github.com/user-attachments/assets/e773a81c-3fda-4c35-b440-8b8216c3ff54" alt="Glissando's config button">
 </p>
 
 Alternatively, you can access the configuration screen via [Mod Menu][modmenu] directly, as shown below.
