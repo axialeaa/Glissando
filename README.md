@@ -73,7 +73,7 @@ Alternatively, you can access the configuration screen via [Mod Menu][modmenu] d
 - [x] Note coloring 
 - [x] Configuration
 - [ ] Data-driven instrument base blocks
-- [ ] Scale control
+- [ ] Scale restriction
 - [ ] MIDI device support (?)
 
 [wiki]: https://github.com/axialeaa/Glissando/wiki/Features
