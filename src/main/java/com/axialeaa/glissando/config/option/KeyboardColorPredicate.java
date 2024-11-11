@@ -15,9 +15,9 @@ public enum KeyboardColorPredicate implements GlissandoNameableEnum {
         predicate.draw(textures, context, x, y, pressed, hovered, color);
     });
 
-    private final DrawNoteKeyTexturesConsumer consumer;
+    private final Consumer consumer;
 
-    KeyboardColorPredicate(DrawNoteKeyTexturesConsumer consumer) {
+    KeyboardColorPredicate(Consumer consumer) {
         this.consumer = consumer;
     }
 
@@ -31,7 +31,7 @@ public enum KeyboardColorPredicate implements GlissandoNameableEnum {
     }
 
     @FunctionalInterface
-    public interface DrawNoteKeyTexturesConsumer {
+    public interface Consumer {
 
         void draw(NoteKeyTextures textures, DrawContext context, int x, int y, boolean pressed, boolean hovered, int color);
 

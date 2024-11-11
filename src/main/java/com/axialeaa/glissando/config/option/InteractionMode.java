@@ -3,6 +3,7 @@ package com.axialeaa.glissando.config.option;
 import com.axialeaa.glissando.config.GlissandoConfig;
 import com.axialeaa.glissando.config.GlissandoNameableEnum;
 
+@SuppressWarnings("unused")
 public enum InteractionMode implements GlissandoNameableEnum {
 
     SILENT, SOCIAL, RECLUSIVE;

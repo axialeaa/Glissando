@@ -129,7 +129,7 @@ public class GlissandoConfigScreen {
                 .name(GENERIC_COLORS)
                 .description(getOptionDesc(TITLE_COLORS))
                 .binding(defaults.titleColors, () -> config.titleColors, value -> config.titleColors = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
+                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).onOffFormatter())
                 .build();
 
             var showInstrument = Option.<Boolean>createBuilder()
@@ -152,7 +152,7 @@ public class GlissandoConfigScreen {
                 .binding(defaults.configButton, () -> config.configButton, value -> config.configButton = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
                 .available(Glissando.LOADER.isDevelopmentEnvironment() || Glissando.MOD_MENU_LOADED)
-                .listener((option, value) -> configButtonPosition.setAvailable(value || !option.available()))
+                .addListener((option, event) -> configButtonPosition.setAvailable(option.pendingValue() || !option.available()))
                 .build();
 
             var keyboardColorPredicate = Option.<KeyboardColorPredicate>createBuilder()
@@ -166,7 +166,7 @@ public class GlissandoConfigScreen {
                 .name(GENERIC_COLORS)
                 .description(getOptionDesc(TOOLTIP_COLORS))
                 .binding(defaults.tooltipColors, () -> config.tooltipColors, value -> config.tooltipColors = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
+                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).onOffFormatter())
                 .build();
 
             AtomicBoolean keybindTooltipsEnabled = new AtomicBoolean(config.keybindTooltips);
@@ -179,7 +179,7 @@ public class GlissandoConfigScreen {
                 .description(getOptionDesc(NOTE_TOOLTIPS))
                 .binding(defaults.noteTooltips, () -> config.noteTooltips, value -> config.noteTooltips = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
-                .listener((option, value) -> tooltipColors.setAvailable(value || keybindTooltipsEnabled.get() || pitchTooltipsEnabled.get()))
+                .addListener((option, event) -> tooltipColors.setAvailable(option.pendingValue() || keybindTooltipsEnabled.get() || pitchTooltipsEnabled.get()))
                 .build();
 
             var pitchTooltips = Option.<Boolean>createBuilder()
@@ -187,9 +187,9 @@ public class GlissandoConfigScreen {
                 .description(getOptionDesc(PITCH_TOOLTIPS))
                 .binding(defaults.pitchTooltips, () -> config.pitchTooltips, value -> config.pitchTooltips = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
-                .listener((option, value) -> {
-                    pitchTooltipsEnabled.set(value);
-                    tooltipColors.setAvailable(noteTooltips.pendingValue() || keybindTooltipsEnabled.get() || value);
+                .addListener((option, event) -> {
+                    pitchTooltipsEnabled.set(option.pendingValue());
+                    tooltipColors.setAvailable(noteTooltips.pendingValue() || keybindTooltipsEnabled.get() || option.pendingValue());
                 })
                 .build();
 
@@ -198,7 +198,9 @@ public class GlissandoConfigScreen {
                 .description(getOptionDesc(KEYBIND_TOOLTIPS))
                 .binding(defaults.keybindTooltips, () -> config.keybindTooltips, value -> config.keybindTooltips = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
-                .listener((option, value) -> {
+                .addListener((option, event) -> {
+                    boolean value = option.pendingValue();
+
                     keybindTooltipsEnabled.set(keybindInputsEnabled.get() && value);
                     tooltipColors.setAvailable(noteTooltips.pendingValue() || pitchTooltips.pendingValue() || value);
                 })
@@ -209,14 +211,17 @@ public class GlissandoConfigScreen {
                 .description(getOptionDesc(KEYBIND_INPUTS))
                 .binding(defaults.keybindInputs, () -> config.keybindInputs, value -> config.keybindInputs = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
-                .listener((option, value) -> {
+                .addListener((option, event) -> {
+                    boolean value = option.pendingValue();
+
                     keybindInputsEnabled.set(value);
                     keybindTooltipsEnabled.set(keybindTooltips.pendingValue() && value);
                     keybindTooltips.setAvailable(value);
                 })
                 .build();
 
-            return builder.title(CONFIG_TITLE)
+            return builder
+                .title(CONFIG_TITLE)
                 .categories(List.of(
                     createCategory("behaviors",
                         interactionMode,

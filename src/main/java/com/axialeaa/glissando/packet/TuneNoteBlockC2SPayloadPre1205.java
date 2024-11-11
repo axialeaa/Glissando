@@ -18,18 +18,18 @@ public class TuneNoteBlockC2SPayloadPre1205 {
         ServerPlayNetworking.registerGlobalReceiver(Glissando.TUNE_NOTE_BLOCK, (server, player, handler, buf, responseSender) -> {
             BlockPos blockPos = buf.readBlockPos();
             int pitch = buf.readInt();
-            boolean playOnChange = buf.readBoolean();
+            boolean play = buf.readBoolean();
 
-            server.execute(() -> GlissandoUtils.tuneToPitch(blockPos, player, pitch, playOnChange));
+            server.execute(() -> GlissandoUtils.tuneToPitch(blockPos, player, pitch, play));
         });
     }
 
-    public static void sendNew(BlockPos pos, int pitch, boolean playOnChange) {
+    public static void sendNew(BlockPos pos, int pitch, boolean play) {
         PacketByteBuf buf = PacketByteBufs.create();
 
         buf.writeBlockPos(pos);
         buf.writeInt(pitch);
-        buf.writeBoolean(playOnChange);
+        buf.writeBoolean(play);
 
         ClientPlayNetworking.send(Glissando.TUNE_NOTE_BLOCK, buf);
     }

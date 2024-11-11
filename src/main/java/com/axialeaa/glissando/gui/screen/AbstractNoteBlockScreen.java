@@ -71,7 +71,9 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
     @Override
     protected void init() {
         this.widgets.clear();
+
         this.addKeys(this.pos);
+
         this.addDoneButton();
         this.addConfigButton();
     }
@@ -83,8 +85,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         boolean configButton = GlissandoConfig.get().configButton || !Glissando.MOD_MENU_LOADED;
         int offset = GlissandoConfig.get().configButtonPosition.getDoneButtonOffset();
 
-        this.addDrawableChild(ButtonWidget
-            .builder(ScreenTexts.DONE, button -> this.close())
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close())
             .dimensions(
                 this.width / 2 + (configButton ? offset : DEFAULT_DONE_BUTTON_OFFSET),
                 this.height / 4 + BUTTON_HEIGHT,
@@ -107,9 +108,10 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         //? >1.20.1 {
         Identifier texture = Glissando.id("note_block/config");
         TextIconButtonWidget widget = TextIconButtonWidget.builder(name, button -> {
-            if (this.client != null)
-                this.client.setScreen(this.getConfigScreen());
-            }, true).width(CONFIG_BUTTON_SIZE)
+                if (this.client != null)
+                    this.client.setScreen(this.getConfigScreen());
+            }, true)
+            .width(CONFIG_BUTTON_SIZE)
             .texture(
                 texture,
                 CONFIG_BUTTON_TEXTURE_SIZE,
@@ -137,7 +139,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
             button -> {
                 if (this.client != null)
                     this.client.setScreen(this.getConfigScreen());
-                },
+            },
             name
         );
         *///?}
@@ -215,7 +217,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         //? if >=1.20.6 {
         if (GlissandoConfig.get().backgroundBlur)
-            this.applyBlur(delta);
+            this.applyBlur( /*? if <=1.21.1 >>*/ /*delta*/ );
         //?}
 
         this.renderGradientBackground(context);
@@ -237,6 +239,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
             color = getArgbColor(pitch.getAsInt());
 
         DiffuseLighting.disableGuiDepthLighting();
+
         context.drawCenteredTextWithShadow(this.textRenderer, this.getTitle(), this.width / 2, 40, color);
         DiffuseLighting.enableGuiDepthLighting();
     }
@@ -249,8 +252,8 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         Color start = GlissandoConfig.get().backgroundStartColor;
         Color end = GlissandoConfig.get().backgroundEndColor;
 
-        int startColor = ColorHelper.Argb.getArgb(start.getAlpha(), start.getRed(), start.getGreen(), start.getBlue());
-        int endColor = ColorHelper.Argb.getArgb(end.getAlpha(), end.getRed(), end.getGreen(), end.getBlue());
+        int startColor = ColorHelper /*? if <=1.21.1 >>*/ /*.Argb*/ .getArgb(start.getAlpha(), start.getRed(), start.getGreen(), start.getBlue());
+        int endColor = ColorHelper /*? if <=1.21.1 >>*/ /*.Argb */ .getArgb(end.getAlpha(), end.getRed(), end.getGreen(), end.getBlue());
 
         context.fillGradient(0, 0, this.width, this.height, startColor, endColor);
     }

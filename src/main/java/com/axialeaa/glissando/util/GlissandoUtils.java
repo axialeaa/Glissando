@@ -2,8 +2,8 @@ package com.axialeaa.glissando.util;
 
 import com.axialeaa.glissando.gui.screen.NoteBlockScreen;
 import com.axialeaa.glissando.mixin.accessor.NoteBlockAccessor;
+import com.axialeaa.glissando.registries.NoteBlockInstrument;
 import it.unimi.dsi.fastutil.chars.CharArrayList;
-import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.NoteBlock;
@@ -11,14 +11,14 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 
 import java.util.Optional;
 
-import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
-import static net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument .*;
+//import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
+//import static net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument .*;
 
 public class GlissandoUtils {
 
@@ -54,22 +54,22 @@ public class GlissandoUtils {
         'z', 's', 'x', 'd', 'c', 'v', 'g'
     );
 
-    /**
-     * Stores a map of instruments along with the octave of the first F♯. This is used in the note tooltips, since not all instruments start on F♯3.
-     */
-    private static final Object2IntArrayMap</*$ instrument >>*/ NoteBlockInstrument > INSTRUMENT_TO_START_OCTAVE = Util.make(new Object2IntArrayMap<>(), map -> {
-        map.defaultReturnValue(3);
-        map.put(BASEDRUM, 0);
-        map.put(BASS, 1);
-        map.put(DIDGERIDOO, 1);
-        map.put(GUITAR, 2);
-        map.put(FLUTE, 4);
-        map.put(SNARE, 4);
-        map.put(BELL, 5);
-        map.put(CHIME, 5);
-        map.put(HAT, 5);
-        map.put(XYLOPHONE, 5);
-    });
+//    /**
+//     * Stores a map of instruments along with the octave of the first F♯. This is used in the note tooltips, since not all instruments start on F♯3.
+//     */
+//    private static final Object2IntArrayMap</*$ instrument >>*/ NoteBlockInstrument > INSTRUMENT_TO_START_OCTAVE = Util.make(new Object2IntArrayMap<>(), map -> {
+//        map.defaultReturnValue(3);
+//        map.put(BASEDRUM, 0);
+//        map.put(BASS, 1);
+//        map.put(DIDGERIDOO, 1);
+//        map.put(GUITAR, 2);
+//        map.put(FLUTE, 4);
+//        map.put(SNARE, 4);
+//        map.put(BELL, 5);
+//        map.put(CHIME, 5);
+//        map.put(HAT, 5);
+//        map.put(XYLOPHONE, 5);
+//    });
 
     public static final Note[] NOTES = new Note[]{
         Note.F_SHARP, Note.G, Note.G_SHARP, Note.A, Note.A_SHARP, Note.B,
@@ -90,7 +90,8 @@ public class GlissandoUtils {
     }
 
     public static int getOctave(/*$ instrument >>*/ NoteBlockInstrument instrument, int pitch) {
-        int startOctave = INSTRUMENT_TO_START_OCTAVE.getInt(instrument);
+        // int startOctave = INSTRUMENT_TO_START_OCTAVE.getInt(instrument);
+        int startOctave = instrument.startOctave();
 
         if (pitch < 6) // First C
             return startOctave;
@@ -103,20 +104,20 @@ public class GlissandoUtils {
      * @param pos The block position of the note block.
      * @param player The player who sent the packet.
      * @param pitch The pitch to tune the note block to.
-     * @param playOnChange Whether the note block should play a sound when it has been tuned.
+     * @param play Whether the note block should play a sound when it has been tuned.
      */
-    public static void tuneToPitch(BlockPos pos, ServerPlayerEntity player, int pitch, boolean playOnChange) {
+    public static void tuneToPitch(BlockPos pos, ServerPlayerEntity player, int pitch, boolean play) {
         ServerWorld world = player.getServerWorld();
 
         BlockState blockState = world.getBlockState(pos);
 
-        if (!isValidNoteBlock(blockState))
+        if (!isValidNoteBlock(world, pos))
             return;
 
         blockState = blockState.with(NoteBlock.NOTE, pitch);
         world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 
-        if (!playOnChange)
+        if (play)
             ((NoteBlockAccessor) blockState.getBlock()).invokePlayNote(player, blockState, world, pos);
 
         player.incrementStat(Stats.TUNE_NOTEBLOCK);
@@ -136,17 +137,27 @@ public class GlissandoUtils {
             /*player.squaredDistanceTo((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5) > 64.0;*/
     }
 
-    public static Optional</*$ instrument >>*/ NoteBlockInstrument > getInstrument(BlockState state) {
-        if (!(state.getBlock() instanceof NoteBlock))
-            return Optional.empty();
+    public static Optional</*$ instrument >>*/ NoteBlockInstrument> getInstrument(World world, BlockPos pos) {
+        NoteBlockInstrument instrument;
 
-        Optional</*$ instrument >>*/ NoteBlockInstrument > optional = state.getOrEmpty(NoteBlock.INSTRUMENT);
+        BlockState upState = world.getBlockState(pos.up());
+        Block up = upState.getBlock();
 
-        return optional;
+        if (NoteBlockInstrument.Manager.TOP_INSTRUMENTS.containsKey(up))
+            instrument = NoteBlockInstrument.Manager.TOP_INSTRUMENTS.get(up);
+        else {
+            BlockState downState = world.getBlockState(pos.down());
+            Block down = downState.getBlock();
+
+            instrument = NoteBlockInstrument.Manager.ALL_INSTRUMENTS.get(down);
+        }
+
+        return Optional.ofNullable(instrument);
+        // return state.getBlock() instanceof NoteBlock ? Optional.empty() : state.getOrEmpty(NoteBlock.INSTRUMENT);
     }
 
-    public static boolean isValidNoteBlock(BlockState state) {
-        return getInstrument(state).filter(instrument -> !instrument.isNotBaseBlock()).isPresent();
+    public static boolean isValidNoteBlock(World world, BlockPos pos) {
+        return getInstrument(world, pos).filter(instrument -> !instrument.isBase()).isPresent();
     }
 
     /**
@@ -170,13 +181,6 @@ public class GlissandoUtils {
         int blue = (int) (Math.max(0.0F, MathHelper.sin((delta + (2.0F / 3.0F)) * MathHelper.TAU) * 0.65F + 0.35F) * 255);
 
         return red << 16 | green << 8 | blue;
-    }
-
-    public static boolean isCoordinateInsideRect(double x, double y, int minX, int minY, int maxX, int maxY) {
-        boolean withinWidth = x >= minX && x < maxX;
-        boolean withinHeight = y >= minY && y < maxY;
-
-        return withinWidth && withinHeight;
     }
 
 }

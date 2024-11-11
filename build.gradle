@@ -45,24 +45,27 @@ if (stonecutter.current.isActive) { // run configs for non-active version would 
 stonecutter {
 	swap("button", eval(mcVersion, ">=1.20.4") ? "TextIconButtonWidget" : "TexturedButtonWidget")
 	swap("payload", eval(mcVersion, ">=1.20.6") ? "TuneNoteBlockC2SPayload" : "TuneNoteBlockC2SPayloadPre1205")
-	swap("identifier", eval(mcVersion, ">=1.21") ? "Identifier.of(MOD_ID, name);" : "new Identifier(MOD_ID, name);")
-	swap("payload_server", eval(mcVersion, ">=1.21") ? "ctx.server();" : "player.server;")
-	swap("instrument", eval(mcVersion, ">=1.21") ? "NoteBlockInstrument" : "Instrument")
+	swap("identifier", eval(mcVersion, ">=1.21.1") ? "Identifier.of(MOD_ID, name);" : "new Identifier(MOD_ID, name);")
+	swap("payload_server", eval(mcVersion, ">=1.21.1") ? "ctx.server();" : "player.server;")
+	swap("instrument", eval(mcVersion, ">=1.21.1") ? "NoteBlockInstrument" : "Instrument")
+	swap("shader_program", eval(mcVersion, ">=1.21.3") ? "ShaderProgramKeys.POSITION_TEX_COLOR" : "GameRenderer::getPositionTexColorProgram")
 }
+
+def javaVersion = stonecutter.eval(mcVersion, ">=1.20.6") ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
+def javaVersionNumber = javaVersion.ordinal() + 1
 
 processResources {
 	inputs.property "version", project.version
 
 	filesMatching("fabric.mod.json") {
 		expand "version": project.version,
-			"target": project.property("target_version")
+			"target": project.property("target_version"),
+			"java_version": javaVersionNumber
 	}
 }
 
-def javaVersion = stonecutter.eval(mcVersion, ">=1.20.6") ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
-
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = javaVersion.ordinal() + 1
+	it.options.release = javaVersionNumber
 }
 
 java {

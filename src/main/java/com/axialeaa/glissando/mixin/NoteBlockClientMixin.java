@@ -33,13 +33,13 @@ public class NoteBlockClientMixin extends BlockMixin {
 		/*Hand hand,*/
 		BlockHitResult hit, Operation<ActionResult> original
 	) {
-		if (!world.isClient() || !GlissandoUtils.isValidNoteBlock(state))
+		if (!world.isClient() || !GlissandoUtils.isValidNoteBlock(world, pos))
 			return ActionResult.CONSUME;
 
 		if (!(world instanceof ClientWorld clientWorld) || GlissandoUtils.isPlayerTooFar(pos, (ClientPlayerEntity) player))
 			return ActionResult.SUCCESS;
 
-		/*$ instrument >>*/ NoteBlockInstrument instrument = GlissandoUtils.getInstrument(state).orElse(/*$ instrument >>*/ NoteBlockInstrument .HARP);
+		/*$ instrument >>*/ NoteBlockInstrument instrument = GlissandoUtils.getInstrument(world, pos).orElse(/*$ instrument >>*/ NoteBlockInstrument .HARP);
 		((NoteBlockScreenOpener) player).openScreen(new NoteBlockScreen(clientWorld, pos, instrument));
 
 		return ActionResult.SUCCESS;
