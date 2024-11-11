@@ -1,7 +1,7 @@
 <p align="center">
   <img width="20%" src="https://github.com/user-attachments/assets/df1c2749-0b7b-44a0-b70c-6ea936628c33" alt="Glissando's logo">
   <br>
-<h1 align="center">Hi there! Thank you for checking out Glissando!</h1>
+<h1 align="center">🎶 Hi there! Thank you for checking out Glissando!</h1>
 
 <p align="center">
   <!-- MODRINTH DOWNLOADS --->
@@ -40,9 +40,8 @@
 **Glissando** is a [Fabric][fabric] mod that attempts to fix what I personally believe to be some severe issues when it comes to the way note blocks work, allowing music-making to be more comfortable and satisfying than ever before! **Glissando**'s highly-customizable <abbr title="Graphical User Interface">GUI</abbr> fits right into this mod's goal: *as few clicks as possible*.
 
 Check out [the wiki][wiki] for a more in-depth overview of **Glissando**'s features!
-***
 
-### Getting Started
+## 📝 Getting Started
 **Glissando**'s production operates on [Stonecutter][stonecutter], allowing for easy multi-version scheming. Every release will be available for all the same game versions as the latest release of [YetAnotherConfigLib][yacl], the API used to build **Glissando**'s configuration screen.
 
 - Make sure you're running a Fabric instance of the game. If you're playing from the vanilla launcher, follow the [Fabric installation guide][fabric-guide]. If you're playing from a third-party launcher like [Prism][prism], you'll need to follow their own instructions which you can often find on their respective websites. For example, [here][prism-guide] is Prism's guide to downloading mods.
@@ -50,9 +49,8 @@ Check out [the wiki][wiki] for a more in-depth overview of **Glissando**'s featu
 
 > [!IMPORTANT]
 > **Glissando** requires both [Fabric API][fabric-api] and YetAnotherConfigLib. Without them, the game will fail to start!
-***
 
-### Configuration
+## 🛠️ Configuration
 **Glissando** prides itself on its extensive feature customizability, which is why there is a button to bring up the menu right inside the interface itself! It looks like this, iconized by a tiny keyboard with a gear in the corner:
 
 <p align="center">
@@ -68,6 +66,15 @@ Alternatively, you can access the configuration screen via [Mod Menu][modmenu] d
 
 > [!TIP]
 > You can preview any graphical changes you may have made to the GUI by clicking the "Preview GUI" button at the top of the Visuals tab!
+
+## 🗺️ Roadmap
+- [x] Basic keyboard functionality
+- [x] Widget tooltips
+- [x] Note coloring 
+- [x] Configuration
+- [ ] Data-driven instrument base blocks
+- [ ] Scale restriction
+- [ ] MIDI device support (?)
 
 [wiki]: https://github.com/axialeaa/Glissando/wiki/Features
 [fabric]: https://fabricmc.net
