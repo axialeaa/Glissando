@@ -1,0 +1,8 @@
+{
+  "blocks": "#minecraft:instruments/hat",
+  "description": {
+    "translate": "minecraft.note_block_instrument.hat"
+  },
+  "octave": 5,
+  "sound_event": "minecraft:block.note_block.hat"
+}

@@ -3,17 +3,17 @@
   "package": "com.axialeaa.glissando.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "NoteBlockServerMixin",
+    "BlockMixin",
+    "NoteBlockCommonMixin",
     "accessor.NoteBlockAccessor"
   ],
-  "injectors": {
-    "defaultRequire": 1
-  },
   "client": [
-    "BlockMixin",
     "ClientPlayerEntityMixin",
     "NoteBlockClientMixin",
     "accessor.ClickableWidgetAccessor",
     "accessor.ScreenAccessor"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

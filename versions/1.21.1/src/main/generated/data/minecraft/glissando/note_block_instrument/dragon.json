@@ -1,0 +1,4 @@
+{
+  "blocks": "#minecraft:instruments/dragon",
+  "sound_event": "minecraft:block.note_block.imitate.ender_dragon"
+}

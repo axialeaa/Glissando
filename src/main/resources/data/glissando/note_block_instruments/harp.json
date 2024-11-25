@@ -1,9 +1,0 @@
-{
-  "description": {
-    "translate": "instrument.harp"
-  },
-  "sound_event": {
-    "sound_id": "minecraft:block.note_block.harp"
-  },
-  "blocks": "#glissando:block/instruments/harp.json"
-}

@@ -2,13 +2,15 @@ package com.axialeaa.glissando.util;
 
 import com.axialeaa.glissando.Glissando;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
+
+//? if >=1.21.3
+ import net.minecraft.client.gl.ShaderProgramKeys;
 
 import static com.axialeaa.glissando.util.GlissandoUtils.*;
 

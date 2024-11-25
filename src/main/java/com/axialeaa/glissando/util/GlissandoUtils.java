@@ -1,9 +1,8 @@
 package com.axialeaa.glissando.util;
 
+import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.gui.screen.NoteBlockScreen;
 import com.axialeaa.glissando.mixin.accessor.NoteBlockAccessor;
-import com.axialeaa.glissando.registries.NoteBlockInstrument;
-import it.unimi.dsi.fastutil.chars.CharArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.NoteBlock;
@@ -13,12 +12,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-
-import java.util.Optional;
-
-//import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
-//import static net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument .*;
 
 public class GlissandoUtils {
 
@@ -42,34 +35,13 @@ public class GlissandoUtils {
     public static final int BUTTON_HEIGHT = 144;
 
     public static final int CONFIG_BUTTON_SIZE = 20;
-    public static final int CONFIG_BUTTON_TEXTURE_SIZE = 16;
+    //? >1.20.1
+     public static final int CONFIG_BUTTON_TEXTURE_SIZE = 16;
 
     public static final int DEFAULT_DONE_BUTTON_WIDTH = 200;
     public static final int DEFAULT_DONE_BUTTON_OFFSET = -(DEFAULT_DONE_BUTTON_WIDTH / 2);
 
     public static final int OFFSET_DONE_BUTTON_WIDTH = DEFAULT_DONE_BUTTON_WIDTH - CONFIG_BUTTON_SIZE;
-
-    private static final CharArrayList CHARS = CharArrayList.of(
-        '1', 'q', '2', 'w', '3', 'e', 'r', '5', 't', '6', 'y', 'u', '8', 'i', '9', 'o', '0', 'p',
-        'z', 's', 'x', 'd', 'c', 'v', 'g'
-    );
-
-//    /**
-//     * Stores a map of instruments along with the octave of the first F♯. This is used in the note tooltips, since not all instruments start on F♯3.
-//     */
-//    private static final Object2IntArrayMap</*$ instrument >>*/ NoteBlockInstrument > INSTRUMENT_TO_START_OCTAVE = Util.make(new Object2IntArrayMap<>(), map -> {
-//        map.defaultReturnValue(3);
-//        map.put(BASEDRUM, 0);
-//        map.put(BASS, 1);
-//        map.put(DIDGERIDOO, 1);
-//        map.put(GUITAR, 2);
-//        map.put(FLUTE, 4);
-//        map.put(SNARE, 4);
-//        map.put(BELL, 5);
-//        map.put(CHIME, 5);
-//        map.put(HAT, 5);
-//        map.put(XYLOPHONE, 5);
-//    });
 
     public static final Note[] NOTES = new Note[]{
         Note.F_SHARP, Note.G, Note.G_SHARP, Note.A, Note.A_SHARP, Note.B,
@@ -77,26 +49,8 @@ public class GlissandoUtils {
         Note.C, Note.C_SHARP, Note.D, Note.D_SHARP, Note.E, Note.F, Note.F_SHARP,
     };
 
-    public static char getChar(int pitch) {
-        return CHARS.getChar(pitch);
-    }
-
-    public static int getPitch(char chr) {
-        return CHARS.indexOf(chr);
-    }
-
     public static Note getNote(int pitch) {
         return NOTES[pitch];
-    }
-
-    public static int getOctave(/*$ instrument >>*/ NoteBlockInstrument instrument, int pitch) {
-        // int startOctave = INSTRUMENT_TO_START_OCTAVE.getInt(instrument);
-        int startOctave = instrument.startOctave();
-
-        if (pitch < 6) // First C
-            return startOctave;
-
-        return startOctave + (pitch >= 18 ? 2 : 1); // Second C
     }
 
     /**
@@ -108,13 +62,12 @@ public class GlissandoUtils {
      */
     public static void tuneToPitch(BlockPos pos, ServerPlayerEntity player, int pitch, boolean play) {
         ServerWorld world = player.getServerWorld();
+        SerializableNoteBlockInstrument instrument = SerializableNoteBlockInstrument.get(world, pos);
 
-        BlockState blockState = world.getBlockState(pos);
-
-        if (!isValidNoteBlock(world, pos))
+        if (!SerializableNoteBlockInstrument.canOpenNoteBlockScreen(world, pos, instrument))
             return;
 
-        blockState = blockState.with(NoteBlock.NOTE, pitch);
+        BlockState blockState = world.getBlockState(pos).with(NoteBlock.NOTE, pitch);
         world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 
         if (play)
@@ -135,29 +88,6 @@ public class GlissandoUtils {
             !player.canInteractWithBlockAt(pos, 4.0);
             //?} else
             /*player.squaredDistanceTo((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5) > 64.0;*/
-    }
-
-    public static Optional</*$ instrument >>*/ NoteBlockInstrument> getInstrument(World world, BlockPos pos) {
-        NoteBlockInstrument instrument;
-
-        BlockState upState = world.getBlockState(pos.up());
-        Block up = upState.getBlock();
-
-        if (NoteBlockInstrument.Manager.TOP_INSTRUMENTS.containsKey(up))
-            instrument = NoteBlockInstrument.Manager.TOP_INSTRUMENTS.get(up);
-        else {
-            BlockState downState = world.getBlockState(pos.down());
-            Block down = downState.getBlock();
-
-            instrument = NoteBlockInstrument.Manager.ALL_INSTRUMENTS.get(down);
-        }
-
-        return Optional.ofNullable(instrument);
-        // return state.getBlock() instanceof NoteBlock ? Optional.empty() : state.getOrEmpty(NoteBlock.INSTRUMENT);
-    }
-
-    public static boolean isValidNoteBlock(World world, BlockPos pos) {
-        return getInstrument(world, pos).filter(instrument -> !instrument.isBase()).isPresent();
     }
 
     /**

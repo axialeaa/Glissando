@@ -1,30 +1,32 @@
 package com.axialeaa.glissando.gui.screen;
 
+import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.gui.widget.PreviewNoteKeyWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The "fake" note block screen opened when clicking the "Preview GUI" button in the {@link com.axialeaa.glissando.config.GlissandoConfig config}. Opening this screen pauses the game in singleplayer mode, blurs the background, and returns to the config screen when closed.
  */
 public class PreviewNoteBlockScreen extends AbstractNoteBlockScreen<PreviewNoteKeyWidget> {
 
-    private final Screen screen;
+    private final Screen parentScreen;
 
-    public PreviewNoteBlockScreen(Screen screen) {
-        super("note_block_screen_preview");
-        this.screen = screen;
+    public PreviewNoteBlockScreen(Screen parentScreen) {
+        super("note_block_screen_preview", null, SerializableNoteBlockInstrument.UNKNOWN);
+        this.parentScreen = parentScreen;
     }
 
     @Override
-    protected PreviewNoteKeyWidget createNewWidget(int x, int y, int pitch, BlockPos pos) {
+    protected PreviewNoteKeyWidget createNewWidget(int x, int y, int pitch, @Nullable BlockPos pos) {
         return new PreviewNoteKeyWidget(x, y, pitch, this);
     }
 
     @Override
     protected Screen getConfigScreen() {
-        return this.screen;
+        return this.parentScreen;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class PreviewNoteBlockScreen extends AbstractNoteBlockScreen<PreviewNoteK
         super.close();
 
         if (this.client != null)
-            this.client.setScreen(this.screen);
+            this.client.setScreen(this.parentScreen);
     }
 
 }

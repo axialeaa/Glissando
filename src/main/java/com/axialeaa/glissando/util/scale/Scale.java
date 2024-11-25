@@ -9,27 +9,25 @@ import java.util.List;
 
 public enum Scale {
 
-    IONIAN          ("ionian",              2, 2, 1, 2, 2, 2, 1), // major
-    DORIAN          ("dorian",              2, 1, 2, 2, 2, 1, 2),
-    PHRYGIAN        ("phrygian",            1, 2, 2, 2, 1, 2, 2),
-    LYDIAN          ("lydian",              2, 2, 2, 1, 2, 2, 1),
-    MIXOLYDIAN      ("mixolydian",          2, 2, 1, 2, 2, 1, 2),
-    AEOLIAN         ("aeolian",             2, 1, 2, 2, 1, 2, 2), // natural minor
-    LOCRIAN         ("locrian",             1, 2, 2, 1, 2, 2, 2),
-    HARMONIC_MAJ    ("harmonic_major",      2, 2, 1, 2, 1, 3, 1),
-    HARMONIC_MIN    ("harmonic_minor",      2, 1, 2, 2, 1, 3, 1),
-    MELODIC_MIN     ("melodic_minor",       2, 1, 2, 2, 2, 2, 1),
-    PENTA_MAJ       ("pentatonic_major",    2, 2, 3, 2, 3),
-    PENTA_MIN       ("pentatonic_minor",    3, 2, 2, 3, 1),
-    BLUES           ("blues",               3, 2, 1, 1, 3, 2);
+    IONIAN          (2, 2, 1, 2, 2, 2, 1), // major
+    DORIAN          (2, 1, 2, 2, 2, 1, 2),
+    PHRYGIAN        (1, 2, 2, 2, 1, 2, 2),
+    LYDIAN          (2, 2, 2, 1, 2, 2, 1),
+    MIXOLYDIAN      (2, 2, 1, 2, 2, 1, 2),
+    AEOLIAN         (2, 1, 2, 2, 1, 2, 2), // natural minor
+    LOCRIAN         (1, 2, 2, 1, 2, 2, 2),
+    HARMONIC_MAJOR  (2, 2, 1, 2, 1, 3, 1),
+    HARMONIC_MINOR  (2, 1, 2, 2, 1, 3, 1),
+    MELODIC_MINOR   (2, 1, 2, 2, 2, 2, 1),
+    PENTA_MAJOR     (2, 2, 3, 2, 3),
+    PENTA_MINOR     (3, 2, 2, 3, 1),
+    BLUES           (3, 2, 1, 1, 3, 2);
 
-    private final String name;
     private final int[] steps;
 
     private final Object2ObjectArrayMap<Note, Note[]> notesForKeyMap = new Object2ObjectArrayMap<>();
 
-    Scale(String name, int... steps) {
-        this.name = name;
+    Scale(int... steps) {
         this.steps = steps;
     }
 

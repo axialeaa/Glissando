@@ -22,6 +22,9 @@
 		"client": [
 			"com.axialeaa.glissando.GlissandoClient"
 		],
+		"fabric-datagen": [
+			"com.axialeaa.glissando.data.GlissandoDataGenerator"
+		],
 		"modmenu": [
 			"com.axialeaa.glissando.config.ModMenuIntegration"
 		]

@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.7-SNAPSHOT'
+	id 'fabric-loom' version '1.8-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${mcVersion}"
+	minecraft "com.mojang:glissando:${mcVersion}"
 	mappings "net.fabricmc:yarn:${property("yarn_mappings")}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${property("loader_version")}"
 
@@ -39,20 +39,43 @@ if (stonecutter.current.isActive) { // run configs for non-active version would 
 			ideConfigGenerated = true // generate IDE tasks for running client, server and testmod, datagen if those are present
 			runDir "../../run" // use a global run directory for all versions
 		}
+		sourceSets {
+			main {
+				resources {
+					srcDir(project.file("src/main/generated"))
+				}
+			}
+		}
 	}
 }
 
 stonecutter {
+	swap("text_codec", eval(mcVersion, ">=1.20.4") ? "TextCodecs.CODEC" : "Codecs.TEXT")
 	swap("button", eval(mcVersion, ">=1.20.4") ? "TextIconButtonWidget" : "TexturedButtonWidget")
 	swap("payload", eval(mcVersion, ">=1.20.6") ? "TuneNoteBlockC2SPayload" : "TuneNoteBlockC2SPayloadPre1205")
-	swap("identifier", eval(mcVersion, ">=1.21.1") ? "Identifier.of(MOD_ID, name);" : "new Identifier(MOD_ID, name);")
+	swap("on_use_with_item", eval(mcVersion, ">=1.20.6") ? "\"onUseWithItem\"" : "\"onUse\"")
+	swap("identifier", eval(mcVersion, ">=1.21.1") ? "Identifier.of(namespace, path);" : "new Identifier(namespace, path);")
 	swap("payload_server", eval(mcVersion, ">=1.21.1") ? "ctx.server();" : "player.server;")
 	swap("instrument", eval(mcVersion, ">=1.21.1") ? "NoteBlockInstrument" : "Instrument")
 	swap("shader_program", eval(mcVersion, ">=1.21.3") ? "ShaderProgramKeys.POSITION_TEX_COLOR" : "GameRenderer::getPositionTexColorProgram")
+	swap("get_wrapper", eval(mcVersion, ">=1.21.3") ? "getOrThrow" : "getWrapperOrThrow")
+	swap("get_registry", eval(mcVersion, ">=1.21.3") ? "getOrThrow" : "get")
+
+	def getStateWithInstrumentWorldParam = eval(mcVersion, ">=1.21.3") ? "WorldView" : "WorldAccess"
+
+	swap("get_state_with_instrument_world_param", getStateWithInstrumentWorldParam)
+	swap("get_state_with_instrument_world_param_string", "\"$getStateWithInstrumentWorldParam\"")
+
 }
 
 def javaVersion = stonecutter.eval(mcVersion, ">=1.20.6") ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
 def javaVersionNumber = javaVersion.ordinal() + 1
+
+tasks.register('copyDatagen', Copy) {
+	from("src/main/generated")
+	into("${layout.buildDirectory.get()}/resources/main")
+	dependsOn("runDatagen")
+}
 
 processResources {
 	inputs.property "version", project.version
@@ -62,6 +85,10 @@ processResources {
 			"target": project.property("target_version"),
 			"java_version": javaVersionNumber
 	}
+}
+
+fabricApi {
+	configureDataGeneration()
 }
 
 tasks.withType(JavaCompile).configureEach {

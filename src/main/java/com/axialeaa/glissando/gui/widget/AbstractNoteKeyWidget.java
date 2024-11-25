@@ -12,10 +12,14 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.sound.SoundEvent;
 
 //? if !=1.20.4
 import com.axialeaa.glissando.mixin.accessor.ClickableWidgetAccessor;
+
+import java.util.Optional;
 
 public abstract class AbstractNoteKeyWidget extends ButtonWidget {
 
@@ -99,7 +103,8 @@ public abstract class AbstractNoteKeyWidget extends ButtonWidget {
 
     @Override
     public void playDownSound(SoundManager soundManager) {
-        soundManager.play(PositionedSoundInstance.master(this.screen.instrument.getSound(), NoteBlock.getNotePitch(this.pitch)));
+        Optional<RegistryEntry<SoundEvent>> sound = this.screen.instrument.soundEvent();
+        sound.ifPresent(entry -> soundManager.play(PositionedSoundInstance.master(entry, NoteBlock.getNotePitch(this.pitch))));
     }
 
     @Override

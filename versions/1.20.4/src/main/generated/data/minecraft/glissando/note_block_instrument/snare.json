@@ -1,0 +1,8 @@
+{
+  "blocks": "#minecraft:instruments/snare",
+  "description": {
+    "translate": "minecraft.note_block_instrument.snare"
+  },
+  "octave": 4,
+  "sound_event": "minecraft:block.note_block.snare"
+}

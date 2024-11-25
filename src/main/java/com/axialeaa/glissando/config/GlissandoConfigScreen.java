@@ -8,11 +8,9 @@ import dev.isxander.yacl3.api.controller.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
-import net.minecraft.util.Pair;
 
 import java.awt.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.axialeaa.glissando.config.GlissandoConfig.*;
 
@@ -23,7 +21,7 @@ public class GlissandoConfigScreen {
     private static final Text GENERIC_ENABLED = Glissando.translate("config.generic_enabled");
     private static final Text GENERIC_COLORS = Glissando.translate("config.generic_colors");
 
-    static Text getOptionTranslation(String name, boolean desc) {
+    public static Text getOptionTranslation(String name, boolean desc) {
         return Glissando.translate("config.option.%s.%s".formatted(name, desc ? "desc" : "name"));
     }
 
@@ -35,35 +33,39 @@ public class GlissandoConfigScreen {
         return OptionDescription.of(getOptionTranslation(name, true));
     }
 
-    private static Text getGroupName(String name, boolean desc) {
+    private static Text getGroupTranslation(String name, boolean desc) {
         return Glissando.translate("config.group.%s.%s".formatted(name, desc ? "desc" : "name"));
+    }
+
+    private static Text getGroupName(String name) {
+        return getGroupTranslation(name, false);
+    }
+
+    private static OptionDescription getGroupDesc(String name) {
+        return OptionDescription.of(getGroupTranslation(name, true));
     }
 
     private static Text getCategoryName(String name) {
         return Glissando.translate("config.category.%s".formatted(name));
     }
 
-    private static ConfigCategory createCategory(String name, Option<?> option, OptionGroup... groups) {
-        return ConfigCategory.createBuilder().name(getCategoryName(name)).option(option).groups(List.of(groups)).build();
+    private static OptionEntry createOption(Option<?> option) {
+        return createOption(true, option);
     }
 
-    @SafeVarargs
-    private static OptionGroup createGroup(String name, Pair<Boolean, Option<?>>... options) {
-        OptionGroup.Builder builder = OptionGroup.createBuilder()
-            .name(getGroupName(name, false))
-            .description(OptionDescription.of(getGroupName(name, true)));
+    private static OptionEntry createOption(boolean apply, Option<?> option) {
+        return new OptionEntry(apply, option);
+    }
 
-        for (Pair<Boolean, Option<?>> pair : options)
-            builder.optionIf(pair.getLeft(), pair.getRight());
+    private static OptionGroup createGroup(String name, OptionEntry... options) {
+        OptionGroup.Builder builder = OptionGroup.createBuilder()
+            .name(getGroupName(name))
+            .description(getGroupDesc(name));
+
+        for (OptionEntry optionEntry : options)
+            builder.optionIf(optionEntry.apply, optionEntry.option);
 
         return builder.build();
-    }
-
-    private static OptionGroup createGroup(String name, Option<?>... options) {
-        return OptionGroup.createBuilder()
-            .name(getGroupName(name, false))
-            .description(OptionDescription.of(getGroupName(name, true)))
-            .options(List.of(options)).build();
     }
 
     public static Screen create(Screen parent) {
@@ -86,11 +88,11 @@ public class GlissandoConfigScreen {
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
                 .build();
 
-            var mouseInputs = Option.<Boolean>createBuilder()
-                .name(getOptionName(MOUSE_INPUTS))
-                .description(getOptionDesc(MOUSE_INPUTS))
-                .binding(defaults.mouseInputs, () -> config.mouseInputs, value -> config.mouseInputs = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
+            var keyboardLayout = Option.<KeyboardLayout>createBuilder()
+                .name(getOptionName(KEYBOARD_LAYOUT))
+                .description(getOptionDesc(KEYBOARD_LAYOUT))
+                .binding(defaults.keyboardLayout, () -> config.keyboardLayout, value -> config.keyboardLayout = value)
+                .controller(EnumDropdownControllerBuilder::create)
                 .build();
 
             var previewGui = ButtonOption.createBuilder()
@@ -162,103 +164,84 @@ public class GlissandoConfigScreen {
                 .controller(option -> EnumControllerBuilder.create(option).enumClass(KeyboardColorPredicate.class))
                 .build();
 
-            var tooltipColors = Option.<Boolean>createBuilder()
-                .name(GENERIC_COLORS)
-                .description(getOptionDesc(TOOLTIP_COLORS))
-                .binding(defaults.tooltipColors, () -> config.tooltipColors, value -> config.tooltipColors = value)
+            var tooltipTitleColor = Option.<Boolean>createBuilder()
+                .name(getOptionName(TOOLTIP_TITLE_COLORS))
+                .description(getOptionDesc(TOOLTIP_TITLE_COLORS))
+                .binding(defaults.tooltipTitleColors, () -> config.tooltipTitleColors, value -> config.tooltipTitleColors = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).onOffFormatter())
                 .build();
 
-            AtomicBoolean keybindTooltipsEnabled = new AtomicBoolean(config.keybindTooltips);
-            AtomicBoolean pitchTooltipsEnabled = new AtomicBoolean(config.pitchTooltips);
-
-            AtomicBoolean keybindInputsEnabled = new AtomicBoolean(config.keybindInputs);
-
-            var noteTooltips = Option.<Boolean>createBuilder()
-                .name(getOptionName(NOTE_TOOLTIPS))
-                .description(getOptionDesc(NOTE_TOOLTIPS))
-                .binding(defaults.noteTooltips, () -> config.noteTooltips, value -> config.noteTooltips = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
-                .addListener((option, event) -> tooltipColors.setAvailable(option.pendingValue() || keybindTooltipsEnabled.get() || pitchTooltipsEnabled.get()))
+            var tooltipLineArrangement = ListOption.<TooltipType>createBuilder()
+                .name(getGroupName(TOOLTIP_LINE_ARRANGEMENT))
+                .description(getGroupDesc(TOOLTIP_LINE_ARRANGEMENT))
+                .binding(defaults.tooltipLineArrangement, () -> config.tooltipLineArrangement, value -> config.tooltipLineArrangement = value)
+                .controller(option -> EnumDropdownControllerBuilder.create(option).formatValue(GlissandoNameableEnum::getDisplayName))
+                .initial(TooltipType.EMPTY)
+                .minimumNumberOfEntries(0)
+                .maximumNumberOfEntries(TooltipType.values().length - 1)
+                .insertEntriesAtEnd(true)
                 .build();
 
-            var pitchTooltips = Option.<Boolean>createBuilder()
-                .name(getOptionName(PITCH_TOOLTIPS))
-                .description(getOptionDesc(PITCH_TOOLTIPS))
-                .binding(defaults.pitchTooltips, () -> config.pitchTooltips, value -> config.pitchTooltips = value)
+            var tooltips = Option.<Boolean>createBuilder()
+                .name(GENERIC_ENABLED)
+                .description(getOptionDesc(TOOLTIPS))
+                .binding(defaults.tooltips, () -> config.tooltips, value -> config.tooltips = value)
                 .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
                 .addListener((option, event) -> {
-                    pitchTooltipsEnabled.set(option.pendingValue());
-                    tooltipColors.setAvailable(noteTooltips.pendingValue() || keybindTooltipsEnabled.get() || option.pendingValue());
-                })
-                .build();
+                    boolean value = option.pendingValue() || !option.available();
 
-            var keybindTooltips = Option.<Boolean>createBuilder()
-                .name(getOptionName(KEYBIND_TOOLTIPS))
-                .description(getOptionDesc(KEYBIND_TOOLTIPS))
-                .binding(defaults.keybindTooltips, () -> config.keybindTooltips, value -> config.keybindTooltips = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
-                .addListener((option, event) -> {
-                    boolean value = option.pendingValue();
-
-                    keybindTooltipsEnabled.set(keybindInputsEnabled.get() && value);
-                    tooltipColors.setAvailable(noteTooltips.pendingValue() || pitchTooltips.pendingValue() || value);
-                })
-                .build();
-
-            var keybindInputs = Option.<Boolean>createBuilder()
-                .name(getOptionName(KEYBIND_INPUTS))
-                .description(getOptionDesc(KEYBIND_INPUTS))
-                .binding(defaults.keybindInputs, () -> config.keybindInputs, value -> config.keybindInputs = value)
-                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).yesNoFormatter())
-                .addListener((option, event) -> {
-                    boolean value = option.pendingValue();
-
-                    keybindInputsEnabled.set(value);
-                    keybindTooltipsEnabled.set(keybindTooltips.pendingValue() && value);
-                    keybindTooltips.setAvailable(value);
+                    tooltipTitleColor.setAvailable(value);
+                    tooltipLineArrangement.setAvailable(value);
                 })
                 .build();
 
             return builder
                 .title(CONFIG_TITLE)
                 .categories(List.of(
-                    createCategory("behaviors",
-                        interactionMode,
-                        createGroup("screen", openScreenWhenPlaced),
-                        createGroup("inputs",
-                            keybindInputs,
-                            mouseInputs
+                    ConfigCategory.createBuilder()
+                        .name(getCategoryName("behaviors"))
+                        .option(interactionMode)
+                        .group(createGroup("screen",
+                            createOption(openScreenWhenPlaced))
                         )
-                    ),
-                    createCategory("visuals",
-                        previewGui,
-                        createGroup("background",
+                        .group(createGroup("inputs",
+                            createOption(keyboardLayout)
+                        ))
+                        .build(),
+
+                    ConfigCategory.createBuilder()
+                        .name(getCategoryName("visuals"))
+                        .option(previewGui)
+                        .group(createGroup("background",
                             //? if >=1.20.6
-                            backgroundBlur,
-                            backgroundStartColor,
-                            backgroundEndColor
-                        ),
-                        createGroup("title",
-                            titleColors,
-                            showInstrument
-                        ),
-                        createGroup("config_button",
-                            new Pair<>(Glissando.LOADER.isDevelopmentEnvironment() || Glissando.MOD_MENU_LOADED, configButton),
-                            new Pair<>(true, configButtonPosition)
-                        ),
-                        createGroup("keyboard", keyboardColorPredicate),
-                        createGroup("tooltips",
-                            tooltipColors,
-                            noteTooltips,
-                            pitchTooltips,
-                            keybindTooltips
-                        )
-                    )
-                ))
+                            createOption(backgroundBlur),
+                            createOption(backgroundStartColor),
+                            createOption(backgroundEndColor)
+                        ))
+                        .group(createGroup("title",
+                            createOption(titleColors),
+                            createOption(showInstrument)
+                        ))
+                        .group(createGroup("config_button",
+                            createOption(Glissando.LOADER.isDevelopmentEnvironment() || Glissando.MOD_MENU_LOADED, configButton),
+                            createOption(configButtonPosition)
+                        ))
+                        .group(createGroup("keyboard",
+                            createOption(keyboardColorPredicate)
+                        ))
+                        .group(createGroup("tooltips",
+                            createOption(tooltips),
+                            createOption(tooltipTitleColor)
+                        ))
+                        .group(tooltipLineArrangement)
+                        .build()
+                    ))
+
                 .save(CONFIG::save);
             }
         );
     }
+
+    public record OptionEntry(boolean apply, Option<?> option) {}
 
 }

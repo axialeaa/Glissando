@@ -1,0 +1,8 @@
+{
+  "blocks": "#minecraft:instruments/didgeridoo",
+  "description": {
+    "translate": "minecraft.note_block_instrument.didgeridoo"
+  },
+  "octave": 1,
+  "sound_event": "minecraft:block.note_block.didgeridoo"
+}

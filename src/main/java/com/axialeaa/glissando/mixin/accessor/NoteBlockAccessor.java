@@ -3,6 +3,7 @@ package com.axialeaa.glissando.mixin.accessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -14,5 +15,8 @@ public interface NoteBlockAccessor {
 
     @Invoker("playNote")
     void invokePlayNote(@Nullable Entity entity, BlockState state, World world, BlockPos pos);
+
+    @Invoker("getCustomSound")
+    Identifier invokeGetCustomSound(World world, BlockPos pos);
 
 }

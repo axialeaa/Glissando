@@ -1,7 +1,7 @@
 package com.axialeaa.glissando.packet;
 
 //? if <1.20.5 {
-/*import com.axialeaa.glissando.Glissando;
+/*import com.axialeaa.glissando.util.CommonIdentifiers;
 import com.axialeaa.glissando.util.GlissandoUtils;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -15,7 +15,7 @@ import net.minecraft.network.PacketByteBuf;
 public class TuneNoteBlockC2SPayloadPre1205 {
 
     public static void register() {
-        ServerPlayNetworking.registerGlobalReceiver(Glissando.TUNE_NOTE_BLOCK, (server, player, handler, buf, responseSender) -> {
+        ServerPlayNetworking.registerGlobalReceiver(CommonIdentifiers.TUNE_NOTE_BLOCK_PAYLOAD, (server, player, handler, buf, responseSender) -> {
             BlockPos blockPos = buf.readBlockPos();
             int pitch = buf.readInt();
             boolean play = buf.readBoolean();
@@ -31,7 +31,7 @@ public class TuneNoteBlockC2SPayloadPre1205 {
         buf.writeInt(pitch);
         buf.writeBoolean(play);
 
-        ClientPlayNetworking.send(Glissando.TUNE_NOTE_BLOCK, buf);
+        ClientPlayNetworking.send(CommonIdentifiers.TUNE_NOTE_BLOCK_PAYLOAD, buf);
     }
 
 }

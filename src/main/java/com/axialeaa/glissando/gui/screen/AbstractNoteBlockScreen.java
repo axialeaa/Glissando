@@ -4,6 +4,8 @@ import com.axialeaa.glissando.Glissando;
 import com.axialeaa.glissando.config.GlissandoConfig;
 import com.axialeaa.glissando.gui.widget.AbstractNoteKeyWidget;
 import com.axialeaa.glissando.mixin.accessor.ScreenAccessor;
+import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
+import com.axialeaa.glissando.util.CommonIdentifiers;
 import com.axialeaa.glissando.util.GlissandoUtils;
 import com.axialeaa.glissando.util.Note;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -22,10 +24,12 @@ import net.minecraft.util.math.ColorHelper;
 import java.awt.*;
 import java.util.OptionalInt;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import static com.axialeaa.glissando.util.GlissandoUtils.*;
 
 import net.minecraft.client.gui.widget. /*$ button >>*/ TextIconButtonWidget ;
-import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
 
 public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> extends Screen {
 
@@ -37,17 +41,13 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
     /**
      * A list of note key widgets on this screen.
      */
-    protected ObjectArrayList<T> widgets = new ObjectArrayList<>();
+    protected final ObjectArrayList<T> widgets = new ObjectArrayList<>();
 
     private final String name;
-    private final BlockPos pos;
-    public /*$ instrument >>*/ NoteBlockInstrument instrument;
+    private final @Nullable BlockPos pos;
+    public @NotNull SerializableNoteBlockInstrument instrument;
 
-    protected AbstractNoteBlockScreen(String name) {
-        this(name, BlockPos.ORIGIN, /*$ instrument >>*/ NoteBlockInstrument .HARP);
-    }
-
-    protected AbstractNoteBlockScreen(String name, BlockPos pos, /*$ instrument >>*/ NoteBlockInstrument instrument) {
+    protected AbstractNoteBlockScreen(String name, @Nullable BlockPos pos, @NotNull SerializableNoteBlockInstrument instrument) {
         super(Glissando.translate(name + ".title"));
         this.name = name;
         this.pos = pos;
@@ -60,7 +60,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
      * @param pitch The pitch of the note. Used as a list index.
      * @return a new instance of {@link T} which will be added to the list of screen children.
      */
-    protected abstract T createNewWidget(int x, int y, int pitch, BlockPos pos);
+    protected abstract T createNewWidget(int x, int y, int pitch, @Nullable BlockPos pos);
 
     /**
      * @return the screen to go to when clicking the config button.
@@ -73,9 +73,10 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         this.widgets.clear();
 
         this.addKeys(this.pos);
-
         this.addDoneButton();
-        this.addConfigButton();
+
+        if (GlissandoConfig.get().configButton || !Glissando.MOD_MENU_LOADED)
+            this.addConfigButton();
     }
 
     /**
@@ -100,34 +101,28 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
      * Adds the config button at the bottom of the screen and moves it next to the {@code Done} button based on the config option.
      */
     private void addConfigButton() {
-        if (!GlissandoConfig.get().configButton && Glissando.MOD_MENU_LOADED)
-            return;
-
         Text name = Glissando.translate("config.button");
+        Identifier texture = CommonIdentifiers.CONFIG_BUTTON_TEXTURE;
+
+        ButtonWidget.PressAction pressAction = button -> {
+            if (this.client != null)
+                this.client.setScreen(this.getConfigScreen());
+        };
+
+        int x = this.width / 2 + GlissandoConfig.get().configButtonPosition.getOffset();
+        int y = this.height / 4 + BUTTON_HEIGHT;
 
         //? >1.20.1 {
-        Identifier texture = Glissando.id("note_block/config");
-        TextIconButtonWidget widget = TextIconButtonWidget.builder(name, button -> {
-                if (this.client != null)
-                    this.client.setScreen(this.getConfigScreen());
-            }, true)
+        TextIconButtonWidget widget = TextIconButtonWidget.builder(name, pressAction, true)
             .width(CONFIG_BUTTON_SIZE)
-            .texture(
-                texture,
-                CONFIG_BUTTON_TEXTURE_SIZE,
-                CONFIG_BUTTON_TEXTURE_SIZE
-            )
+            .texture(texture, CONFIG_BUTTON_TEXTURE_SIZE, CONFIG_BUTTON_TEXTURE_SIZE)
             .build();
 
-        widget.setPosition(
-            this.width / 2 + GlissandoConfig.get().configButtonPosition.getOffset(),
-            this.height / 4 + BUTTON_HEIGHT
-        );
+        widget.setPosition(x, y);
         //?} else {
-        /*Identifier texture = Glissando.id("textures/gui/sprites/note_block/config_button.png");
-        TexturedButtonWidget widget = new TexturedButtonWidget(
-            this.width / 2 + GlissandoConfig.get().configButtonPosition.getOffset(),
-            this.height / 4 + BUTTON_HEIGHT,
+        /*TexturedButtonWidget widget = new TexturedButtonWidget(
+            x,
+            y,
             CONFIG_BUTTON_SIZE,
             CONFIG_BUTTON_SIZE,
             0,
@@ -136,10 +131,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
             texture,
             CONFIG_BUTTON_SIZE,
             CONFIG_BUTTON_SIZE * 2,
-            button -> {
-                if (this.client != null)
-                    this.client.setScreen(this.getConfigScreen());
-            },
+            pressAction,
             name
         );
         *///?}
@@ -150,7 +142,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
     /**
      * Adds all note key widgets to the screen with appropriate offsets based on the {@link GlissandoUtils#NOTES list in GlissandoUtils}.
      */
-    private void addKeys(BlockPos pos) {
+    private void addKeys(@Nullable BlockPos pos) {
         int keyboardStartX = this.width / 2 - KEYBOARD_WIDTH / 2;
 
         int naturalX = keyboardStartX;
@@ -192,7 +184,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
      * @param y The vertical position.
      * @param pitch The pitch of the note. Used as a list index.
      */
-    private void addKey(int x, int y, int pitch, BlockPos pos) {
+    private void addKey(int x, int y, int pitch, @Nullable BlockPos pos) {
         T widget = this.createNewWidget(x, y, pitch, pos);
 
         this.widgets.add(pitch, widget);
@@ -206,7 +198,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         if (!GlissandoConfig.get().showInstrument)
             return this.title;
 
-        Text instrument = Text.translatable("instrument." + this.instrument.asString());
+        Text instrument = this.instrument.description();
         Text title = Glissando.translate(this.name + ".title_instrument");
 
         return Text.of(title.getString().formatted(instrument.getString()));
@@ -253,16 +245,13 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         Color end = GlissandoConfig.get().backgroundEndColor;
 
         int startColor = ColorHelper /*? if <=1.21.1 >>*/ /*.Argb*/ .getArgb(start.getAlpha(), start.getRed(), start.getGreen(), start.getBlue());
-        int endColor = ColorHelper /*? if <=1.21.1 >>*/ /*.Argb */ .getArgb(end.getAlpha(), end.getRed(), end.getGreen(), end.getBlue());
+        int endColor = ColorHelper /*? if <=1.21.1 >>*/ /*.Argb*/ .getArgb(end.getAlpha(), end.getRed(), end.getGreen(), end.getBlue());
 
         context.fillGradient(0, 0, this.width, this.height, startColor, endColor);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!GlissandoConfig.get().mouseInputs)
-            return false;
-
         for (T widget : this.widgets) {
             if (!widget.mouseClicked(mouseX, mouseY, button))
                 continue;
@@ -278,9 +267,6 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (!GlissandoConfig.get().keybindInputs)
-            return super.keyPressed(keyCode, scanCode, modifiers);
-
         for (T widget : this.widgets) {
             if (!widget.isSelected() || !widget.keyPressed(keyCode, 0, 0))
                 continue;
@@ -296,10 +282,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
 
     @Override
     public boolean charTyped(char chr, int modifiers) {
-        if (!GlissandoConfig.get().keybindInputs)
-            return false;
-
-        int pitch = getPitch(chr);
+        int pitch = GlissandoConfig.get().keyboardLayout.getPitch(chr);
 
         if (pitch < 0)
             return false;

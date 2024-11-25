@@ -1,0 +1,8 @@
+{
+  "blocks": "#minecraft:instruments/flute",
+  "description": {
+    "translate": "minecraft.note_block_instrument.flute"
+  },
+  "octave": 4,
+  "sound_event": "minecraft:block.note_block.flute"
+}

@@ -1,0 +1,4 @@
+{
+  "blocks": "#minecraft:instruments/creeper",
+  "sound_event": "minecraft:block.note_block.imitate.creeper"
+}

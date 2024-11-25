@@ -1,7 +1,7 @@
 package com.axialeaa.glissando.packet;
 
 //? if >=1.20.5 {
-import com.axialeaa.glissando.Glissando;
+import com.axialeaa.glissando.util.CommonIdentifiers;
 import com.axialeaa.glissando.util.GlissandoUtils;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -23,7 +23,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
  */
 public record TuneNoteBlockC2SPayload(BlockPos pos, int pitch, boolean play) implements CustomPayload {
 
-    public static final CustomPayload.Id<TuneNoteBlockC2SPayload> ID = new CustomPayload.Id<>(Glissando.TUNE_NOTE_BLOCK);
+    public static final CustomPayload.Id<TuneNoteBlockC2SPayload> ID = new CustomPayload.Id<>(CommonIdentifiers.TUNE_NOTE_BLOCK_PAYLOAD);
 
     public static final PacketCodec<RegistryByteBuf, TuneNoteBlockC2SPayload> CODEC = PacketCodec.tuple(
         BlockPos.PACKET_CODEC, TuneNoteBlockC2SPayload::pos,
@@ -50,9 +50,9 @@ public record TuneNoteBlockC2SPayload(BlockPos pos, int pitch, boolean play) imp
 
             BlockPos blockPos = payload.pos;
             int pitch = payload.pitch;
-            boolean playOnChange = payload.play;
+            boolean play = payload.play;
 
-            server.execute(() -> GlissandoUtils.tuneToPitch(blockPos, player, pitch, playOnChange));
+            server.execute(() -> GlissandoUtils.tuneToPitch(blockPos, player, pitch, play));
         });
     }
 

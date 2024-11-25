@@ -4,18 +4,19 @@ import com.axialeaa.glissando.config.GlissandoConfig;
 import com.axialeaa.glissando.config.GlissandoConfigScreen;
 import com.axialeaa.glissando.config.option.InteractionMode;
 import com.axialeaa.glissando.gui.widget.NoteKeyWidget;
+import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.util.GlissandoUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.OptionalInt;
 
 import com.axialeaa.glissando.packet. /*$ payload >>*/ TuneNoteBlockC2SPayload ;
-import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
 
 /**
  * The "normal" note block screen opened when interacting with a note block.
@@ -25,7 +26,7 @@ public class NoteBlockScreen extends AbstractNoteBlockScreen<NoteKeyWidget> {
     private final ClientWorld world;
     private final BlockPos pos;
 
-    public NoteBlockScreen(ClientWorld world, BlockPos pos, /*$ instrument >>*/ NoteBlockInstrument instrument) {
+    public NoteBlockScreen(ClientWorld world, BlockPos pos, @NotNull SerializableNoteBlockInstrument instrument) {
         super("note_block_screen", pos, instrument);
 
         this.world = world;
@@ -78,8 +79,7 @@ public class NoteBlockScreen extends AbstractNoteBlockScreen<NoteKeyWidget> {
         if (!this.canEdit())
             this.close();
 
-        BlockState blockState = this.world.getBlockState(this.pos);
-        /*$ instrument >>*/ NoteBlockInstrument instrument = GlissandoUtils.getInstrument(blockState).orElse(/*$ instrument >>*/ NoteBlockInstrument .HARP);
+        SerializableNoteBlockInstrument instrument = SerializableNoteBlockInstrument.get(this.world, this.pos);
 
         if (this.instrument == instrument)
             return;
@@ -97,9 +97,7 @@ public class NoteBlockScreen extends AbstractNoteBlockScreen<NoteKeyWidget> {
         if (this.client == null || this.client.player == null)
             return false;
 
-        BlockState blockState = this.world.getBlockState(this.pos);
-
-        return !GlissandoUtils.isPlayerTooFar(this.pos, this.client.player) && GlissandoUtils.isValidNoteBlock(blockState);
+        return !GlissandoUtils.isPlayerTooFar(this.pos, this.client.player) && SerializableNoteBlockInstrument.canOpenNoteBlockScreen(this.world, this.pos, this.instrument);
     }
 
 }

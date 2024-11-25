@@ -1,43 +1,43 @@
 package com.axialeaa.glissando.config;
 
 import com.axialeaa.glissando.Glissando;
-import com.axialeaa.glissando.config.option.ConfigButtonPosition;
-import com.axialeaa.glissando.config.option.InteractionMode;
-import com.axialeaa.glissando.config.option.KeyboardColorPredicate;
+import com.axialeaa.glissando.config.option.*;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 
 import java.awt.*;
+import java.util.List;
 
 public class GlissandoConfig {
 
-    static final String FILE_NAME = "%s.json".formatted(Glissando.MOD_ID);
+    private static final String FILE_NAME = Glissando.MOD_ID + ".json";
 
-    public static final String INTERACTION_MODE = "interaction_mode";
-    public static final String OPEN_SCREEN_WHEN_PLACED = "open_screen_when_placed";
-    public static final String KEYBIND_INPUTS = "keybind_inputs";
-    public static final String MOUSE_INPUTS = "mouse_inputs";
+    public static final String
+        INTERACTION_MODE = "interaction_mode",
+        OPEN_SCREEN_WHEN_PLACED = "open_screen_when_placed",
+        KEYBOARD_LAYOUT = "keyboard_layout",
 
-    public static final String PREVIEW_GUI = "preview_gui";
-    public static final String SHOW_INSTRUMENT = "show_instrument";
-    public static final String CONFIG_BUTTON = "config_button";
-    public static final String CONFIG_BUTTON_POSITION = "config_button_position";
-    public static final String NOTE_TOOLTIPS = "note_tooltips";
-    public static final String PITCH_TOOLTIPS = "pitch_tooltips";
-    public static final String KEYBIND_TOOLTIPS = "keybind_tooltips";
-    public static final String BACKGROUND_BLUR = "background_blur";
-    public static final String BACKGROUND_START_COLOR = "background_start_color";
-    public static final String BACKGROUND_END_COLOR = "background_end_color";
-    public static final String TITLE_COLORS = "title_colors";
-    public static final String KEYBOARD_COLOR_PREDICATE = "keyboard_color_predicate";
-    public static final String TOOLTIP_COLORS = "tooltip_colors";
+        PREVIEW_GUI = "preview_gui",
+        SHOW_INSTRUMENT = "show_instrument",
+        CONFIG_BUTTON = "config_button",
+        CONFIG_BUTTON_POSITION = "config_button_position",
+        TOOLTIP_LINE_ARRANGEMENT = "tooltip_line_arrangement",
+        //? if >=1.20.6
+        BACKGROUND_BLUR = "background_blur",
+        BACKGROUND_START_COLOR = "background_start_color",
+        BACKGROUND_END_COLOR = "background_end_color",
+        TITLE_COLORS = "title_colors",
+        KEYBOARD_COLOR_PREDICATE = "keyboard_color_predicate",
+        TOOLTIP_TITLE_COLORS = "tooltip_title_colors",
+        TOOLTIPS = "tooltips",
+        TOOLTIP_TYPE = "tooltip_type";
 
     @SerialEntry(value = INTERACTION_MODE) public InteractionMode interactionMode = InteractionMode.RECLUSIVE;
     @SerialEntry(value = OPEN_SCREEN_WHEN_PLACED) public boolean openScreenWhenPlaced = true;
-    @SerialEntry(value = KEYBIND_INPUTS) public boolean keybindInputs = true;
-    @SerialEntry(value = MOUSE_INPUTS) public boolean mouseInputs = true;
+    @SerialEntry(value = KEYBOARD_LAYOUT) public KeyboardLayout keyboardLayout = KeyboardLayout.QWERTY;
 
+    //? if >=1.20.6
     @SerialEntry(value = BACKGROUND_BLUR) public boolean backgroundBlur = false;
     @SerialEntry(value = BACKGROUND_START_COLOR) public Color backgroundStartColor = new Color(0xC00F0F0F, true);
     @SerialEntry(value = BACKGROUND_END_COLOR) public Color backgroundEndColor = new Color(0xD00F0F0F, true);
@@ -46,10 +46,9 @@ public class GlissandoConfig {
     @SerialEntry(value = CONFIG_BUTTON) public boolean configButton = true;
     @SerialEntry(value = CONFIG_BUTTON_POSITION) public ConfigButtonPosition configButtonPosition = ConfigButtonPosition.LEFT;
     @SerialEntry(value = KEYBOARD_COLOR_PREDICATE) public KeyboardColorPredicate keyboardColorPredicate = KeyboardColorPredicate.PRESSED;
-    @SerialEntry(value = TOOLTIP_COLORS) public boolean tooltipColors = true;
-    @SerialEntry(value = NOTE_TOOLTIPS) public boolean noteTooltips = true;
-    @SerialEntry(value = PITCH_TOOLTIPS) public boolean pitchTooltips = true;
-    @SerialEntry(value = KEYBIND_TOOLTIPS) public boolean keybindTooltips = true;
+    @SerialEntry(value = TOOLTIP_TITLE_COLORS) public boolean tooltipTitleColors = true;
+    @SerialEntry(value = TOOLTIPS) public boolean tooltips = true;
+    @SerialEntry(value = TOOLTIP_LINE_ARRANGEMENT) public List<TooltipType> tooltipLineArrangement = List.of(TooltipType.NOTE, TooltipType.PITCH);
 
     public static final ConfigClassHandler<GlissandoConfig> CONFIG = ConfigClassHandler.createBuilder(GlissandoConfig.class)
         .serializer(config -> GsonConfigSerializerBuilder.create(config)

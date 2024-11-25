@@ -1,7 +1,6 @@
 package com.axialeaa.glissando.config.option;
 
 import com.axialeaa.glissando.config.GlissandoConfig;
-import com.axialeaa.glissando.config.GlissandoNameableEnum;
 import com.axialeaa.glissando.util.NoteKeyTextures;
 import net.minecraft.client.gui.DrawContext;
 
@@ -15,9 +14,9 @@ public enum KeyboardColorPredicate implements GlissandoNameableEnum {
         predicate.draw(textures, context, x, y, pressed, hovered, color);
     });
 
-    private final Consumer consumer;
+    private final DrawConsumer consumer;
 
-    KeyboardColorPredicate(Consumer consumer) {
+    KeyboardColorPredicate(DrawConsumer consumer) {
         this.consumer = consumer;
     }
 
@@ -31,7 +30,7 @@ public enum KeyboardColorPredicate implements GlissandoNameableEnum {
     }
 
     @FunctionalInterface
-    public interface Consumer {
+    public interface DrawConsumer {
 
         void draw(NoteKeyTextures textures, DrawContext context, int x, int y, boolean pressed, boolean hovered, int color);
 

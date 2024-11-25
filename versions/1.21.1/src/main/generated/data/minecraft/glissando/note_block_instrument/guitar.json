@@ -1,0 +1,8 @@
+{
+  "blocks": "#minecraft:instruments/guitar",
+  "description": {
+    "translate": "minecraft.note_block_instrument.guitar"
+  },
+  "octave": 2,
+  "sound_event": "minecraft:block.note_block.guitar"
+}
