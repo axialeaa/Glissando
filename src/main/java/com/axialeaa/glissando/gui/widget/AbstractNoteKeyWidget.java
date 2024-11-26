@@ -19,8 +19,6 @@ import net.minecraft.sound.SoundEvent;
 //? if !=1.20.4
 import com.axialeaa.glissando.mixin.accessor.ClickableWidgetAccessor;
 
-import java.util.Optional;
-
 public abstract class AbstractNoteKeyWidget extends ButtonWidget {
 
     private final Note note;
@@ -103,8 +101,8 @@ public abstract class AbstractNoteKeyWidget extends ButtonWidget {
 
     @Override
     public void playDownSound(SoundManager soundManager) {
-        Optional<RegistryEntry<SoundEvent>> sound = this.screen.instrument.soundEvent();
-        sound.ifPresent(entry -> soundManager.play(PositionedSoundInstance.master(entry, NoteBlock.getNotePitch(this.pitch))));
+        RegistryEntry<SoundEvent> sound = this.screen.instrument.soundEvent();
+        soundManager.play(PositionedSoundInstance.master(sound, NoteBlock.getNotePitch(this.pitch)));
     }
 
     @Override

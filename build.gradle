@@ -54,6 +54,7 @@ stonecutter {
 	swap("button", eval(mcVersion, ">=1.20.4") ? "TextIconButtonWidget" : "TexturedButtonWidget")
 	swap("payload", eval(mcVersion, ">=1.20.6") ? "TuneNoteBlockC2SPayload" : "TuneNoteBlockC2SPayloadPre1205")
 	swap("on_use_with_item", eval(mcVersion, ">=1.20.6") ? "\"onUseWithItem\"" : "\"onUse\"")
+	swap("convention_tag_package_ver", eval(mcVersion, ">=1.20.6") ? "v2" : "v1")
 	swap("identifier", eval(mcVersion, ">=1.21.1") ? "Identifier.of(namespace, path);" : "new Identifier(namespace, path);")
 	swap("payload_server", eval(mcVersion, ">=1.21.1") ? "ctx.server();" : "player.server;")
 	swap("instrument", eval(mcVersion, ">=1.21.1") ? "NoteBlockInstrument" : "Instrument")
@@ -76,6 +77,13 @@ tasks.register('copyDatagen', Copy) {
 	into("${layout.buildDirectory.get()}/resources/main")
 	dependsOn("runDatagen")
 }
+
+tasks.register('copyBuild', Copy) {
+	from("${layout.buildDirectory.get()}/libs")
+	into("${rootDir}/releases")
+}
+
+tasks.build.finalizedBy("copyBuild")
 
 processResources {
 	inputs.property "version", project.version

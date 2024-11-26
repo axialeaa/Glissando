@@ -20,10 +20,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.world. /*$ get_state_with_instrument_world_param >>*/ WorldView ;
+import net.minecraft.world. /*$ get_state_with_instrument_world_param >>*/ WorldAccess ;
 import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
 
-@Debug(export = true)
 @Mixin(NoteBlock.class)
 public class NoteBlockCommonMixin {
 
@@ -45,8 +44,8 @@ public class NoteBlockCommonMixin {
 		return instance;
 	}
 
-	@WrapOperation(method = "getPlacementState", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/NoteBlock;getStateWithInstrument(Lnet/minecraft/world/" + /*$ get_state_with_instrument_world_param_string >>*/ "WorldView" + ";Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;"))
-	private BlockState getDefaultStateForPlacement(NoteBlock instance, /*$ get_state_with_instrument_world_param >>*/ WorldView world, BlockPos pos, BlockState state, Operation<BlockState> original) {
+	@WrapOperation(method = "getPlacementState", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/NoteBlock;getStateWithInstrument(Lnet/minecraft/world/" + /*$ get_state_with_instrument_world_param_string >>*/ "WorldAccess" + ";Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;"))
+	private BlockState getDefaultStateForPlacement(NoteBlock instance, /*$ get_state_with_instrument_world_param >>*/ WorldAccess world, BlockPos pos, BlockState state, Operation<BlockState> original) {
 		return state;
 	}
 
@@ -68,7 +67,7 @@ public class NoteBlockCommonMixin {
 	@WrapOperation(method = "playNote", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;get(Lnet/minecraft/state/property/Property;)Ljava/lang/Comparable;"))
 	private Comparable<?> imitateBehaviorForNewObject(BlockState instance, Property<?> property, Operation<Comparable<?>> original, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos) {
 		SerializableNoteBlockInstrument instrument = SerializableNoteBlockInstrument.get(world, pos);
-		return instrument.isBase() ? /*$ instrument >>*/ NoteBlockInstrument .HARP : /*$ instrument >>*/ NoteBlockInstrument .ZOMBIE;
+        return instrument.isTop(world) ? /*$ instrument >>*/ NoteBlockInstrument .ZOMBIE : /*$ instrument >>*/ NoteBlockInstrument .HARP;
 	}
 
 	@WrapOperation(method = "appendProperties", at = @At(value = "INVOKE", target = "Lnet/minecraft/state/StateManager$Builder;add([Lnet/minecraft/state/property/Property;)Lnet/minecraft/state/StateManager$Builder;"))

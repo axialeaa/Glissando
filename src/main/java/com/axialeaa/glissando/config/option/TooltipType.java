@@ -6,6 +6,7 @@ import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.util.GlissandoUtils;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 public enum TooltipType implements GlissandoNameableEnum {
 
@@ -43,7 +44,7 @@ public enum TooltipType implements GlissandoNameableEnum {
     @FunctionalInterface
     public interface TooltipTextFactory {
 
-        Text getTextContent(int pitch, @NotNull SerializableNoteBlockInstrument instrument);
+        Text getTextContent(@Range(from = 0, to = 25) int pitch, @NotNull SerializableNoteBlockInstrument instrument);
 
     }
 

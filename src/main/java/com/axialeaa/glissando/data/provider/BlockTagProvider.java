@@ -59,6 +59,8 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
             TagKey<Block> tag = TagKey.of(RegistryKeys.BLOCK, id);
             FabricTagBuilder builder = getOrCreateTagBuilder(tag);
 
+            builder.setReplace(false);
+
             for (RegistryKey<Block> key : INSTRUMENT_TO_BLOCKS_MAP.get(instrument))
                 builder.add(key);
         }

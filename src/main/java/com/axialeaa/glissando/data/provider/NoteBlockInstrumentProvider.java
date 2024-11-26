@@ -15,7 +15,7 @@ public class NoteBlockInstrumentProvider extends FabricDynamicRegistryProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup registries, Entries entries) {
-        entries.addAll(registries. /*$ get_wrapper >>*/ getOrThrow (SerializableNoteBlockInstrument.REGISTRY_KEY));
+        entries.addAll(registries. /*$ get_wrapper >>*/ getWrapperOrThrow (SerializableNoteBlockInstrument.REGISTRY_KEY));
     }
 
     @Override

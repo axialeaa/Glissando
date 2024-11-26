@@ -21,59 +21,76 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.util.*;
 
 //? if >1.20.1
 import net.minecraft.text.TextCodecs;
-import net.fabricmc.fabric.api.tag.convention.
-    //? if >=1.20.6 {
-    v2
-    //?} else
-    /*v1*/
-    .TagUtil;
+import net.fabricmc.fabric.api.tag.convention. /*$ convention_tag_package_ver >>*/ v2 .TagUtil;
 
-public record SerializableNoteBlockInstrument(Optional<RegistryEntry<SoundEvent>> soundEvent, float range, RegistryEntryList<Block> blocks, Text description, int octave) {
+public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEvent, float range, RegistryEntryList<Block> blocks, Text description, int octave) {
+
+    private static final RegistryEntry<SoundEvent> DEFAULT_SOUND_EVENT = SoundEvents.UI_BUTTON_CLICK;
+    private static final float DEFAULT_RANGE = 48.0F;
+    private static final RegistryEntryList<Block> DEFAULT_BLOCKS = RegistryEntryList.of();
+    private static final Text DEFAULT_DESCRIPTION = Text.translatable("note_block_instrument.unknown");
+    private static final int DEFAULT_OCTAVE = 3;
 
     public static final RegistryKey<Registry<SerializableNoteBlockInstrument>> REGISTRY_KEY = RegistryKey.ofRegistry(CommonIdentifiers.NOTE_BLOCK_INSTRUMENT_REGISTRY);
 
-    public static final SerializableNoteBlockInstrument UNKNOWN = createBuilder()
-        .setSoundEvent(SoundEvents.BLOCK_NOTE_BLOCK_HARP)
-        .setDescription(Text.translatable("note_block_instrument.unknown"))
-        .build();
+    /**
+     * Serves as a "placeholder instrument" in the preview screen, giving all the behaviors of a valid instrument outside of a world.
+     */
+    public static final SerializableNoteBlockInstrument UNKNOWN = createBuilder().setSoundEvent(SoundEvents.BLOCK_NOTE_BLOCK_HARP).build();
 
     public static final Codec<SerializableNoteBlockInstrument> CODEC = RecordCodecBuilder.create(instance -> instance
         .group(
-            SoundEvent.ENTRY_CODEC.optionalFieldOf("sound_event").forGetter(SerializableNoteBlockInstrument::soundEvent),
-            Codecs.POSITIVE_FLOAT.optionalFieldOf("range", 48.0F).forGetter(SerializableNoteBlockInstrument::range),
-            RegistryCodecs.entryList(RegistryKeys.BLOCK).optionalFieldOf("blocks", RegistryEntryList.of()).forGetter(SerializableNoteBlockInstrument::blocks),
-            /*$ text_codec >>*/ TextCodecs.CODEC .optionalFieldOf("description", Text.empty()).forGetter(SerializableNoteBlockInstrument::description),
-            Codec.INT.optionalFieldOf("octave", 3).forGetter(SerializableNoteBlockInstrument::octave)
+            SoundEvent.ENTRY_CODEC.optionalFieldOf("sound_event", DEFAULT_SOUND_EVENT).forGetter(SerializableNoteBlockInstrument::soundEvent),
+            Codecs.POSITIVE_FLOAT.optionalFieldOf("range", DEFAULT_RANGE).forGetter(SerializableNoteBlockInstrument::range),
+            RegistryCodecs.entryList(RegistryKeys.BLOCK).optionalFieldOf("blocks", DEFAULT_BLOCKS).forGetter(SerializableNoteBlockInstrument::blocks),
+            /*$ text_codec >>*/ TextCodecs.CODEC .optionalFieldOf("description", DEFAULT_DESCRIPTION).forGetter(SerializableNoteBlockInstrument::description),
+            Codec.INT.optionalFieldOf("octave", DEFAULT_OCTAVE).forGetter(SerializableNoteBlockInstrument::octave)
         )
         .apply(instance, SerializableNoteBlockInstrument::new)
     );
 
-    public boolean isBase() {
-        return !this.isIn(NoteBlockInstrumentTags.TOP_INSTRUMENTS);
+    /**
+     * Top instruments do not suppress the note block sound when a matching block is placed above, and always override a potential base instrument.
+     * @return true if this instrument should be considered a "top instrument".
+     */
+    public boolean isTop(World world) {
+        return this.isIn(world, NoteBlockInstrumentTags.TOP);
     }
 
-    public boolean isIn(TagKey<SerializableNoteBlockInstrument> tagKey) {
-        return TagUtil.isIn(tagKey, this);
+    public boolean isTunable(World world) {
+        return !this.isIn(world, NoteBlockInstrumentTags.UNTUNABLE);
     }
 
+    public boolean isIn(World world, TagKey<SerializableNoteBlockInstrument> tagKey) {
+        return TagUtil.isIn(world.getRegistryManager(), tagKey, this);
+    }
+
+    /**
+     * @return a new builder for a {@link SerializableNoteBlockInstrument}.
+     */
     public static Builder createBuilder() {
         return new Builder();
     }
 
     private static Registry<SerializableNoteBlockInstrument> getRegistry(World world) {
-        return world.getRegistryManager(). /*$ get_registry >>*/ getOrThrow (REGISTRY_KEY);
+        return world.getRegistryManager(). /*$ get_registry >>*/ get (REGISTRY_KEY);
     }
 
     private static SerializableNoteBlockInstrument byKey(World world, RegistryKey<SerializableNoteBlockInstrument> key) {
         return getRegistry(world).get(key);
     }
 
-    public int getOctaveOf(int pitch) {
+    /**
+     * Some instruments are tuned to higher octaves than others. The octave of the first F sharp is determined via {@link SerializableNoteBlockInstrument#octave}.
+     * @return the octave of {@code pitch} for this instrument.
+     */
+    public int getOctaveOf(@Range(from = 0, to = 25) int pitch) {
         int startOctave = this.octave();
 
         if (pitch < 6) // First C
@@ -82,33 +99,39 @@ public record SerializableNoteBlockInstrument(Optional<RegistryEntry<SoundEvent>
         return startOctave + (pitch >= 18 ? 2 : 1); // Second C
     }
 
+    /**
+     * @return a note block instrument associated with the blocks above and below the note block. If no instrument can be found, it will default to Harp.
+     */
     public static SerializableNoteBlockInstrument get(World world, BlockPos pos) {
-        SerializableNoteBlockInstrument instrument = findForBlock(world, pos);
+        SerializableNoteBlockInstrument instrument = find(world, pos);
         return Objects.requireNonNullElse(instrument, byKey(world, VanillaNoteBlockInstruments.HARP));
     }
 
     @Nullable
-    public static SerializableNoteBlockInstrument findForBlock(World world, BlockPos pos) {
-        for (SerializableNoteBlockInstrument instrument : getRegistry(world)) {
-            BlockPos blockPos = instrument.isBase() ? pos.down() : pos.up();
-            BlockState blockState = world.getBlockState(blockPos);
+    public static SerializableNoteBlockInstrument find(World world, BlockPos pos) {
+        BlockState upState = world.getBlockState(pos.up());
+        boolean air = upState.isAir();
 
-            if (blockState.isIn(instrument.blocks))
+        BlockState blockState = air ? world.getBlockState(pos.down()) : upState;
+
+        for (SerializableNoteBlockInstrument instrument : getRegistry(world)) {
+            if (air != instrument.isTop(world) && blockState.isIn(instrument.blocks))
                 return instrument;
         }
 
         return null;
     }
 
+    /**
+     * @return true if the note block screen can be opened.
+     */
     public static boolean canOpenNoteBlockScreen(World world, BlockPos pos, SerializableNoteBlockInstrument instrument) {
         BlockState blockState = world.getBlockState(pos);
 
-        if (!(blockState.getBlock() instanceof NoteBlock))
-            return false;
+        if (blockState.getBlock() instanceof NoteBlock && instrument.isTunable(world))
+            return !instrument.isTop(world) && world.getBlockState(pos.up()).isAir();
 
-        BlockState upState = world.getBlockState(pos.up());
-
-        return instrument.isBase() && upState.isAir();
+        return false;
     }
 
     public boolean playSoundAndAddParticle(World world, BlockPos pos, BlockState state) {
@@ -125,11 +148,11 @@ public record SerializableNoteBlockInstrument(Optional<RegistryEntry<SoundEvent>
         float range = this.range / 16.0F;
 
         int note = state.get(NoteBlock.NOTE);
-        float pitch = this.isBase() ? NoteBlock.getNotePitch(note) : 1.0F;
+        float pitch = this.isTunable(world) ? NoteBlock.getNotePitch(note) : 1.0F;
 
         world.playSound(null, x, y, z, soundEvent, SoundCategory.RECORDS, range, pitch, world.random.nextLong());
 
-        if (this.isBase())
+        if (!this.isTop(world) && this.isTunable(world))
             world.addParticle(ParticleTypes.NOTE, x, y + 0.7, z, (double) note / 24.0, 0.0, 0.0);
 
         return true;
@@ -137,8 +160,8 @@ public record SerializableNoteBlockInstrument(Optional<RegistryEntry<SoundEvent>
 
     @Nullable
     public RegistryEntry<SoundEvent> getSoundEvent(World world, BlockPos pos, BlockState state) {
-        if (this != byKey(world, VanillaNoteBlockInstruments.CUSTOM_HEAD) && this.soundEvent.isPresent())
-            return this.soundEvent.get();
+        if (this != byKey(world, VanillaNoteBlockInstruments.CUSTOM_HEAD))
+            return this.soundEvent;
 
         Identifier id = ((NoteBlockAccessor) state.getBlock()).invokeGetCustomSound(world, pos);
 
@@ -147,14 +170,14 @@ public record SerializableNoteBlockInstrument(Optional<RegistryEntry<SoundEvent>
 
     public static class Builder {
 
-        private Optional<RegistryEntry<SoundEvent>> soundEvent = Optional.of(SoundEvents.UI_BUTTON_CLICK);
-        private float range = 48.0F;
-        private RegistryEntryList<Block> blocks = RegistryEntryList.of();
-        private Text description = Text.empty();
-        private int octave = 3;
+        private RegistryEntry<SoundEvent> soundEvent = DEFAULT_SOUND_EVENT;
+        private float range = DEFAULT_RANGE;
+        private RegistryEntryList<Block> blocks = DEFAULT_BLOCKS;
+        private Text description = DEFAULT_DESCRIPTION;
+        private int octave = DEFAULT_OCTAVE;
 
         public Builder setSoundEvent(RegistryEntry<SoundEvent> soundEvent) {
-            this.soundEvent = Optional.of(soundEvent);
+            this.soundEvent = soundEvent;
             return this;
         }
 

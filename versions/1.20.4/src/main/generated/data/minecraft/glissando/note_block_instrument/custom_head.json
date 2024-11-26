@@ -1,4 +1,3 @@
 {
-  "blocks": "#minecraft:instruments/custom_head",
-  "sound_event": "minecraft:ui.button.click"
+  "blocks": "#minecraft:instruments/custom_head"
 }

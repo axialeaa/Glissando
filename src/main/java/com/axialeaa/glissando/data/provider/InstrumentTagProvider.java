@@ -5,11 +5,22 @@ import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.data.VanillaNoteBlockInstruments;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class InstrumentTagProvider extends FabricTagProvider<SerializableNoteBlockInstrument> {
+
+    private static final List<RegistryKey<SerializableNoteBlockInstrument>> TOP_INSTRUMENT_KEYS = List.of(
+        VanillaNoteBlockInstruments.CREEPER,
+        VanillaNoteBlockInstruments.CUSTOM_HEAD,
+        VanillaNoteBlockInstruments.DRAGON,
+        VanillaNoteBlockInstruments.PIGLIN,
+        VanillaNoteBlockInstruments.WITHER_SKELETON,
+        VanillaNoteBlockInstruments.ZOMBIE
+    );
 
     public InstrumentTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
         super(output, SerializableNoteBlockInstrument.REGISTRY_KEY, registriesFuture);
@@ -17,13 +28,13 @@ public class InstrumentTagProvider extends FabricTagProvider<SerializableNoteBlo
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        getOrCreateTagBuilder(NoteBlockInstrumentTags.TOP_INSTRUMENTS)
-            .add(VanillaNoteBlockInstruments.CREEPER)
-            .add(VanillaNoteBlockInstruments.CUSTOM_HEAD)
-            .add(VanillaNoteBlockInstruments.DRAGON)
-            .add(VanillaNoteBlockInstruments.PIGLIN)
-            .add(VanillaNoteBlockInstruments.WITHER_SKELETON)
-            .add(VanillaNoteBlockInstruments.ZOMBIE);
+        FabricTagBuilder top = getOrCreateTagBuilder(NoteBlockInstrumentTags.TOP);
+        FabricTagBuilder untunable = getOrCreateTagBuilder(NoteBlockInstrumentTags.UNTUNABLE);
+
+        for (RegistryKey<SerializableNoteBlockInstrument> key : TOP_INSTRUMENT_KEYS) {
+            top.add(key);
+            untunable.add(key);
+        }
     }
 
 }
