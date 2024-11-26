@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/bit",
+  "blocks": "#minecraft:note_block_instruments/bit",
   "description": {
     "translate": "minecraft.note_block_instrument.bit"
   },

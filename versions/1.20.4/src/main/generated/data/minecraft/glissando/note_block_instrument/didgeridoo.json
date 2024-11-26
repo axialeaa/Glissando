@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/didgeridoo",
+  "blocks": "#minecraft:note_block_instruments/didgeridoo",
   "description": {
     "translate": "minecraft.note_block_instrument.didgeridoo"
   },

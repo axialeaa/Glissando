@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/cow_bell",
+  "blocks": "#minecraft:note_block_instruments/cow_bell",
   "description": {
     "translate": "minecraft.note_block_instrument.cow_bell"
   },

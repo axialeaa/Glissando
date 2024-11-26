@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/banjo",
+  "blocks": "#minecraft:note_block_instruments/banjo",
   "description": {
     "translate": "minecraft.note_block_instrument.banjo"
   },

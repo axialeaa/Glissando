@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/pling",
+  "blocks": "#minecraft:note_block_instruments/pling",
   "description": {
     "translate": "minecraft.note_block_instrument.pling"
   },

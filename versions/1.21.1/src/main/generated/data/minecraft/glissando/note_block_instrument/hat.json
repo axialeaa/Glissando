@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/hat",
+  "blocks": "#minecraft:note_block_instruments/hat",
   "description": {
     "translate": "minecraft.note_block_instrument.hat"
   },

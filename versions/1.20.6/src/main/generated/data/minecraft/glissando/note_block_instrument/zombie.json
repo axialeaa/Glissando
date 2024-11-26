@@ -1,4 +1,4 @@
 {
-  "blocks": "#minecraft:instruments/zombie",
+  "blocks": "#minecraft:note_block_instruments/zombie",
   "sound_event": "minecraft:block.note_block.imitate.zombie"
 }

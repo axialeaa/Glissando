@@ -126,12 +126,20 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
      * @return true if the note block screen can be opened.
      */
     public static boolean canOpenNoteBlockScreen(World world, BlockPos pos, SerializableNoteBlockInstrument instrument) {
+        if (!instrument.isTunable(world))
+            return false;
+
         BlockState blockState = world.getBlockState(pos);
 
-        if (blockState.getBlock() instanceof NoteBlock && instrument.isTunable(world))
-            return !instrument.isTop(world) && world.getBlockState(pos.up()).isAir();
+        if (!(blockState.getBlock() instanceof NoteBlock))
+            return false;
 
-        return false;
+        if (instrument.isTop(world))
+            return true;
+        else {
+            BlockState upState = world.getBlockState(pos.up());
+            return upState.isAir();
+        }
     }
 
     public boolean playSoundAndAddParticle(World world, BlockPos pos, BlockState state) {

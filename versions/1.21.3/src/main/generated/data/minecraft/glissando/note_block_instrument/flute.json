@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/flute",
+  "blocks": "#minecraft:note_block_instruments/flute",
   "description": {
     "translate": "minecraft.note_block_instrument.flute"
   },

@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/bell",
+  "blocks": "#minecraft:note_block_instruments/bell",
   "description": {
     "translate": "minecraft.note_block_instrument.bell"
   },

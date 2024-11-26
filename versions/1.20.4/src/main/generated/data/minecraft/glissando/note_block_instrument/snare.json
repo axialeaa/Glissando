@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/snare",
+  "blocks": "#minecraft:note_block_instruments/snare",
   "description": {
     "translate": "minecraft.note_block_instrument.snare"
   },

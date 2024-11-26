@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/chime",
+  "blocks": "#minecraft:note_block_instruments/chime",
   "description": {
     "translate": "minecraft.note_block_instrument.chime"
   },

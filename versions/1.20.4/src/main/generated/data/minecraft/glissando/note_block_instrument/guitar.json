@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/guitar",
+  "blocks": "#minecraft:note_block_instruments/guitar",
   "description": {
     "translate": "minecraft.note_block_instrument.guitar"
   },

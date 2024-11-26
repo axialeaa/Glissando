@@ -32,7 +32,7 @@ public class BlockTags {
         ZOMBIE_INSTRUMENT = ofInstrument("zombie");
 
     private static TagKey<Block> ofInstrument(String path) {
-        return of("instruments", path);
+        return of("note_block_instruments", path);
     }
 
     private static TagKey<Block> of(String prefix, String path) {

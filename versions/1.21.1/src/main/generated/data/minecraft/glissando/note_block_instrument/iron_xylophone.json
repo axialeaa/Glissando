@@ -1,5 +1,5 @@
 {
-  "blocks": "#minecraft:instruments/iron_xylophone",
+  "blocks": "#minecraft:note_block_instruments/iron_xylophone",
   "description": {
     "translate": "minecraft.note_block_instrument.iron_xylophone"
   },

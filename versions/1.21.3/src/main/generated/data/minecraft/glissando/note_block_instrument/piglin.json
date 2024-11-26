@@ -1,4 +1,4 @@
 {
-  "blocks": "#minecraft:instruments/piglin",
+  "blocks": "#minecraft:note_block_instruments/piglin",
   "sound_event": "minecraft:block.note_block.imitate.piglin"
 }
