@@ -1,19 +1,15 @@
 package com.axialeaa.glissando.util;
 
-import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.gui.screen.NoteBlockScreen;
-import com.axialeaa.glissando.mixin.accessor.NoteBlockAccessor;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.NoteBlock;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class GlissandoUtils {
+
+    public static final int NOTES_IN_OCTAVE = 12;
+    public static final int FIRST_C_ORDINAL = 6;
+    public static final int SECOND_C_ORDINAL = FIRST_C_ORDINAL + NOTES_IN_OCTAVE;
 
     public static final int KEYBOARD_WIDTH = 196;
     public static final int KEYBOARD_HEIGHT = 65;
@@ -36,7 +32,7 @@ public class GlissandoUtils {
 
     public static final int CONFIG_BUTTON_SIZE = 20;
     //? >1.20.1
-     public static final int CONFIG_BUTTON_TEXTURE_SIZE = 16;
+    public static final int CONFIG_BUTTON_TEXTURE_SIZE = 16;
 
     public static final int DEFAULT_DONE_BUTTON_WIDTH = 200;
     public static final int DEFAULT_DONE_BUTTON_OFFSET = -(DEFAULT_DONE_BUTTON_WIDTH / 2);
@@ -51,29 +47,6 @@ public class GlissandoUtils {
 
     public static Note getNote(int pitch) {
         return NOTES[pitch];
-    }
-
-    /**
-     * The method that is called by the tune note block packet to tune the note block to a specified pitch.
-     * @param pos The block position of the note block.
-     * @param player The player who sent the packet.
-     * @param pitch The pitch to tune the note block to.
-     * @param play Whether the note block should play a sound when it has been tuned.
-     */
-    public static void tuneToPitch(BlockPos pos, ServerPlayerEntity player, int pitch, boolean play) {
-        ServerWorld world = player.getServerWorld();
-        SerializableNoteBlockInstrument instrument = SerializableNoteBlockInstrument.get(world, pos);
-
-        if (!SerializableNoteBlockInstrument.canOpenNoteBlockScreen(world, pos, instrument))
-            return;
-
-        BlockState blockState = world.getBlockState(pos).with(NoteBlock.NOTE, pitch);
-        world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
-
-        if (play)
-            ((NoteBlockAccessor) blockState.getBlock()).invokePlayNote(player, blockState, world, pos);
-
-        player.incrementStat(Stats.TUNE_NOTEBLOCK);
     }
 
     /**

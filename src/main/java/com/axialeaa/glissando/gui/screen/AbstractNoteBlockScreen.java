@@ -209,7 +209,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         //? if >=1.20.6 {
         if (GlissandoConfig.get().backgroundBlur)
-            this.applyBlur( /*? if <=1.21.1 >>*/ delta );
+            this.applyBlur( /*? if <=1.21.1 >>*/ /*delta*/ );
         //?}
 
         this.renderGradientBackground(context);
@@ -244,8 +244,8 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         Color start = GlissandoConfig.get().backgroundStartColor;
         Color end = GlissandoConfig.get().backgroundEndColor;
 
-        int startColor = ColorHelper /*? if <=1.21.1 >>*/ .Argb .getArgb(start.getAlpha(), start.getRed(), start.getGreen(), start.getBlue());
-        int endColor = ColorHelper /*? if <=1.21.1 >>*/ .Argb .getArgb(end.getAlpha(), end.getRed(), end.getGreen(), end.getBlue());
+        int startColor = ColorHelper /*? if <=1.21.1 >>*/ /*.Argb*/ .getArgb(start.getAlpha(), start.getRed(), start.getGreen(), start.getBlue());
+        int endColor = ColorHelper /*? if <=1.21.1 >>*/ /*.Argb*/ .getArgb(end.getAlpha(), end.getRed(), end.getGreen(), end.getBlue());
 
         context.fillGradient(0, 0, this.width, this.height, startColor, endColor);
     }

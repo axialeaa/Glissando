@@ -8,6 +8,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.NoteBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Property;
@@ -20,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.world. /*$ get_state_with_instrument_world_param >>*/ WorldAccess ;
+import net.minecraft.world. /*$ get_state_with_instrument_world_param >>*/ WorldView ;
 import net.minecraft.block.enums. /*$ instrument >>*/ NoteBlockInstrument ;
 
 @Mixin(NoteBlock.class)
@@ -29,14 +30,20 @@ public class NoteBlockCommonMixin {
 	@Shadow @Final public static EnumProperty</*$ instrument >>*/ NoteBlockInstrument > INSTRUMENT;
 
 	@ModifyExpressionValue(method = "onUse", at = @At(value = "FIELD", target = "Lnet/minecraft/world/World;isClient:Z"))
-	private boolean shouldCycleStateOnUse(boolean original, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos) {
+	private boolean shouldOpenNoteBlockScreen(boolean original, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos) {
 		SerializableNoteBlockInstrument instrument = SerializableNoteBlockInstrument.get(world, pos);
 		return original || SerializableNoteBlockInstrument.canOpenNoteBlockScreen(world, pos, instrument);
 	}
 
 	@ModifyExpressionValue(method = /*$ on_use_with_item >>*/ "onUseWithItem" , at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isIn(Lnet/minecraft/registry/tag/TagKey;)Z"))
-	private boolean shouldPassBlockAction(boolean original, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos) {
-		return original && world.getBlockState(pos.up()).isReplaceable();
+	private boolean shouldPassBlockAction(boolean original, @Local /*? if >=1.20.6 >>*/ (argsOnly=true) ItemStack stack, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos) {
+		if (!original)
+			return false;
+
+		Block block = Block.getBlockFromItem(stack.getItem());
+		BlockState blockState = block.getDefaultState();
+
+		return blockState.canPlaceAt(world, pos.up());
 	}
 
 	@WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;with(Lnet/minecraft/state/property/Property;Ljava/lang/Comparable;)Ljava/lang/Object;", ordinal = 0))
@@ -44,8 +51,8 @@ public class NoteBlockCommonMixin {
 		return instance;
 	}
 
-	@WrapOperation(method = "getPlacementState", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/NoteBlock;getStateWithInstrument(Lnet/minecraft/world/" + /*$ get_state_with_instrument_world_param_string >>*/ "WorldAccess" + ";Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;"))
-	private BlockState getDefaultStateForPlacement(NoteBlock instance, /*$ get_state_with_instrument_world_param >>*/ WorldAccess world, BlockPos pos, BlockState state, Operation<BlockState> original) {
+	@WrapOperation(method = "getPlacementState", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/NoteBlock;getStateWithInstrument(Lnet/minecraft/world/" + /*$ get_state_with_instrument_world_param_string >>*/ "WorldView" + ";Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;"))
+	private BlockState getDefaultStateForPlacement(NoteBlock instance, /*$ get_state_with_instrument_world_param >>*/ WorldView world, BlockPos pos, BlockState state, Operation<BlockState> original) {
 		return state;
 	}
 

@@ -1,5 +1,6 @@
 package com.axialeaa.glissando.util.scale;
 
+import com.axialeaa.glissando.util.GlissandoUtils;
 import com.axialeaa.glissando.util.Note;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -39,7 +40,7 @@ public enum Scale {
         Note note = key;
 
         for (int step : this.steps) {
-            int ordinal = (note.ordinal() + step) % 12;
+            int ordinal = (note.ordinal() + step) % GlissandoUtils.NOTES_IN_OCTAVE;
             note = Note.values()[ordinal];
 
             notes.add(note);

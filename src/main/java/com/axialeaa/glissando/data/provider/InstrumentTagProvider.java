@@ -1,6 +1,6 @@
 package com.axialeaa.glissando.data.provider;
 
-import com.axialeaa.glissando.data.NoteBlockInstrumentTags;
+import com.axialeaa.glissando.data.VanillaNoteBlockInstrumentTags;
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.data.VanillaNoteBlockInstruments;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -28,8 +28,8 @@ public class InstrumentTagProvider extends FabricTagProvider<SerializableNoteBlo
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        FabricTagBuilder top = getOrCreateTagBuilder(NoteBlockInstrumentTags.TOP);
-        FabricTagBuilder untunable = getOrCreateTagBuilder(NoteBlockInstrumentTags.UNTUNABLE);
+        FabricTagBuilder top = getOrCreateTagBuilder(VanillaNoteBlockInstrumentTags.TOP);
+        FabricTagBuilder untunable = getOrCreateTagBuilder(VanillaNoteBlockInstrumentTags.UNTUNABLE);
 
         for (RegistryKey<SerializableNoteBlockInstrument> key : TOP_INSTRUMENT_KEYS) {
             top.add(key);

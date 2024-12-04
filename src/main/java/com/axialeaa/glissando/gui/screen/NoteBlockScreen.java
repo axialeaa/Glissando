@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import com.axialeaa.glissando.packet. /*$ payload >>*/ TuneNoteBlockC2SPayload ;
+import com.axialeaa.glissando.packet.TuneNoteBlockC2SPayload;
 
 /**
  * The "normal" note block screen opened when interacting with a note block.
@@ -65,13 +65,15 @@ public class NoteBlockScreen extends AbstractNoteBlockScreen<NoteKeyWidget> {
         BlockState blockState = this.world.getBlockState(this.pos);
         Optional<Integer> optional = blockState.getOrEmpty(NoteBlock.NOTE);
 
-        OptionalInt pitch = this.selectedPitch;
+        OptionalInt selectedPitch = this.selectedPitch;
 
-        if (pitch.isEmpty())
+        if (selectedPitch.isEmpty() || optional.isEmpty())
             return;
 
-        if (optional.isPresent() && optional.get() != pitch.getAsInt())
-            /*$ payload >>*/ TuneNoteBlockC2SPayload .sendNew(this.pos, pitch.getAsInt(), mode == InteractionMode.RECLUSIVE);
+        int pitch = selectedPitch.getAsInt();
+
+        if (optional.get() != pitch)
+            TuneNoteBlockC2SPayload.sendNew(this.pos, pitch, mode == InteractionMode.RECLUSIVE);
     }
 
     @Override

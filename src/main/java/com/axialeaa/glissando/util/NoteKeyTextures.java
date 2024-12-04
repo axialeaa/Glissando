@@ -10,7 +10,7 @@ import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 
 //? if >=1.21.3
- /*import net.minecraft.client.gl.ShaderProgramKeys;*/
+ import net.minecraft.client.gl.ShaderProgramKeys;
 
 import static com.axialeaa.glissando.util.GlissandoUtils.*;
 
@@ -49,13 +49,13 @@ public record NoteKeyTextures(Identifier released, Identifier pressed, Identifie
     }
 
     public void drawWithColor(DrawContext context, int x, int y, boolean pressed, boolean hovered, int color) {
-        if (color == Colors.WHITE || ColorHelper /*? if <=1.21.1 >>*/ .Argb .getAlpha(color) == 0) {
+        if (color == Colors.WHITE || ColorHelper /*? if <=1.21.1 >>*/ /*.Argb*/ .getAlpha(color) == 0) {
             this.draw(context, x, y, pressed, hovered);
             return;
         }
 
         RenderSystem.setShaderTexture(0, this.get(pressed));
-        RenderSystem.setShader( /*$ shader_program >>*/ GameRenderer::getPositionTexColorProgram );
+        RenderSystem.setShader( /*$ shader_program >>*/ ShaderProgramKeys.POSITION_TEX_COLOR );
 
         Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
 
@@ -77,7 +77,7 @@ public record NoteKeyTextures(Identifier released, Identifier pressed, Identifie
     }
 
     private void drawTexture(DrawContext context, Identifier sprite, int x, int y) {
-        context.drawTexture(/*? if >=1.21.3 >>*/ /*RenderLayer::getGuiTextured,*/ sprite, x, y, 0, 0, this.width, this.height, this.width, this.height);
+        context.drawTexture(/*? if >=1.21.3 >>*/ RenderLayer::getGuiTextured, sprite, x, y, 0, 0, this.width, this.height, this.width, this.height);
     }
 
     private void renderQuad(BufferBuilder builder, Matrix4f matrix, float x, float y, int color) {

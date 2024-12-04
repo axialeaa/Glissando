@@ -168,6 +168,7 @@
   "glissando.tooltip.note": "Note: %s",
   "glissando.tooltip.pitch": "Pitch: %s",
   "glissando.tooltip.title": "Press %s or click to play",
+  "glissando.unknown_instrument": "Unknown Instrument",
   "minecraft.note_block_instrument.banjo": "Banjo",
   "minecraft.note_block_instrument.basedrum": "Bass Drum",
   "minecraft.note_block_instrument.bass": "String Bass",
@@ -184,7 +185,6 @@
   "minecraft.note_block_instrument.pling": "Pling",
   "minecraft.note_block_instrument.snare": "Snare Drum",
   "minecraft.note_block_instrument.xylophone": "Xylophone",
-  "note_block_instrument.unknown": "Unknown Instrument",
   "resourcePack.glissando:32x_upscale.description": "Based on §8§nhttps://faithfulpack.net",
   "resourcePack.glissando:32x_upscale.name": "Glissando: 32x Upscale"
 }

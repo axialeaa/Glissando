@@ -1,8 +1,0 @@
-{
-  "blocks": "#minecraft:note_block_instruments/bass",
-  "description": {
-    "translate": "minecraft.note_block_instrument.bass"
-  },
-  "octave": 1,
-  "sound_event": "minecraft:block.note_block.bass"
-}

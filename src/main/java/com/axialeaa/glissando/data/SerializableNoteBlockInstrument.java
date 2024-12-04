@@ -2,7 +2,9 @@ package com.axialeaa.glissando.data;
 
 import com.axialeaa.glissando.mixin.accessor.NoteBlockAccessor;
 import com.axialeaa.glissando.util.CommonIdentifiers;
+import com.axialeaa.glissando.util.GlissandoUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,11 +21,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.function.Function;
 
 //? if >1.20.1
 import net.minecraft.text.TextCodecs;
@@ -34,7 +38,7 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
     private static final RegistryEntry<SoundEvent> DEFAULT_SOUND_EVENT = SoundEvents.UI_BUTTON_CLICK;
     private static final float DEFAULT_RANGE = 48.0F;
     private static final RegistryEntryList<Block> DEFAULT_BLOCKS = RegistryEntryList.of();
-    private static final Text DEFAULT_DESCRIPTION = Text.translatable("note_block_instrument.unknown");
+    private static final Text DEFAULT_DESCRIPTION = Text.translatable("glissando.unknown_instrument");
     private static final int DEFAULT_OCTAVE = 3;
 
     public static final RegistryKey<Registry<SerializableNoteBlockInstrument>> REGISTRY_KEY = RegistryKey.ofRegistry(CommonIdentifiers.NOTE_BLOCK_INSTRUMENT_REGISTRY);
@@ -46,25 +50,30 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
 
     public static final Codec<SerializableNoteBlockInstrument> CODEC = RecordCodecBuilder.create(instance -> instance
         .group(
-            SoundEvent.ENTRY_CODEC.optionalFieldOf("sound_event", DEFAULT_SOUND_EVENT).forGetter(SerializableNoteBlockInstrument::soundEvent),
-            Codecs.POSITIVE_FLOAT.optionalFieldOf("range", DEFAULT_RANGE).forGetter(SerializableNoteBlockInstrument::range),
-            RegistryCodecs.entryList(RegistryKeys.BLOCK).optionalFieldOf("blocks", DEFAULT_BLOCKS).forGetter(SerializableNoteBlockInstrument::blocks),
-            /*$ text_codec >>*/ TextCodecs.CODEC .optionalFieldOf("description", DEFAULT_DESCRIPTION).forGetter(SerializableNoteBlockInstrument::description),
-            Codec.INT.optionalFieldOf("octave", DEFAULT_OCTAVE).forGetter(SerializableNoteBlockInstrument::octave)
+            apply("sound_event", DEFAULT_SOUND_EVENT, SoundEvent.ENTRY_CODEC, SerializableNoteBlockInstrument::soundEvent),
+            apply("range",       DEFAULT_RANGE,       Codecs.POSITIVE_FLOAT, SerializableNoteBlockInstrument::range),
+            apply("blocks",      DEFAULT_BLOCKS,      RegistryCodecs.entryList(RegistryKeys.BLOCK), SerializableNoteBlockInstrument::blocks),
+            apply("description", DEFAULT_DESCRIPTION, /*$ text_codec >>*/ TextCodecs.CODEC , SerializableNoteBlockInstrument::description),
+            apply("octave",      DEFAULT_OCTAVE,      Codec.INT, SerializableNoteBlockInstrument::octave)
         )
         .apply(instance, SerializableNoteBlockInstrument::new)
     );
+
+    private static <T> RecordCodecBuilder<SerializableNoteBlockInstrument, T> apply(String name, T defaultValue, Codec<T> codec, Function<SerializableNoteBlockInstrument, T> getter) {
+        MapCodec<T> optional = codec.optionalFieldOf(name, defaultValue);
+        return optional.forGetter(getter);
+    }
 
     /**
      * Top instruments do not suppress the note block sound when a matching block is placed above, and always override a potential base instrument.
      * @return true if this instrument should be considered a "top instrument".
      */
     public boolean isTop(World world) {
-        return this.isIn(world, NoteBlockInstrumentTags.TOP);
+        return this.isIn(world, VanillaNoteBlockInstrumentTags.TOP);
     }
 
     public boolean isTunable(World world) {
-        return !this.isIn(world, NoteBlockInstrumentTags.UNTUNABLE);
+        return !this.isIn(world, VanillaNoteBlockInstrumentTags.UNTUNABLE);
     }
 
     public boolean isIn(World world, TagKey<SerializableNoteBlockInstrument> tagKey) {
@@ -79,7 +88,7 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
     }
 
     private static Registry<SerializableNoteBlockInstrument> getRegistry(World world) {
-        return world.getRegistryManager(). /*$ get_registry >>*/ get (REGISTRY_KEY);
+        return world.getRegistryManager(). /*$ get_registry >>*/ getOrThrow (REGISTRY_KEY);
     }
 
     private static SerializableNoteBlockInstrument byKey(World world, RegistryKey<SerializableNoteBlockInstrument> key) {
@@ -93,22 +102,16 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
     public int getOctaveOf(@Range(from = 0, to = 25) int pitch) {
         int startOctave = this.octave();
 
-        if (pitch < 6) // First C
+        if (pitch < GlissandoUtils.FIRST_C_ORDINAL)
             return startOctave;
 
-        return startOctave + (pitch >= 18 ? 2 : 1); // Second C
+        return startOctave + (pitch >= GlissandoUtils.SECOND_C_ORDINAL ? 2 : 1);
     }
 
     /**
-     * @return a note block instrument associated with the blocks above and below the note block. If no instrument can be found, it will default to Harp.
+     * @return a note block instrument associated with the blocks above and below the note block. If no instrument can be found, it will default to {@link VanillaNoteBlockInstruments#HARP}.
      */
     public static SerializableNoteBlockInstrument get(World world, BlockPos pos) {
-        SerializableNoteBlockInstrument instrument = find(world, pos);
-        return Objects.requireNonNullElse(instrument, byKey(world, VanillaNoteBlockInstruments.HARP));
-    }
-
-    @Nullable
-    public static SerializableNoteBlockInstrument find(World world, BlockPos pos) {
         BlockState upState = world.getBlockState(pos.up());
         boolean air = upState.isAir();
 
@@ -119,7 +122,9 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
                 return instrument;
         }
 
-        return null;
+        SerializableNoteBlockInstrument harp = byKey(world, VanillaNoteBlockInstruments.HARP);
+
+        return Objects.requireNonNull(harp);
     }
 
     /**
@@ -137,7 +142,9 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
         if (instrument.isTop(world))
             return true;
         else {
-            BlockState upState = world.getBlockState(pos.up());
+            BlockPos up = pos.up();
+            BlockState upState = world.getBlockState(up);
+
             return upState.isAir();
         }
     }
@@ -148,20 +155,18 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
         if (soundEvent == null)
             return false;
 
-        double
-            x = pos.getX() + 0.5,
-            y = pos.getY() + 0.5,
-            z = pos.getZ() + 0.5;
-
         float range = this.range / 16.0F;
-
         int note = state.get(NoteBlock.NOTE);
-        float pitch = this.isTunable(world) ? NoteBlock.getNotePitch(note) : 1.0F;
 
-        world.playSound(null, x, y, z, soundEvent, SoundCategory.RECORDS, range, pitch, world.random.nextLong());
+        boolean tunable = this.isTunable(world);
+        float pitch = tunable ? NoteBlock.getNotePitch(note) : 1.0F;
 
-        if (!this.isTop(world) && this.isTunable(world))
-            world.addParticle(ParticleTypes.NOTE, x, y + 0.7, z, (double) note / 24.0, 0.0, 0.0);
+        Vec3d centerPos = pos.toCenterPos();
+
+        world.playSound(null, centerPos.x, centerPos.y, centerPos.z, soundEvent, SoundCategory.RECORDS, range, pitch, world.random.nextLong());
+
+        if (!this.isTop(world) && tunable)
+            world.addParticle(ParticleTypes.NOTE, centerPos.x, centerPos.y + 0.7, centerPos.z, (double) note / 24.0, 0.0, 0.0);
 
         return true;
     }

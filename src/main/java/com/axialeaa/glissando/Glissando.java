@@ -1,7 +1,7 @@
 package com.axialeaa.glissando;
 
-import com.axialeaa.glissando.data.BlockTags;
-import com.axialeaa.glissando.data.NoteBlockInstrumentTags;
+import com.axialeaa.glissando.data.VanillaBlockTags;
+import com.axialeaa.glissando.data.VanillaNoteBlockInstrumentTags;
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.data.VanillaNoteBlockInstruments;
 import net.fabricmc.api.ModInitializer;
@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.axialeaa.glissando.packet. /*$ payload >>*/ TuneNoteBlockC2SPayload ;
+import com.axialeaa.glissando.packet.TuneNoteBlockC2SPayload;
 
 public class Glissando implements ModInitializer {
 
@@ -32,10 +32,10 @@ public class Glissando implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("{} initialized! I-vory much enjoy this news, and it means a lot on a large scale.", MOD_NAME);
 
-		/*$ payload >>*/ TuneNoteBlockC2SPayload .register();
+		TuneNoteBlockC2SPayload.register();
 
-		BlockTags.init();
-		NoteBlockInstrumentTags.init();
+		VanillaBlockTags.init();
+		VanillaNoteBlockInstrumentTags.init();
 		VanillaNoteBlockInstruments.init();
 
 		DynamicRegistries.registerSynced(SerializableNoteBlockInstrument.REGISTRY_KEY, SerializableNoteBlockInstrument.CODEC);

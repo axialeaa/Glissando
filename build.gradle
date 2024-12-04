@@ -18,8 +18,8 @@ repositories {
 		url 'https://maven.isxander.dev/releases'
 	}
 	maven {
-		name = "Terraformers"
-		url = "https://maven.terraformersmc.com/"
+		name 'Terraformers'
+		url 'https://maven.terraformersmc.com/'
 	}
 }
 
@@ -52,7 +52,7 @@ if (stonecutter.current.isActive) { // run configs for non-active version would 
 stonecutter {
 	swap("text_codec", eval(mcVersion, ">=1.20.4") ? "TextCodecs.CODEC" : "Codecs.TEXT")
 	swap("button", eval(mcVersion, ">=1.20.4") ? "TextIconButtonWidget" : "TexturedButtonWidget")
-	swap("payload", eval(mcVersion, ">=1.20.6") ? "TuneNoteBlockC2SPayload" : "TuneNoteBlockC2SPayloadPre1205")
+	swap("packet_interface", eval(mcVersion, ">=1.20.5") ? "CustomPayload" : "FabricPacket")
 	swap("on_use_with_item", eval(mcVersion, ">=1.20.6") ? "\"onUseWithItem\"" : "\"onUse\"")
 	swap("convention_tag_package_ver", eval(mcVersion, ">=1.20.6") ? "v2" : "v1")
 	swap("identifier", eval(mcVersion, ">=1.21.1") ? "Identifier.of(namespace, path);" : "new Identifier(namespace, path);")
@@ -61,12 +61,12 @@ stonecutter {
 	swap("shader_program", eval(mcVersion, ">=1.21.3") ? "ShaderProgramKeys.POSITION_TEX_COLOR" : "GameRenderer::getPositionTexColorProgram")
 	swap("get_wrapper", eval(mcVersion, ">=1.21.3") ? "getOrThrow" : "getWrapperOrThrow")
 	swap("get_registry", eval(mcVersion, ">=1.21.3") ? "getOrThrow" : "get")
+	swap("bool_packet_codec", eval(mcVersion, ">=1.21.4") ? "BOOLEAN" : "BOOL")
 
 	def getStateWithInstrumentWorldParam = eval(mcVersion, ">=1.21.3") ? "WorldView" : "WorldAccess"
 
 	swap("get_state_with_instrument_world_param", getStateWithInstrumentWorldParam)
 	swap("get_state_with_instrument_world_param_string", "\"$getStateWithInstrumentWorldParam\"")
-
 }
 
 def javaVersion = stonecutter.eval(mcVersion, ">=1.20.6") ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
@@ -92,6 +92,10 @@ processResources {
 		expand "version": project.version,
 			"target": project.property("target_version"),
 			"java_version": javaVersionNumber
+	}
+
+	filesMatching("glissando.mixins.json") {
+		expand "compat_level": "JAVA_$javaVersionNumber"
 	}
 }
 

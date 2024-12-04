@@ -42,7 +42,7 @@ public class GlissandoConfig {
     @SerialEntry(value = BACKGROUND_START_COLOR) public Color backgroundStartColor = new Color(0xC00F0F0F, true);
     @SerialEntry(value = BACKGROUND_END_COLOR) public Color backgroundEndColor = new Color(0xD00F0F0F, true);
     @SerialEntry(value = TITLE_COLORS) public boolean titleColors = false;
-    @SerialEntry(value = SHOW_INSTRUMENT) public boolean showInstrument = false;
+    @SerialEntry(value = SHOW_INSTRUMENT) public boolean showInstrument = true;
     @SerialEntry(value = CONFIG_BUTTON) public boolean configButton = true;
     @SerialEntry(value = CONFIG_BUTTON_POSITION) public ConfigButtonPosition configButtonPosition = ConfigButtonPosition.LEFT;
     @SerialEntry(value = KEYBOARD_COLOR_PREDICATE) public KeyboardColorPredicate keyboardColorPredicate = KeyboardColorPredicate.PRESSED;

@@ -16,14 +16,14 @@
 	"icon": "assets/glissando/icon.png",
 	"environment": "*",
 	"entrypoints": {
+		"fabric-datagen": [
+			"com.axialeaa.glissando.data.VanillaEffectiveDataGenerator"
+		],
 		"main": [
 			"com.axialeaa.glissando.Glissando"
 		],
 		"client": [
 			"com.axialeaa.glissando.GlissandoClient"
-		],
-		"fabric-datagen": [
-			"com.axialeaa.glissando.data.GlissandoDataGenerator"
 		],
 		"modmenu": [
 			"com.axialeaa.glissando.config.ModMenuIntegration"
@@ -33,7 +33,8 @@
 		"modmenu": {
 			"links": {
 				"modmenu.github_releases": "https://github.com/axialeaa/Glissando/releases",
-				"modmenu.modrinth": "https://modrinth.com/mod/glissando"
+				"modmenu.modrinth": "https://modrinth.com/mod/glissando",
+				"modmenu.discord": "https://discord.gg/hfVmpeQhe8"
 			}
 		}
 	},
@@ -41,11 +42,11 @@
 		"glissando.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.15.10",
+		"fabricloader": ">=0.16.7",
 		"minecraft": "${target}",
-		"java": ">=17",
+		"java": ">=${java_version}",
 		"fabric-api": "*",
-		"yet_another_config_lib_v3": ">=3.5.0"
+		"yet_another_config_lib_v3": ">=3.6.1"
 	},
 	"suggests": {
 		"modmenu": "*"

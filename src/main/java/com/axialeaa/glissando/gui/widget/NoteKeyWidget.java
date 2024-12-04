@@ -5,14 +5,14 @@ import com.axialeaa.glissando.gui.screen.NoteBlockScreen;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.util.math.BlockPos;
 
-import com.axialeaa.glissando.packet. /*$ payload >>*/ TuneNoteBlockC2SPayload ;
+import com.axialeaa.glissando.packet.TuneNoteBlockC2SPayload;
 
 public class NoteKeyWidget extends AbstractNoteKeyWidget {
 
     public NoteKeyWidget(int x, int y, int pitch, BlockPos pos, NoteBlockScreen screen) {
         super(x, y, pitch, button -> {
             if (!GlissandoConfig.get().interactionMode.isReclusive())
-                /*$ payload >>*/ TuneNoteBlockC2SPayload .sendNew(pos, pitch, true);
+                TuneNoteBlockC2SPayload.sendNew(pos, pitch, true);
         }, screen);
     }
 

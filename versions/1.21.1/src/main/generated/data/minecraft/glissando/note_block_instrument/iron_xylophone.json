@@ -1,7 +1,0 @@
-{
-  "blocks": "#minecraft:note_block_instruments/iron_xylophone",
-  "description": {
-    "translate": "minecraft.note_block_instrument.iron_xylophone"
-  },
-  "sound_event": "minecraft:block.note_block.iron_xylophone"
-}
