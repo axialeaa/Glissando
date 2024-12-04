@@ -5,10 +5,10 @@ import com.axialeaa.glissando.config.GlissandoConfigScreen;
 import com.axialeaa.glissando.config.option.InteractionMode;
 import com.axialeaa.glissando.gui.widget.NoteKeyWidget;
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
-import com.axialeaa.glissando.util.GlissandoUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
@@ -99,7 +99,21 @@ public class NoteBlockScreen extends AbstractNoteBlockScreen<NoteKeyWidget> {
         if (this.client == null || this.client.player == null)
             return false;
 
-        return !GlissandoUtils.isPlayerTooFar(this.pos, this.client.player) && SerializableNoteBlockInstrument.canOpenNoteBlockScreen(this.world, this.pos, this.instrument);
+        return isPlayerWithinRange(this.pos, this.client.player) && SerializableNoteBlockInstrument.canOpenNoteBlockScreen(this.world, this.pos, this.instrument);
+    }
+
+    /**
+     * @param pos The position of the note block.
+     * @param player The client player.
+     * @return true if the {@code player} is too far away from the note block to tune it.
+     * @see NoteBlockScreen#canEdit()
+     */
+    private static boolean isPlayerWithinRange(BlockPos pos, ClientPlayerEntity player) {
+        return
+            //? if >=1.20.6 {
+            player.canInteractWithBlockAt(pos, 4.0);
+            //?} else
+            /*player.squaredDistanceTo((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5) <= 64.0;*/
     }
 
 }

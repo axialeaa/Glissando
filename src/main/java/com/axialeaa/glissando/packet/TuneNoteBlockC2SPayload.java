@@ -2,7 +2,7 @@ package com.axialeaa.glissando.packet;
 
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.mixin.accessor.NoteBlockAccessor;
-import com.axialeaa.glissando.util.CommonIdentifiers;
+import com.axialeaa.glissando.util.GlissandoConstants;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
@@ -36,7 +36,7 @@ import net.minecraft.util.Identifier;
 public record TuneNoteBlockC2SPayload(BlockPos pos, int pitch, boolean play) implements /*$ packet_interface >>*/ CustomPayload {
 
     //? if >=1.20.5 {
-    private static final CustomPayload.Id<TuneNoteBlockC2SPayload> ID = new CustomPayload.Id<>(CommonIdentifiers.TUNE_NOTE_BLOCK_PAYLOAD);
+    private static final CustomPayload.Id<TuneNoteBlockC2SPayload> ID = new CustomPayload.Id<>(GlissandoConstants.TUNE_NOTE_BLOCK_PAYLOAD);
 
     public static final PacketCodec<RegistryByteBuf, TuneNoteBlockC2SPayload> CODEC = PacketCodec.tuple(
         BlockPos.PACKET_CODEC, TuneNoteBlockC2SPayload::pos,
@@ -50,7 +50,7 @@ public record TuneNoteBlockC2SPayload(BlockPos pos, int pitch, boolean play) imp
         return ID;
     }
     //?} else {
-    /*private static final Identifier ID = CommonIdentifiers.TUNE_NOTE_BLOCK_PAYLOAD;
+    /*private static final Identifier ID = GlissandoConstants.TUNE_NOTE_BLOCK_PAYLOAD;
     private static final PacketType<TuneNoteBlockC2SPayload> PACKET_TYPE = PacketType.create(ID, TuneNoteBlockC2SPayload::new);
 
     public TuneNoteBlockC2SPayload(PacketByteBuf buf) {

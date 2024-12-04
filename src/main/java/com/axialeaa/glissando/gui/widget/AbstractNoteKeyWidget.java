@@ -2,7 +2,6 @@ package com.axialeaa.glissando.gui.widget;
 
 import com.axialeaa.glissando.config.GlissandoConfig;
 import com.axialeaa.glissando.gui.screen.AbstractNoteBlockScreen;
-import com.axialeaa.glissando.util.GlissandoUtils;
 import com.axialeaa.glissando.util.Note;
 import com.axialeaa.glissando.util.NoteKeyTextures;
 import net.minecraft.block.NoteBlock;
@@ -31,9 +30,9 @@ public abstract class AbstractNoteKeyWidget extends ButtonWidget {
     }
 
     public AbstractNoteKeyWidget(int x, int y, int pitch, PressAction action, AbstractNoteBlockScreen<?> screen) {
-        super(x, y, GlissandoUtils.getNote(pitch).getWidth(), GlissandoUtils.getNote(pitch).getHeight(), ScreenTexts.EMPTY, action, DEFAULT_NARRATION_SUPPLIER);
+        super(x, y, Note.byPitch(pitch).getWidth(), Note.byPitch(pitch).getHeight(), ScreenTexts.EMPTY, action, DEFAULT_NARRATION_SUPPLIER);
 
-        this.note = GlissandoUtils.getNote(pitch);
+        this.note = Note.byPitch(pitch);
         this.pitch = pitch;
         this.screen = screen;
 
@@ -91,7 +90,7 @@ public abstract class AbstractNoteKeyWidget extends ButtonWidget {
         int x = this.getX();
         int y = this.getY();
 
-        int color = GlissandoUtils.getArgbColor(this.pitch);
+        int color = Note.getArgbColor(this.pitch);
         NoteKeyTextures textures = this.note.textures;
 
         GlissandoConfig.get().keyboardColorPredicate.draw(textures, context, x, y, pressed, this.isSelected(), color);

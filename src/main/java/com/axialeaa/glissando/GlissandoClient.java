@@ -1,7 +1,7 @@
 package com.axialeaa.glissando;
 
 import com.axialeaa.glissando.config.GlissandoConfig;
-import com.axialeaa.glissando.util.CommonIdentifiers;
+import com.axialeaa.glissando.util.GlissandoConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
@@ -12,7 +12,7 @@ public class GlissandoClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        registerPack(CommonIdentifiers.UPSCALE_RESOURCE_PACK);
+        registerPack(GlissandoConstants.UPSCALE_RESOURCE_PACK);
         GlissandoConfig.load();
     }
 

@@ -4,7 +4,7 @@ import com.axialeaa.glissando.Glissando;
 import com.axialeaa.glissando.config.GlissandoConfig;
 import com.axialeaa.glissando.config.option.TooltipType;
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
-import com.axialeaa.glissando.util.GlissandoUtils;
+import com.axialeaa.glissando.util.Note;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
@@ -39,12 +39,12 @@ public class NoteKeyWidgetTooltip {
 
         String titleLine = Glissando.translate("tooltip.title").getString();
 
-        char c = GlissandoConfig.get().keyboardLayout.getChar(pitch);
+        char c = GlissandoConfig.get().keyboardLayout.getChar(this.pitch);
         String character = Character.valueOf(c).toString().toUpperCase(Locale.ROOT);
 
         titleLine = titleLine.formatted(character);
 
-        int titleColor = GlissandoConfig.get().tooltipTitleColors ? GlissandoUtils.getRgbColor(this.pitch) : Colors.WHITE;
+        int titleColor = GlissandoConfig.get().tooltipTitleColors ? Note.getRgbColor(this.pitch) : Colors.WHITE;
         MutableText mutableText = Text.literal(titleLine).fillStyle(Style.EMPTY.withColor(titleColor));
 
         if (GlissandoConfig.get().tooltipLineArrangement.isEmpty())

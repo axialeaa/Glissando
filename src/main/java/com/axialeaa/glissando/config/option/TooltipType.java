@@ -3,7 +3,7 @@ package com.axialeaa.glissando.config.option;
 import com.axialeaa.glissando.Glissando;
 import com.axialeaa.glissando.config.GlissandoConfig;
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
-import com.axialeaa.glissando.util.GlissandoUtils;
+import com.axialeaa.glissando.util.Note;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -14,7 +14,7 @@ public enum TooltipType implements GlissandoNameableEnum {
     NOTE((pitch, instrument) -> {
         Text localizedTooltip = Glissando.translate("tooltip.note");
 
-        String note = GlissandoUtils.getNote(pitch).asString();
+        String note = Note.byPitch(pitch).asString();
         int octave = instrument.getOctaveOf(pitch);
 
         Text localizedPitch = Glissando.translate("note.%s.%s".formatted(note, octave));

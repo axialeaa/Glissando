@@ -1,12 +1,11 @@
 package com.axialeaa.glissando.util.scale;
 
-import com.axialeaa.glissando.util.GlissandoUtils;
+import com.axialeaa.glissando.util.GlissandoConstants;
 import com.axialeaa.glissando.util.Note;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import com.google.common.collect.Maps;
+import net.minecraft.util.Util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public enum Scale {
 
@@ -25,30 +24,33 @@ public enum Scale {
     BLUES           (3, 2, 1, 1, 3, 2);
 
     private final int[] steps;
-
-    private final Object2ObjectArrayMap<Note, Note[]> notesForKeyMap = new Object2ObjectArrayMap<>();
+    private final EnumMap<Note, Note[]> notesForKeyMap;
 
     Scale(int... steps) {
         this.steps = steps;
+
+        this.notesForKeyMap = Util.make(Maps.newEnumMap(Note.class), map -> {
+            for (Note key : Note.values())
+                map.put(key, putNotesForKey(key));
+        });
     }
 
-    public ObjectArrayList<Note> getNotesInKey(Note key) {
-        if (this.notesForKeyMap.containsKey(key))
-            return new ObjectArrayList<>(this.notesForKeyMap.get(key));
+    public Note[] getNotesInKey(Note key) {
+        return this.notesForKeyMap.get(key);
+    }
 
+    public Note[] putNotesForKey(Note key) {
         List<Note> notes = new ArrayList<>(List.of(key));
         Note note = key;
 
         for (int step : this.steps) {
-            int ordinal = (note.ordinal() + step) % GlissandoUtils.NOTES_IN_OCTAVE;
+            int ordinal = (note.ordinal() + step) % GlissandoConstants.NOTES_IN_OCTAVE;
             note = Note.values()[ordinal];
 
             notes.add(note);
         }
 
-        Note[] array = this.notesForKeyMap.put(key, notes.toArray(Note[]::new));
-
-        return array == null ? new ObjectArrayList<>() : new ObjectArrayList<>(array);
+        return notes.stream().distinct().toArray(Note[]::new);
     }
 
 }

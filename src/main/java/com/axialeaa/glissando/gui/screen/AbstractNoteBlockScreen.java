@@ -5,8 +5,7 @@ import com.axialeaa.glissando.config.GlissandoConfig;
 import com.axialeaa.glissando.gui.widget.AbstractNoteKeyWidget;
 import com.axialeaa.glissando.mixin.accessor.ScreenAccessor;
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
-import com.axialeaa.glissando.util.CommonIdentifiers;
-import com.axialeaa.glissando.util.GlissandoUtils;
+import com.axialeaa.glissando.util.GlissandoConstants;
 import com.axialeaa.glissando.util.Note;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.gui.DrawContext;
@@ -27,7 +26,7 @@ import java.util.OptionalInt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.axialeaa.glissando.util.GlissandoUtils.*;
+import static com.axialeaa.glissando.util.GlissandoConstants.*;
 
 import net.minecraft.client.gui.widget. /*$ button >>*/ TextIconButtonWidget ;
 
@@ -102,7 +101,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
      */
     private void addConfigButton() {
         Text name = Glissando.translate("config.button");
-        Identifier texture = CommonIdentifiers.CONFIG_BUTTON_TEXTURE;
+        Identifier texture = GlissandoConstants.CONFIG_BUTTON_TEXTURE;
 
         ButtonWidget.PressAction pressAction = button -> {
             if (this.client != null)
@@ -140,7 +139,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
     }
 
     /**
-     * Adds all note key widgets to the screen with appropriate offsets based on the {@link GlissandoUtils#NOTES list in GlissandoUtils}.
+     * Adds all note key widgets to the screen with appropriate offsets based on the {@link Note#KEYBOARD_NOTES list in GlissandoUtils}.
      */
     private void addKeys(@Nullable BlockPos pos) {
         int keyboardStartX = this.width / 2 - KEYBOARD_WIDTH / 2;
@@ -148,8 +147,8 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         int naturalX = keyboardStartX;
         int accidentalX = keyboardStartX - SEMITONE_OFFSET;
 
-        for (int pitch = 0; pitch < NOTES.length; pitch++) {
-            Note note = getNote(pitch);
+        for (int pitch = 0; pitch < Note.KEYBOARD_NOTES.length; pitch++) {
+            Note note = Note.byPitch(pitch);
 
             if (note.accidental) {
                 this.addKey(accidentalX, TALL_KEY_Y_POS, pitch, pos);
@@ -214,11 +213,11 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
 
         this.renderGradientBackground(context);
 
-        OptionalInt pitch = this.selectedPitch;
+        OptionalInt selectedPitch = this.selectedPitch;
 
         for (Drawable drawable : ((ScreenAccessor) this).getDrawables()) {
             if (drawable instanceof AbstractNoteKeyWidget widget) {
-                widget.render(context, mouseX, mouseY, pitch.isPresent() && this.getPitchFromWidget((T) widget) == pitch.getAsInt());
+                widget.render(context, mouseX, mouseY, selectedPitch.isPresent() && this.getPitchFromWidget((T) widget) == selectedPitch.getAsInt());
                 continue;
             }
 
@@ -227,8 +226,8 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
 
         int color = Colors.WHITE;
 
-        if (GlissandoConfig.get().titleColors && pitch.isPresent())
-            color = getArgbColor(pitch.getAsInt());
+        if (GlissandoConfig.get().titleColors && selectedPitch.isPresent())
+            color = Note.getArgbColor(selectedPitch.getAsInt());
 
         DiffuseLighting.disableGuiDepthLighting();
 

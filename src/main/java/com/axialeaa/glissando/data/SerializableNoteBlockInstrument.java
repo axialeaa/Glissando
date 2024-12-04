@@ -1,8 +1,7 @@
 package com.axialeaa.glissando.data;
 
 import com.axialeaa.glissando.mixin.accessor.NoteBlockAccessor;
-import com.axialeaa.glissando.util.CommonIdentifiers;
-import com.axialeaa.glissando.util.GlissandoUtils;
+import com.axialeaa.glissando.util.GlissandoConstants;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -41,7 +40,7 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
     private static final Text DEFAULT_DESCRIPTION = Text.translatable("glissando.unknown_instrument");
     private static final int DEFAULT_OCTAVE = 3;
 
-    public static final RegistryKey<Registry<SerializableNoteBlockInstrument>> REGISTRY_KEY = RegistryKey.ofRegistry(CommonIdentifiers.NOTE_BLOCK_INSTRUMENT_REGISTRY);
+    public static final RegistryKey<Registry<SerializableNoteBlockInstrument>> REGISTRY_KEY = RegistryKey.ofRegistry(GlissandoConstants.NOTE_BLOCK_INSTRUMENT_REGISTRY);
 
     /**
      * Serves as a "placeholder instrument" in the preview screen, giving all the behaviors of a valid instrument outside of a world.
@@ -102,10 +101,10 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
     public int getOctaveOf(@Range(from = 0, to = 25) int pitch) {
         int startOctave = this.octave();
 
-        if (pitch < GlissandoUtils.FIRST_C_ORDINAL)
+        if (pitch < GlissandoConstants.FIRST_C_ORDINAL)
             return startOctave;
 
-        return startOctave + (pitch >= GlissandoUtils.SECOND_C_ORDINAL ? 2 : 1);
+        return startOctave + (pitch >= GlissandoConstants.SECOND_C_ORDINAL ? 2 : 1);
     }
 
     /**

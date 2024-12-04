@@ -32,12 +32,11 @@ public class Glissando implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("{} initialized! I-vory much enjoy this news, and it means a lot on a large scale.", MOD_NAME);
 
-		TuneNoteBlockC2SPayload.register();
-
 		VanillaBlockTags.init();
-		VanillaNoteBlockInstrumentTags.init();
 		VanillaNoteBlockInstruments.init();
+		VanillaNoteBlockInstrumentTags.init();
 
+		TuneNoteBlockC2SPayload.register();
 		DynamicRegistries.registerSynced(SerializableNoteBlockInstrument.REGISTRY_KEY, SerializableNoteBlockInstrument.CODEC);
 	}
 

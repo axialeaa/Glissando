@@ -10,9 +10,9 @@ import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 
 //? if >=1.21.3
- import net.minecraft.client.gl.ShaderProgramKeys;
+import net.minecraft.client.gl.ShaderProgramKeys;
 
-import static com.axialeaa.glissando.util.GlissandoUtils.*;
+import static com.axialeaa.glissando.util.GlissandoConstants.*;
 
 /**
  *
