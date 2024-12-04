@@ -1,0 +1,8 @@
+{
+  "blocks": "#minecraft:note_block_instruments/basedrum",
+  "description": {
+    "translate": "minecraft.note_block_instrument.basedrum"
+  },
+  "octave": 0,
+  "sound_event": "minecraft:block.note_block.basedrum"
+}

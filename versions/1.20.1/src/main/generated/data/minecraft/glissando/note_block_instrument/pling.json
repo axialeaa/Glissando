@@ -1,0 +1,7 @@
+{
+  "blocks": "#minecraft:note_block_instruments/pling",
+  "description": {
+    "translate": "minecraft.note_block_instrument.pling"
+  },
+  "sound_event": "minecraft:block.note_block.pling"
+}

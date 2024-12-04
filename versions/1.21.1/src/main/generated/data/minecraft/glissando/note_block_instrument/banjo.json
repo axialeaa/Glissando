@@ -1,0 +1,7 @@
+{
+  "blocks": "#minecraft:note_block_instruments/banjo",
+  "description": {
+    "translate": "minecraft.note_block_instrument.banjo"
+  },
+  "sound_event": "minecraft:block.note_block.banjo"
+}

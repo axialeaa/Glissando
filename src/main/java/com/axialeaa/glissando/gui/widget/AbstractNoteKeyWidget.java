@@ -42,17 +42,20 @@ public abstract class AbstractNoteKeyWidget extends ButtonWidget {
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return this.active && this.visible && this.note.textures.mouseOverPredicate().isMouseOver(this.getX(), this.getY(), mouseX, mouseY);
+        NoteKeyTextures.MouseOverPredicate predicate = this.note.textures.mouseOverPredicate();
+        return this.active && this.visible && predicate.isMouseOver(this.getX(), this.getY(), mouseX, mouseY);
     }
 
     public void updateTooltip() {
         this.updateTooltip = true;
     }
 
-    @Override
+    //? if <1.21.4 {
+    /*@Override
     public boolean clicked(double mouseX, double mouseY) {
         return this.isMouseOver(mouseX, mouseY);
     }
+    *///?}
 
     /**
      * Renders this widget using the draw methods present in {@link NoteKeyTextures}.

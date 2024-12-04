@@ -1,0 +1,7 @@
+{
+  "blocks": "#minecraft:note_block_instruments/bit",
+  "description": {
+    "translate": "minecraft.note_block_instrument.bit"
+  },
+  "sound_event": "minecraft:block.note_block.bit"
+}

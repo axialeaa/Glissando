@@ -1,0 +1,8 @@
+{
+  "blocks": "#minecraft:note_block_instruments/chime",
+  "description": {
+    "translate": "minecraft.note_block_instrument.chime"
+  },
+  "octave": 5,
+  "sound_event": "minecraft:block.note_block.chime"
+}

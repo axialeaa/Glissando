@@ -1,0 +1,8 @@
+{
+  "blocks": "#minecraft:note_block_instruments/bell",
+  "description": {
+    "translate": "minecraft.note_block_instrument.bell"
+  },
+  "octave": 5,
+  "sound_event": "minecraft:block.note_block.bell"
+}
