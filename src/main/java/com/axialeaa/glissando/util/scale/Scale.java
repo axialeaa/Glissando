@@ -39,7 +39,7 @@ public enum Scale {
         return this.notesForKeyMap.get(key);
     }
 
-    public Note[] putNotesForKey(Note key) {
+    private Note[] putNotesForKey(Note key) {
         List<Note> notes = new ArrayList<>(List.of(key));
         Note note = key;
 
@@ -50,7 +50,7 @@ public enum Scale {
             notes.add(note);
         }
 
-        return notes.stream().distinct().toArray(Note[]::new);
+        return notes.toArray(Note[]::new);
     }
 
 }

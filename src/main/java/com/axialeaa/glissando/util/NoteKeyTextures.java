@@ -22,16 +22,16 @@ import static com.axialeaa.glissando.util.GlissandoConstants.*;
  * @param outlineHovered The identifier of the outline texture to use when the key is being hovered over.
  * @param width The width of the key textures.
  * @param height The height of the key textures.
- * @param mouseOverPredicate The boolean-returning function calculating whether a mouse position should register as being "over" the note key. This is important because {@link NoteKeyTextures#NATURAL_LEFT} and {@link NoteKeyTextures#NATURAL_RIGHT} are compound rectangles which, with the vanilla behaviour, would overlap with the adjacent accidental unless special padding is applied.
+ * @param mouseOverCondition The boolean-returning function calculating whether a mouse position should register as being "over" the note key. This is important because {@link NoteKeyTextures#NATURAL_LEFT} and {@link NoteKeyTextures#NATURAL_RIGHT} are compound rectangles which, with the vanilla behaviour, would overlap with the adjacent accidental unless special padding is applied.
  */
-public record NoteKeyTextures(Identifier released, Identifier pressed, Identifier outline, Identifier outlineHovered, int width, int height, MouseOverPredicate mouseOverPredicate) {
+public record NoteKeyTextures(Identifier released, Identifier pressed, Identifier outline, Identifier outlineHovered, int width, int height, MouseOverCondition mouseOverCondition) {
 
-    public static final NoteKeyTextures NATURAL = NoteKeyTextures.create("natural", NATURAL_KEY_WIDTH, NATURAL_KEY_HEIGHT, MouseOverPredicate.NATURAL);
-    public static final NoteKeyTextures NATURAL_LEFT = NoteKeyTextures.create("natural_left", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, MouseOverPredicate.NATURAL_LEFT);
-    public static final NoteKeyTextures NATURAL_RIGHT = NoteKeyTextures.create("natural_right", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, MouseOverPredicate.NATURAL_RIGHT);
-    public static final NoteKeyTextures ACCIDENTAL = NoteKeyTextures.create("accidental", ACCIDENTAL_KEY_WIDTH, ACCIDENTAL_KEY_HEIGHT, MouseOverPredicate.ACCIDENTAL);
+    public static final NoteKeyTextures NATURAL = NoteKeyTextures.create("natural", NATURAL_KEY_WIDTH, NATURAL_KEY_HEIGHT, MouseOverCondition.NATURAL);
+    public static final NoteKeyTextures NATURAL_LEFT = NoteKeyTextures.create("natural_left", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, MouseOverCondition.NATURAL_LEFT);
+    public static final NoteKeyTextures NATURAL_RIGHT = NoteKeyTextures.create("natural_right", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, MouseOverCondition.NATURAL_RIGHT);
+    public static final NoteKeyTextures ACCIDENTAL = NoteKeyTextures.create("accidental", ACCIDENTAL_KEY_WIDTH, ACCIDENTAL_KEY_HEIGHT, MouseOverCondition.ACCIDENTAL);
 
-    public static NoteKeyTextures create(String name, int width, int height, MouseOverPredicate mouseOverPredicate) {
+    public static NoteKeyTextures create(String name, int width, int height, MouseOverCondition condition) {
         String path = "textures/gui/sprites/note_block/%s.png";
 
         Identifier released = Glissando.id(path.formatted(name));
@@ -40,7 +40,7 @@ public record NoteKeyTextures(Identifier released, Identifier pressed, Identifie
         Identifier outline = Glissando.id(path.formatted(name + "_outline"));
         Identifier outlineHovered = Glissando.id(path.formatted(name + "_outline_hovered"));
 
-        return new NoteKeyTextures(released, pressed, outline, outlineHovered, width, height, mouseOverPredicate);
+        return new NoteKeyTextures(released, pressed, outline, outlineHovered, width, height, condition);
     }
 
     public void draw(DrawContext context, int x, int y, boolean pressed, boolean hovered) {
@@ -103,23 +103,23 @@ public record NoteKeyTextures(Identifier released, Identifier pressed, Identifie
     }
 
     @FunctionalInterface
-    public interface MouseOverPredicate {
+    public interface MouseOverCondition {
 
-        MouseOverPredicate NATURAL = (x, y, mouseX, mouseY) -> {
+        MouseOverCondition NATURAL = (x, y, mouseX, mouseY) -> {
             int maxX = x + NATURAL_KEY_WIDTH;
             int maxY = y + NATURAL_KEY_HEIGHT;
 
             return isCoordinateInsideRect(mouseX, mouseY, x, y, maxX, maxY);
         };
 
-        MouseOverPredicate NATURAL_LEFT = (x, y, mouseX, mouseY) -> {
+        MouseOverCondition NATURAL_LEFT = (x, y, mouseX, mouseY) -> {
             int maxX = x + NATURAL_KEY_WIDTH - SEMITONE_OFFSET;
             int maxY = y + TALL_KEY_HEIGHT_DIFF;
 
             return isMouseOverTallKeyBase(x, y, mouseX, mouseY) || isCoordinateInsideRect(mouseX, mouseY, x, y, maxX, maxY);
         };
 
-        MouseOverPredicate NATURAL_RIGHT = (x, y, mouseX, mouseY) -> {
+        MouseOverCondition NATURAL_RIGHT = (x, y, mouseX, mouseY) -> {
             int minX = x + SEMITONE_OFFSET;
             int maxX = x + NATURAL_KEY_WIDTH;
             int maxY = y + TALL_KEY_HEIGHT_DIFF;
@@ -127,7 +127,7 @@ public record NoteKeyTextures(Identifier released, Identifier pressed, Identifie
             return isMouseOverTallKeyBase(x, y, mouseX, mouseY) || isCoordinateInsideRect(mouseX, mouseY, minX, y, maxX, maxY);
         };
 
-        MouseOverPredicate ACCIDENTAL = (x, y, mouseX, mouseY) -> {
+        MouseOverCondition ACCIDENTAL = (x, y, mouseX, mouseY) -> {
             int maxX = x + ACCIDENTAL_KEY_WIDTH;
             int maxY = y + ACCIDENTAL_KEY_HEIGHT;
 
