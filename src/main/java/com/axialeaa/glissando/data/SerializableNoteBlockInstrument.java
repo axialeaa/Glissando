@@ -22,11 +22,13 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 import java.util.Objects;
 import java.util.function.Function;
+
+import static com.axialeaa.glissando.util.GlissandoConstants.*;
 
 //? if >1.20.1
 import net.minecraft.text.TextCodecs;
@@ -64,6 +66,13 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
     }
 
     /**
+     * @return a new builder for a {@link SerializableNoteBlockInstrument}.
+     */
+    public static Builder createBuilder() {
+        return new Builder();
+    }
+
+    /**
      * Top instruments do not suppress the note block sound when a matching block is placed above, and always override a potential base instrument.
      * @return true if this instrument should be considered a "top instrument".
      */
@@ -71,6 +80,10 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
         return this.isIn(world, VanillaNoteBlockInstrumentTags.TOP);
     }
 
+    /**
+     * Untunable instruments cannot be pitched via the note block screen and always play a sound with a pitch value of {@code 1.0F}. All vanilla instruments that are in the {@link VanillaNoteBlockInstrumentTags#TOP top tag} are a part of this tag by default, but they're separated into two tags so modders and datapack creators can create tunable top instruments if they so choose.
+     * @return true if this instrument should be considered "tunable".
+     */
     public boolean isTunable(World world) {
         return !this.isIn(world, VanillaNoteBlockInstrumentTags.UNTUNABLE);
     }
@@ -79,18 +92,15 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
         return TagUtil.isIn(world.getRegistryManager(), tagKey, this);
     }
 
-    /**
-     * @return a new builder for a {@link SerializableNoteBlockInstrument}.
-     */
-    public static Builder createBuilder() {
-        return new Builder();
-    }
-
     private static Registry<SerializableNoteBlockInstrument> getRegistry(World world) {
         return world.getRegistryManager(). /*$ get_registry >>*/ getOrThrow (REGISTRY_KEY);
     }
 
-    private static SerializableNoteBlockInstrument byKey(World world, RegistryKey<SerializableNoteBlockInstrument> key) {
+    private @Nullable RegistryKey<SerializableNoteBlockInstrument> getKey(World world) {
+        return getRegistry(world).getKey(this).orElse(null);
+    }
+
+    private static @Nullable SerializableNoteBlockInstrument byKey(World world, RegistryKey<SerializableNoteBlockInstrument> key) {
         return getRegistry(world).get(key);
     }
 
@@ -98,13 +108,13 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
      * Some instruments are tuned to higher octaves than others. The octave of the first F sharp is determined via {@link SerializableNoteBlockInstrument#octave}.
      * @return the octave of {@code pitch} for this instrument.
      */
-    public int getOctaveOf(@Range(from = 0, to = 25) int pitch) {
+    public int getOctaveOf(int pitch) {
         int startOctave = this.octave();
 
-        if (pitch < GlissandoConstants.FIRST_C_ORDINAL)
+        if (pitch < FIRST_C_ORDINAL)
             return startOctave;
 
-        return startOctave + (pitch >= GlissandoConstants.SECOND_C_ORDINAL ? 2 : 1);
+        return startOctave + (pitch >= SECOND_C_ORDINAL ? 2 : 1);
     }
 
     /**
@@ -148,13 +158,17 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
         }
     }
 
+    /**
+     * Creates a particle effect above the note block if there's a valid sound to play.
+     * @return true if the sound is successfully played.
+     */
     public boolean playSoundAndAddParticle(World world, BlockPos pos, BlockState state) {
         RegistryEntry<SoundEvent> soundEvent = this.getSoundEvent(world, pos, state);
 
         if (soundEvent == null)
             return false;
 
-        float range = this.range / 16.0F;
+        float volume = this.range / 16.0F;
         int note = state.get(NoteBlock.NOTE);
 
         boolean tunable = this.isTunable(world);
@@ -162,7 +176,7 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
 
         Vec3d centerPos = pos.toCenterPos();
 
-        world.playSound(null, centerPos.x, centerPos.y, centerPos.z, soundEvent, SoundCategory.RECORDS, range, pitch, world.random.nextLong());
+        world.playSound(null, centerPos.x, centerPos.y, centerPos.z, soundEvent, SoundCategory.RECORDS, volume, pitch, world.random.nextLong());
 
         if (!this.isTop(world) && tunable)
             world.addParticle(ParticleTypes.NOTE, centerPos.x, centerPos.y + 0.7, centerPos.z, (double) note / 24.0, 0.0, 0.0);
@@ -170,9 +184,8 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
         return true;
     }
 
-    @Nullable
-    public RegistryEntry<SoundEvent> getSoundEvent(World world, BlockPos pos, BlockState state) {
-        if (this != byKey(world, VanillaNoteBlockInstruments.CUSTOM_HEAD))
+    public @Nullable RegistryEntry<SoundEvent> getSoundEvent(World world, BlockPos pos, BlockState state) {
+        if (this.getKey(world) != VanillaNoteBlockInstruments.CUSTOM_HEAD)
             return this.soundEvent;
 
         Identifier id = ((NoteBlockAccessor) state.getBlock()).invokeGetCustomSound(world, pos);
@@ -199,7 +212,7 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
             return this;
         }
 
-        public final Builder setBlocks(Registerable<SerializableNoteBlockInstrument> registerable, TagKey<Block> tagKey) {
+        public final Builder setBlocks(@NotNull Registerable<SerializableNoteBlockInstrument> registerable, TagKey<Block> tagKey) {
             return setBlocks(registerable.getRegistryLookup(RegistryKeys.BLOCK), tagKey);
         }
 

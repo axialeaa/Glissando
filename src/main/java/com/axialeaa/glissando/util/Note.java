@@ -1,11 +1,12 @@
 package com.axialeaa.glissando.util;
 
+import com.axialeaa.glissando.gui.widget.NoteKeyTextures;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Locale;
 
-import static com.axialeaa.glissando.util.NoteKeyTextures.*;
+import static com.axialeaa.glissando.gui.widget.NoteKeyTextures.*;
 
 /**
  * A simple enumerator storing the list of all possible notes from C through B, along with their {@link NoteKeyTextures textures} .

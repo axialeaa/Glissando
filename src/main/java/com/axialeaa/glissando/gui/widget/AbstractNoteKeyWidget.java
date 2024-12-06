@@ -2,8 +2,8 @@ package com.axialeaa.glissando.gui.widget;
 
 import com.axialeaa.glissando.config.GlissandoConfig;
 import com.axialeaa.glissando.gui.screen.AbstractNoteBlockScreen;
+import com.axialeaa.glissando.util.CursorHoverChecker;
 import com.axialeaa.glissando.util.Note;
-import com.axialeaa.glissando.util.NoteKeyTextures;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -41,8 +41,8 @@ public abstract class AbstractNoteKeyWidget extends ButtonWidget {
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        NoteKeyTextures.MouseOverCondition predicate = this.note.textures.mouseOverCondition();
-        return this.active && this.visible && predicate.isMouseOver(this.getX(), this.getY(), mouseX, mouseY);
+        CursorHoverChecker checker = this.note.textures.cursorHoverChecker();
+        return this.active && this.visible && checker.check(this.getX(), this.getY(), mouseX, mouseY);
     }
 
     public void updateTooltip() {

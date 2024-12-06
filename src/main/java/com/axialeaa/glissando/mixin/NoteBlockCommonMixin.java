@@ -15,6 +15,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Contract;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -35,6 +36,7 @@ public class NoteBlockCommonMixin {
 		return original || SerializableNoteBlockInstrument.canOpenNoteBlockScreen(world, pos, instrument);
 	}
 
+	@Contract("false, _, _, _ -> false")
 	@ModifyExpressionValue(method = /*$ on_use_with_item >>*/ "onUseWithItem" , at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isIn(Lnet/minecraft/registry/tag/TagKey;)Z"))
 	private boolean shouldPassBlockAction(boolean original, @Local /*? if >=1.20.6 >>*/ (argsOnly=true) ItemStack stack, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos) {
 		if (!original)
@@ -46,16 +48,19 @@ public class NoteBlockCommonMixin {
 		return blockState.canPlaceAt(world, pos.up());
 	}
 
+	@Contract(value = "_, _, _, _ -> param1", pure = true)
 	@WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;with(Lnet/minecraft/state/property/Property;Ljava/lang/Comparable;)Ljava/lang/Object;", ordinal = 0))
 	private Object removeInstrumentProperty(BlockState instance, Property<?> property, Comparable<?> comparable, Operation<BlockState> original) {
 		return instance;
 	}
 
+	@Contract(value = "_, _, _, _, _ -> param4", pure = true)
 	@WrapOperation(method = "getPlacementState", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/NoteBlock;getStateWithInstrument(Lnet/minecraft/world/" + /*$ get_state_with_instrument_world_param_string >>*/ "WorldView" + ";Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;"))
 	private BlockState getDefaultStateForPlacement(NoteBlock instance, /*$ get_state_with_instrument_world_param >>*/ WorldView world, BlockPos pos, BlockState state, Operation<BlockState> original) {
 		return state;
 	}
 
+	@Contract(pure = true)
 	@ModifyExpressionValue(method = "getStateForNeighborUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Direction;getAxis()Lnet/minecraft/util/math/Direction$Axis;"))
 	private Direction.Axis bypassInstrumentChange(Direction.Axis original) {
 		return Direction.Axis.X;

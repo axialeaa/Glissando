@@ -1,6 +1,7 @@
-package com.axialeaa.glissando.util;
+package com.axialeaa.glissando.gui.widget;
 
 import com.axialeaa.glissando.Glissando;
+import com.axialeaa.glissando.util.CursorHoverChecker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
@@ -9,29 +10,29 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 
+import static com.axialeaa.glissando.util.GlissandoConstants.*;
+
 //? if >=1.21.3
 import net.minecraft.client.gl.ShaderProgramKeys;
 
-import static com.axialeaa.glissando.util.GlissandoConstants.*;
-
 /**
- *
  * @param released The identifier of the default texture.
  * @param pressed The identifier of the texture to use when the key is pressed.
  * @param outline The identifier of the default outline texture.
  * @param outlineHovered The identifier of the outline texture to use when the key is being hovered over.
  * @param width The width of the key textures.
  * @param height The height of the key textures.
- * @param mouseOverCondition The boolean-returning function calculating whether a mouse position should register as being "over" the note key. This is important because {@link NoteKeyTextures#NATURAL_LEFT} and {@link NoteKeyTextures#NATURAL_RIGHT} are compound rectangles which, with the vanilla behaviour, would overlap with the adjacent accidental unless special padding is applied.
+ * @param cursorHoverChecker The boolean-returning function calculating whether a mouse position should register as being "over" the note key. This is important because {@link NoteKeyTextures#NATURAL_LEFT} and {@link NoteKeyTextures#NATURAL_RIGHT} are compound rectangles which, with the vanilla behaviour, would overlap with the adjacent accidental unless special padding is applied.
  */
-public record NoteKeyTextures(Identifier released, Identifier pressed, Identifier outline, Identifier outlineHovered, int width, int height, MouseOverCondition mouseOverCondition) {
+public record NoteKeyTextures(Identifier released, Identifier pressed, Identifier outline, Identifier outlineHovered, int width, int height, CursorHoverChecker cursorHoverChecker) {
 
-    public static final NoteKeyTextures NATURAL = NoteKeyTextures.create("natural", NATURAL_KEY_WIDTH, NATURAL_KEY_HEIGHT, MouseOverCondition.NATURAL);
-    public static final NoteKeyTextures NATURAL_LEFT = NoteKeyTextures.create("natural_left", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, MouseOverCondition.NATURAL_LEFT);
-    public static final NoteKeyTextures NATURAL_RIGHT = NoteKeyTextures.create("natural_right", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, MouseOverCondition.NATURAL_RIGHT);
-    public static final NoteKeyTextures ACCIDENTAL = NoteKeyTextures.create("accidental", ACCIDENTAL_KEY_WIDTH, ACCIDENTAL_KEY_HEIGHT, MouseOverCondition.ACCIDENTAL);
+    public static final NoteKeyTextures
+        NATURAL = NoteKeyTextures.create("natural", NATURAL_KEY_WIDTH, NATURAL_KEY_HEIGHT, CursorHoverChecker.NATURAL),
+        NATURAL_LEFT = NoteKeyTextures.create("natural_left", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, CursorHoverChecker.NATURAL_LEFT),
+        NATURAL_RIGHT = NoteKeyTextures.create("natural_right", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, CursorHoverChecker.NATURAL_RIGHT),
+        ACCIDENTAL = NoteKeyTextures.create("accidental", ACCIDENTAL_KEY_WIDTH, ACCIDENTAL_KEY_HEIGHT, CursorHoverChecker.ACCIDENTAL);
 
-    public static NoteKeyTextures create(String name, int width, int height, MouseOverCondition condition) {
+    public static NoteKeyTextures create(String name, int width, int height, CursorHoverChecker cursorHoverChecker) {
         String path = "textures/gui/sprites/note_block/%s.png";
 
         Identifier released = Glissando.id(path.formatted(name));
@@ -40,7 +41,7 @@ public record NoteKeyTextures(Identifier released, Identifier pressed, Identifie
         Identifier outline = Glissando.id(path.formatted(name + "_outline"));
         Identifier outlineHovered = Glissando.id(path.formatted(name + "_outline_hovered"));
 
-        return new NoteKeyTextures(released, pressed, outline, outlineHovered, width, height, condition);
+        return new NoteKeyTextures(released, pressed, outline, outlineHovered, width, height, cursorHoverChecker);
     }
 
     public void draw(DrawContext context, int x, int y, boolean pressed, boolean hovered) {
@@ -100,53 +101,6 @@ public record NoteKeyTextures(Identifier released, Identifier pressed, Identifie
 
     private Identifier getOutline(boolean hovered) {
         return hovered ? this.outlineHovered : this.outline;
-    }
-
-    @FunctionalInterface
-    public interface MouseOverCondition {
-
-        MouseOverCondition NATURAL = (x, y, mouseX, mouseY) -> {
-            int maxX = x + NATURAL_KEY_WIDTH;
-            int maxY = y + NATURAL_KEY_HEIGHT;
-
-            return isCoordinateInsideRect(mouseX, mouseY, x, y, maxX, maxY);
-        };
-
-        MouseOverCondition NATURAL_LEFT = (x, y, mouseX, mouseY) -> {
-            int maxX = x + NATURAL_KEY_WIDTH - SEMITONE_OFFSET;
-            int maxY = y + TALL_KEY_HEIGHT_DIFF;
-
-            return isMouseOverTallKeyBase(x, y, mouseX, mouseY) || isCoordinateInsideRect(mouseX, mouseY, x, y, maxX, maxY);
-        };
-
-        MouseOverCondition NATURAL_RIGHT = (x, y, mouseX, mouseY) -> {
-            int minX = x + SEMITONE_OFFSET;
-            int maxX = x + NATURAL_KEY_WIDTH;
-            int maxY = y + TALL_KEY_HEIGHT_DIFF;
-
-            return isMouseOverTallKeyBase(x, y, mouseX, mouseY) || isCoordinateInsideRect(mouseX, mouseY, minX, y, maxX, maxY);
-        };
-
-        MouseOverCondition ACCIDENTAL = (x, y, mouseX, mouseY) -> {
-            int maxX = x + ACCIDENTAL_KEY_WIDTH;
-            int maxY = y + ACCIDENTAL_KEY_HEIGHT;
-
-            return isCoordinateInsideRect(mouseX, mouseY, x, y, maxX, maxY);
-        };
-
-        boolean isMouseOver(int x, int y, double mouseX, double mouseY);
-
-        static boolean isMouseOverTallKeyBase(int x, int y, double mouseX, double mouseY) {
-            return isCoordinateInsideRect(mouseX, mouseY, x, y + TALL_KEY_HEIGHT_DIFF, x + NATURAL_KEY_WIDTH, y + NATURAL_KEY_HEIGHT + TALL_KEY_HEIGHT_DIFF);
-        }
-
-        static boolean isCoordinateInsideRect(double x, double y, int minX, int minY, int maxX, int maxY) {
-            boolean withinWidth = x >= minX && x < maxX;
-            boolean withinHeight = y >= minY && y < maxY;
-
-            return withinWidth && withinHeight;
-        }
-
     }
 
 }

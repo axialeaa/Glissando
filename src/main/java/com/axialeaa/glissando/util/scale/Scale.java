@@ -1,11 +1,12 @@
 package com.axialeaa.glissando.util.scale;
 
-import com.axialeaa.glissando.util.GlissandoConstants;
 import com.axialeaa.glissando.util.Note;
 import com.google.common.collect.Maps;
 import net.minecraft.util.Util;
 
 import java.util.*;
+
+import static com.axialeaa.glissando.util.GlissandoConstants.*;
 
 public enum Scale {
 
@@ -44,7 +45,7 @@ public enum Scale {
         Note note = key;
 
         for (int step : this.steps) {
-            int ordinal = (note.ordinal() + step) % GlissandoConstants.NOTES_IN_OCTAVE;
+            int ordinal = (note.ordinal() + step) % NOTES_IN_OCTAVE;
             note = Note.values()[ordinal];
 
             notes.add(note);

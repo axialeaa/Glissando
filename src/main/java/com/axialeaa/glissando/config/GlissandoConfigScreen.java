@@ -16,6 +16,17 @@ import static com.axialeaa.glissando.config.GlissandoConfig.*;
 
 public class GlissandoConfigScreen {
 
+    private static final String BEHAVIORS_CATEGORY = "behaviors";
+    private static final String SCREEN_GROUP = "screen";
+    private static final String INPUTS_GROUP = "inputs";
+
+    private static final String VISUALS_CATEGORY = "visuals";
+    private static final String BACKGROUND_GROUP = "background";
+    private static final String TITLE_GROUP = "title";
+    private static final String CONFIG_BUTTON_GROUP = "config_button";
+    private static final String KEYBOARD_GROUP = "keyboard";
+    private static final String TOOLTIPS_GROUP = "tooltips";
+
     private static final Text CONFIG_TITLE = Glissando.translate("config.title");
 
     private static final Text GENERIC_ENABLED = Glissando.translate("config.generic_enabled");
@@ -63,7 +74,7 @@ public class GlissandoConfigScreen {
             .description(getGroupDesc(name));
 
         for (OptionEntry optionEntry : options)
-            builder.optionIf(optionEntry.apply, optionEntry.option);
+            builder.optionIf(optionEntry.apply(), optionEntry.option());
 
         return builder.build();
     }
@@ -199,41 +210,41 @@ public class GlissandoConfigScreen {
                 .title(CONFIG_TITLE)
                 .categories(List.of(
                     ConfigCategory.createBuilder()
-                        .name(getCategoryName("behaviors"))
+                        .name(getCategoryName(BEHAVIORS_CATEGORY))
                         .option(interactionMode)
-                        .group(createGroup("screen",
+                        .group(createGroup(SCREEN_GROUP,
                             createOption(openScreenWhenPlaced))
                         )
-                        .group(createGroup("inputs",
+                        .group(createGroup(INPUTS_GROUP,
                             createOption(keyboardLayout)
                         ))
                         .build(),
 
                     ConfigCategory.createBuilder()
-                        .name(getCategoryName("visuals"))
+                        .name(getCategoryName(VISUALS_CATEGORY))
                         .option(previewGui)
-                        .group(createGroup("background",
+                        .group(createGroup(BACKGROUND_GROUP,
                             //? if >=1.20.6
                             createOption(backgroundBlur),
                             createOption(backgroundStartColor),
                             createOption(backgroundEndColor)
                         ))
-                        .group(createGroup("title",
+                        .group(createGroup(TITLE_GROUP,
                             createOption(titleColors),
                             createOption(showInstrument)
                         ))
-                        .group(createGroup("config_button",
+                        .group(createGroup(CONFIG_BUTTON_GROUP,
                             createOption(Glissando.LOADER.isDevelopmentEnvironment() || Glissando.MOD_MENU_LOADED, configButton),
                             createOption(configButtonPosition)
                         ))
-                        .group(createGroup("keyboard",
+                        .group(createGroup(KEYBOARD_GROUP,
                             createOption(keyboardColorPredicate)
                         ))
-                        .group(createGroup("tooltips",
+                        .group(createGroup(TOOLTIPS_GROUP,
                             createOption(tooltips),
                             createOption(tooltipTitleColor)
                         ))
-                        .group(tooltipLineArrangement)
+                        .groupIf(tooltips.pendingValue(), tooltipLineArrangement)
                         .build()
                     ))
 
@@ -241,7 +252,5 @@ public class GlissandoConfigScreen {
             }
         );
     }
-
-    public record OptionEntry(boolean apply, Option<?> option) {}
 
 }

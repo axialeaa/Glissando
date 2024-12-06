@@ -1,7 +1,7 @@
 package com.axialeaa.glissando.config.option;
 
 import com.axialeaa.glissando.config.GlissandoConfig;
-import com.axialeaa.glissando.util.NoteKeyTextures;
+import com.axialeaa.glissando.gui.widget.NoteKeyTextures;
 import net.minecraft.client.gui.DrawContext;
 
 @SuppressWarnings("unused")
