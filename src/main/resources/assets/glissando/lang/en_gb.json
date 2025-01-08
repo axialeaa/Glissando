@@ -8,6 +8,7 @@
   "glissando.config.option.background_start_color.name": "Top Colour",
   "glissando.config.option.interaction_mode.reclusive.desc": "Note sounds are played on the client side, synchronising them better with key presses. Other players will not be able to hear your inputs until the note block is tuned, which will happen when you close the GUI.",
   "glissando.config.option.interaction_mode.social.desc": "Note sounds are played through the note block, losing some synchronisation in favour of allowing other players to hear your inputs.",
-  "glissando.config.option.keyboard_color_predicate.name": "Keyboard Colour Predicate",
+  "glissando.config.option.keyboard_color_mode.name": "Keyboard Colour Mode",
+  "glissando.config.option.solmization.name": "Solmisation",
   "glissando.config.option.tooltip_title_colors.name": "Title Colours"
 }

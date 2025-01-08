@@ -1,5 +1,13 @@
 {
   "values": [
+    {
+      "id": "#minecraft:concrete_powder",
+      "required": false
+    },
+    {
+      "id": "#minecraft:sand",
+      "required": false
+    },
     "minecraft:sand",
     "minecraft:suspicious_sand",
     "minecraft:red_sand",

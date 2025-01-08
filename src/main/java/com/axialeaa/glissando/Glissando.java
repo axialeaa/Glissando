@@ -18,13 +18,13 @@ import com.axialeaa.glissando.packet.TuneNoteBlockC2SPayload;
 
 public class Glissando implements ModInitializer {
 
-	public static final String MOD_ID = "glissando";
+	public static final String MOD_ID = /*$ mod_id*/ "glissando";
+	public static final String MOD_NAME = /*$ mod_name*/ "Glissando";
+
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
 	public static final FabricLoader LOADER = FabricLoader.getInstance();
 	public static final ModContainer CONTAINER = LOADER.getModContainer(MOD_ID).orElseThrow(RuntimeException::new);
-
-	public static final String MOD_NAME = CONTAINER.getMetadata().getName();
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
 	public static final boolean MOD_MENU_LOADED = LOADER.isModLoaded("modmenu");
 
@@ -52,8 +52,8 @@ public class Glissando implements ModInitializer {
 		return /*$ identifier*/ Identifier.of(namespace, path);
 	}
 
-	public static Text translate(String name) {
-		return Text.translatable(MOD_ID + "." + name);
+	public static Text translate(String name, Object... args) {
+		return Text.translatable(MOD_ID + "." + name, args);
 	}
 
 }

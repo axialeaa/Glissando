@@ -6,25 +6,12 @@ import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.util.Note;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Range;
 
 public enum TooltipType implements GlissandoNameableEnum {
 
-    EMPTY((pitch, instrument) -> Text.empty()),
-    NOTE((pitch, instrument) -> {
-        Text localizedTooltip = Glissando.translate("tooltip.note");
-
-        String note = Note.byPitch(pitch).asString();
-        int octave = instrument.getOctaveOf(pitch);
-
-        Text localizedPitch = Glissando.translate("note.%s.%s".formatted(note, octave));
-
-        return Text.of(localizedTooltip.getString().formatted(localizedPitch.getString()));
-    }),
-    PITCH((pitch, instrument) -> {
-        String line = Glissando.translate("tooltip.pitch").getString();
-        return Text.of(line.formatted(pitch));
-    });
+    EMPTY (TooltipTextFactory.EMPTY),
+    NOTE (TooltipTextFactory.NOTE),
+    PITCH (TooltipTextFactory.PITCH);
 
     private final TooltipTextFactory factory;
 
@@ -44,7 +31,21 @@ public enum TooltipType implements GlissandoNameableEnum {
     @FunctionalInterface
     public interface TooltipTextFactory {
 
-        Text getTextContent(@Range(from = 0, to = 25) int pitch, @NotNull SerializableNoteBlockInstrument instrument);
+        TooltipTextFactory EMPTY = (pitch, instrument) -> Text.empty();
+
+        TooltipTextFactory NOTE = (pitch, instrument) -> {
+            Note note = Note.byPitch(pitch);
+            String name = note.getTranslatedName(pitch, instrument).getString();
+
+            return Glissando.translate("tooltip.note", name);
+        };
+
+        TooltipTextFactory PITCH = (pitch, instrument) -> {
+            String line = Glissando.translate("tooltip.pitch").getString();
+            return Text.of(line.formatted(pitch));
+        };
+
+        Text getTextContent(int pitch, @NotNull SerializableNoteBlockInstrument instrument);
 
     }
 

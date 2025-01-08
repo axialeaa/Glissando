@@ -2,7 +2,7 @@ package com.axialeaa.glissando.gui.screen;
 
 import com.axialeaa.glissando.Glissando;
 import com.axialeaa.glissando.config.GlissandoConfig;
-import com.axialeaa.glissando.gui.widget.AbstractNoteKeyWidget;
+import com.axialeaa.glissando.gui.widget.NoteKeyWidget;
 import com.axialeaa.glissando.mixin.accessor.ScreenAccessor;
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.util.GlissandoConstants;
@@ -17,39 +17,39 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 
 import java.awt.*;
 import java.util.OptionalInt;
+import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static com.axialeaa.glissando.util.GlissandoConstants.*;
 
 import net.minecraft.client.gui.widget. /*$ button >>*/ TextIconButtonWidget ;
+import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> extends Screen {
+public abstract class AbstractNoteBlockScreen extends Screen {
 
     /**
      * An {@link OptionalInt} representing the pitch of the latest-focused widget, if one exists.
      */
-    protected OptionalInt selectedPitch = OptionalInt.empty();
+    @Nullable
+    protected NoteKeyWidget selectedWidget = null;
 
     /**
      * A list of note key widgets on this screen.
      */
-    protected final ObjectArrayList<T> widgets = new ObjectArrayList<>();
+    protected final ObjectArrayList<NoteKeyWidget> widgets = new ObjectArrayList<>();
 
     private final String name;
-    private final @Nullable BlockPos pos;
     public @NotNull SerializableNoteBlockInstrument instrument;
 
-    protected AbstractNoteBlockScreen(String name, @Nullable BlockPos pos, @NotNull SerializableNoteBlockInstrument instrument) {
+    protected AbstractNoteBlockScreen(String name, @NotNull SerializableNoteBlockInstrument instrument) {
         super(Glissando.translate(name + ".title"));
+
         this.name = name;
-        this.pos = pos;
         this.instrument = instrument;
     }
 
@@ -57,9 +57,9 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
      * @param x The horizontal position.
      * @param y The vertical position.
      * @param pitch The pitch of the note. Used as a list index.
-     * @return a new instance of {@link T} which will be added to the list of screen children.
+     * @return a new instance of {@link NoteKeyWidget} which will be added to the list of screen children.
      */
-    protected abstract T createNewWidget(int x, int y, int pitch, @Nullable BlockPos pos);
+    protected abstract NoteKeyWidget createNewWidget(int x, int y, int pitch);
 
     /**
      * @return the screen to go to when clicking the config button.
@@ -71,7 +71,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
     protected void init() {
         this.widgets.clear();
 
-        this.addKeys(this.pos);
+        this.addKeys();
         this.addDoneButton();
 
         if (GlissandoConfig.get().configButton || !Glissando.MOD_MENU_LOADED)
@@ -141,7 +141,7 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
     /**
      * Adds all note key widgets to the screen with appropriate offsets based on the {@link Note#KEYBOARD_NOTES list in GlissandoUtils}.
      */
-    private void addKeys(@Nullable BlockPos pos) {
+    private void addKeys() {
         int keyboardStartX = this.width / 2 - KEYBOARD_WIDTH / 2;
 
         int naturalX = keyboardStartX;
@@ -150,14 +150,14 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         for (int pitch = 0; pitch < Note.KEYBOARD_NOTES.length; pitch++) {
             Note note = Note.byPitch(pitch);
 
-            if (note.accidental) {
-                this.addKey(accidentalX, TALL_KEY_Y_POS, pitch, pos);
+            if (note.isAccidental()) {
+                this.addKey(accidentalX, TALL_KEY_Y_POS, pitch);
                 accidentalX += getOffsetForAccidental(note);
 
                 continue;
             }
 
-            this.addKey(naturalX, note.isTall() ? TALL_KEY_Y_POS : NATURAL_KEY_Y_POS, pitch, pos); // moves tall keys up
+            this.addKey(naturalX, note.isTall() ? TALL_KEY_Y_POS : NATURAL_KEY_Y_POS, pitch); // moves tall keys up
             naturalX += NATURAL_KEY_WIDTH + KEY_PADDING;
         }
     }
@@ -178,13 +178,13 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
     }
 
     /**
-     * Adds an instance of {@link T} to the list of screen children.
+     * Adds an instance of {@link NoteKeyWidget} to the list of screen children.
      * @param x The horizontal position.
      * @param y The vertical position.
      * @param pitch The pitch of the note. Used as a list index.
      */
-    private void addKey(int x, int y, int pitch, @Nullable BlockPos pos) {
-        T widget = this.createNewWidget(x, y, pitch, pos);
+    private void addKey(int x, int y, int pitch) {
+        NoteKeyWidget widget = this.createNewWidget(x, y, pitch);
 
         this.widgets.add(pitch, widget);
         widget.setNavigationOrder(pitch);
@@ -203,7 +203,6 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         return Text.of(title.getString().formatted(instrument.getString()));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         //? if >=1.20.6 {
@@ -212,12 +211,11 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
         //?}
 
         this.renderGradientBackground(context);
-
-        OptionalInt selectedPitch = this.selectedPitch;
+        int pitch = this.getSelectedWidgetPitch();
 
         for (Drawable drawable : ((ScreenAccessor) this).getDrawables()) {
-            if (drawable instanceof AbstractNoteKeyWidget widget) {
-                widget.render(context, mouseX, mouseY, selectedPitch.isPresent() && this.getPitchFromWidget((T) widget) == selectedPitch.getAsInt());
+            if (drawable instanceof NoteKeyWidget widget) {
+                widget.render(context, mouseX, mouseY, this.getPitchFromWidget(widget) == pitch);
                 continue;
             }
 
@@ -226,8 +224,8 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
 
         int color = Colors.WHITE;
 
-        if (GlissandoConfig.get().titleColors && selectedPitch.isPresent())
-            color = Note.getArgbColor(selectedPitch.getAsInt());
+        if (GlissandoConfig.get().titleColors && this.selectedWidget != null)
+            color = Note.getArgbColor(pitch);
 
         DiffuseLighting.disableGuiDepthLighting();
 
@@ -251,65 +249,58 @@ public abstract class AbstractNoteBlockScreen<T extends AbstractNoteKeyWidget> e
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for (T widget : this.widgets) {
-            if (!widget.mouseClicked(mouseX, mouseY, button))
-                continue;
-
-            this.selectedPitch = OptionalInt.of(this.getPitchFromWidget(widget));
-            this.setFocused(widget);
-
-            return true;
-        }
-
-        return super.mouseClicked(mouseX, mouseY, button);
+        Predicate<NoteKeyWidget> predicate = widget -> widget.mouseClicked(mouseX, mouseY, button);
+        return this.iterateAndSetSelected(predicate) || super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        for (T widget : this.widgets) {
-            if (!widget.isSelected() || !widget.keyPressed(keyCode, 0, 0))
-                continue;
-
-            this.selectedPitch = OptionalInt.of(this.getPitchFromWidget(widget));
-            this.setFocused(widget);
-
-            return true;
-        }
-
-        return super.keyPressed(keyCode, 0, 0);
+        Predicate<NoteKeyWidget> predicate = widget -> widget.isSelected() && widget.keyPressed(keyCode, scanCode, modifiers);
+        return this.iterateAndSetSelected(predicate) || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean charTyped(char chr, int modifiers) {
         int pitch = GlissandoConfig.get().keyboardLayout.getPitch(chr);
 
-        if (pitch < 0)
+        if (pitch == -1)
             return false;
 
-        T widget = getWidgetFromPitch(pitch);
+        NoteKeyWidget widget = this.getWidgetFromPitch(pitch);
 
         if (!widget.charTyped(chr, modifiers))
             return false;
 
-        this.selectedPitch = OptionalInt.of(pitch);
-        this.setFocused(widget);
+        this.setSelectedWidget(widget);
 
         return true;
     }
 
-    /**
-     * @param widget The note key widget.
-     * @return the pitch of the {@code widget}.
-     */
-    private int getPitchFromWidget(T widget) {
+    private boolean iterateAndSetSelected(Predicate<NoteKeyWidget> predicate) {
+        for (NoteKeyWidget widget : this.widgets) {
+            if (predicate.test(widget)) {
+                this.setSelectedWidget(widget);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void setSelectedWidget(NoteKeyWidget widget) {
+        this.selectedWidget = widget;
+        this.setFocused(widget);
+    }
+
+    int getSelectedWidgetPitch() {
+        return this.getPitchFromWidget(this.selectedWidget);
+    }
+
+    private int getPitchFromWidget(NoteKeyWidget widget) {
         return this.widgets.indexOf(widget);
     }
 
-    /**
-     * @param pitch The pitch of the widget.
-     * @return the widget with a pitch equal to {@code pitch}.
-     */
-    private T getWidgetFromPitch(int pitch) {
+    NoteKeyWidget getWidgetFromPitch(int pitch) {
         return this.widgets.get(pitch);
     }
 

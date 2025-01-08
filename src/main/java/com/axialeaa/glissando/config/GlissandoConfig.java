@@ -23,15 +23,17 @@ public class GlissandoConfig {
         CONFIG_BUTTON = "config_button",
         CONFIG_BUTTON_POSITION = "config_button_position",
         TOOLTIP_LINE_ARRANGEMENT = "tooltip_line_arrangement",
+
         //? if >=1.20.6
         BACKGROUND_BLUR = "background_blur",
         BACKGROUND_START_COLOR = "background_start_color",
         BACKGROUND_END_COLOR = "background_end_color",
         TITLE_COLORS = "title_colors",
-        KEYBOARD_COLOR_PREDICATE = "keyboard_color_predicate",
+        KEYBOARD_COLOR_MODE = "keyboard_color_mode",
         TOOLTIP_TITLE_COLORS = "tooltip_title_colors",
         TOOLTIPS = "tooltips",
-        TOOLTIP_TYPE = "tooltip_type";
+        TOOLTIP_TYPE = "tooltip_type",
+        SOLMIZATION = "solmization";
 
     @SerialEntry(value = INTERACTION_MODE) public InteractionMode interactionMode = InteractionMode.RECLUSIVE;
     @SerialEntry(value = OPEN_SCREEN_WHEN_PLACED) public boolean openScreenWhenPlaced = true;
@@ -45,10 +47,11 @@ public class GlissandoConfig {
     @SerialEntry(value = SHOW_INSTRUMENT) public boolean showInstrument = true;
     @SerialEntry(value = CONFIG_BUTTON) public boolean configButton = true;
     @SerialEntry(value = CONFIG_BUTTON_POSITION) public ConfigButtonPosition configButtonPosition = ConfigButtonPosition.LEFT;
-    @SerialEntry(value = KEYBOARD_COLOR_PREDICATE) public KeyboardColorPredicate keyboardColorPredicate = KeyboardColorPredicate.PRESSED;
+    @SerialEntry(value = KEYBOARD_COLOR_MODE) public KeyboardColorMode keyboardColorMode = KeyboardColorMode.PRESSED;
     @SerialEntry(value = TOOLTIP_TITLE_COLORS) public boolean tooltipTitleColors = true;
     @SerialEntry(value = TOOLTIPS) public boolean tooltips = true;
     @SerialEntry(value = TOOLTIP_LINE_ARRANGEMENT) public List<TooltipType> tooltipLineArrangement = List.of(TooltipType.NOTE, TooltipType.PITCH);
+    @SerialEntry(value = SOLMIZATION) public boolean solmization = false;
 
     public static final ConfigClassHandler<GlissandoConfig> CONFIG = ConfigClassHandler.createBuilder(GlissandoConfig.class)
         .serializer(config -> GsonConfigSerializerBuilder.create(config)

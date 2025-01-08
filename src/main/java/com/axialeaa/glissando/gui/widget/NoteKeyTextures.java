@@ -1,7 +1,7 @@
 package com.axialeaa.glissando.gui.widget;
 
 import com.axialeaa.glissando.Glissando;
-import com.axialeaa.glissando.util.CursorHoverChecker;
+import com.axialeaa.glissando.util.WidgetHoverArea;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
@@ -22,17 +22,17 @@ import net.minecraft.client.gl.ShaderProgramKeys;
  * @param outlineHovered The identifier of the outline texture to use when the key is being hovered over.
  * @param width The width of the key textures.
  * @param height The height of the key textures.
- * @param cursorHoverChecker The boolean-returning function calculating whether a mouse position should register as being "over" the note key. This is important because {@link NoteKeyTextures#NATURAL_LEFT} and {@link NoteKeyTextures#NATURAL_RIGHT} are compound rectangles which, with the vanilla behaviour, would overlap with the adjacent accidental unless special padding is applied.
+ * @param hoverArea The boolean-returning function calculating whether a mouse position should register as being "over" the note key widget. This is important because {@link NoteKeyTextures#NATURAL_LEFT} and {@link NoteKeyTextures#NATURAL_RIGHT} are compound rectangles which, with the vanilla behaviour, would overlap with the adjacent accidental unless special padding is applied.
  */
-public record NoteKeyTextures(Identifier released, Identifier pressed, Identifier outline, Identifier outlineHovered, int width, int height, CursorHoverChecker cursorHoverChecker) {
+public record NoteKeyTextures(Identifier released, Identifier pressed, Identifier outline, Identifier outlineHovered, int width, int height, WidgetHoverArea hoverArea) {
 
     public static final NoteKeyTextures
-        NATURAL = NoteKeyTextures.create("natural", NATURAL_KEY_WIDTH, NATURAL_KEY_HEIGHT, CursorHoverChecker.NATURAL),
-        NATURAL_LEFT = NoteKeyTextures.create("natural_left", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, CursorHoverChecker.NATURAL_LEFT),
-        NATURAL_RIGHT = NoteKeyTextures.create("natural_right", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, CursorHoverChecker.NATURAL_RIGHT),
-        ACCIDENTAL = NoteKeyTextures.create("accidental", ACCIDENTAL_KEY_WIDTH, ACCIDENTAL_KEY_HEIGHT, CursorHoverChecker.ACCIDENTAL);
+        NATURAL = NoteKeyTextures.create("natural", NATURAL_KEY_WIDTH, NATURAL_KEY_HEIGHT, WidgetHoverArea.NATURAL),
+        NATURAL_LEFT = NoteKeyTextures.create("natural_left", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, WidgetHoverArea.NATURAL_LEFT),
+        NATURAL_RIGHT = NoteKeyTextures.create("natural_right", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, WidgetHoverArea.NATURAL_RIGHT),
+        ACCIDENTAL = NoteKeyTextures.create("accidental", ACCIDENTAL_KEY_WIDTH, ACCIDENTAL_KEY_HEIGHT, WidgetHoverArea.ACCIDENTAL);
 
-    public static NoteKeyTextures create(String name, int width, int height, CursorHoverChecker cursorHoverChecker) {
+    public static NoteKeyTextures create(String name, int width, int height, WidgetHoverArea hoverArea) {
         String path = "textures/gui/sprites/note_block/%s.png";
 
         Identifier released = Glissando.id(path.formatted(name));
@@ -41,7 +41,7 @@ public record NoteKeyTextures(Identifier released, Identifier pressed, Identifie
         Identifier outline = Glissando.id(path.formatted(name + "_outline"));
         Identifier outlineHovered = Glissando.id(path.formatted(name + "_outline_hovered"));
 
-        return new NoteKeyTextures(released, pressed, outline, outlineHovered, width, height, cursorHoverChecker);
+        return new NoteKeyTextures(released, pressed, outline, outlineHovered, width, height, hoverArea);
     }
 
     public void draw(DrawContext context, int x, int y, boolean pressed, boolean hovered) {

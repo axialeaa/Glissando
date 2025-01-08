@@ -2,7 +2,6 @@ package com.axialeaa.glissando.util.scale;
 
 import com.axialeaa.glissando.util.Note;
 import com.google.common.collect.Maps;
-import net.minecraft.util.Util;
 
 import java.util.*;
 
@@ -25,22 +24,20 @@ public enum Scale {
     BLUES           (3, 2, 1, 1, 3, 2);
 
     private final int[] steps;
-    private final EnumMap<Note, Note[]> notesForKeyMap;
+    private final EnumMap<Note, Note[]> notesForKeyMap = Maps.newEnumMap(Note.class);
 
     Scale(int... steps) {
         this.steps = steps;
 
-        this.notesForKeyMap = Util.make(Maps.newEnumMap(Note.class), map -> {
-            for (Note key : Note.values())
-                map.put(key, putNotesForKey(key));
-        });
+        for (Note key : Note.values())
+            this.putNotesForKey(key);
     }
 
     public Note[] getNotesInKey(Note key) {
         return this.notesForKeyMap.get(key);
     }
 
-    private Note[] putNotesForKey(Note key) {
+    private void putNotesForKey(Note key) {
         List<Note> notes = new ArrayList<>(List.of(key));
         Note note = key;
 
@@ -51,7 +48,8 @@ public enum Scale {
             notes.add(note);
         }
 
-        return notes.toArray(Note[]::new);
+        Note[] notesArray = notes.toArray(Note[]::new);
+        this.notesForKeyMap.put(key, notesArray);
     }
 
 }

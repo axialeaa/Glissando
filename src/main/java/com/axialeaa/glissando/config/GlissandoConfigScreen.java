@@ -16,21 +16,21 @@ import static com.axialeaa.glissando.config.GlissandoConfig.*;
 
 public class GlissandoConfigScreen {
 
-    private static final String BEHAVIORS_CATEGORY = "behaviors";
-    private static final String SCREEN_GROUP = "screen";
-    private static final String INPUTS_GROUP = "inputs";
+    private static final String
+        BEHAVIORS_CATEGORY = "behaviors",
+        SCREEN_GROUP = "screen",
+        INPUTS_GROUP = "inputs",
 
-    private static final String VISUALS_CATEGORY = "visuals";
-    private static final String BACKGROUND_GROUP = "background";
-    private static final String TITLE_GROUP = "title";
-    private static final String CONFIG_BUTTON_GROUP = "config_button";
-    private static final String KEYBOARD_GROUP = "keyboard";
-    private static final String TOOLTIPS_GROUP = "tooltips";
+        VISUALS_CATEGORY = "visuals",
+        BACKGROUND_GROUP = "background",
+        TITLE_GROUP = "title",
+        CONFIG_BUTTON_GROUP = "config_button",
+        KEYBOARD_GROUP = "keyboard",
+        TOOLTIPS_GROUP = "tooltips";
 
-    private static final Text CONFIG_TITLE = Glissando.translate("config.title");
-
-    private static final Text GENERIC_ENABLED = Glissando.translate("config.generic_enabled");
-    private static final Text GENERIC_COLORS = Glissando.translate("config.generic_colors");
+    private static final Text
+        GENERIC_ENABLED = Glissando.translate("config.generic_enabled"),
+        GENERIC_COLORS = Glissando.translate("config.generic_colors");
 
     public static Text getOptionTranslation(String name, boolean desc) {
         return Glissando.translate("config.option.%s.%s".formatted(name, desc ? "desc" : "name"));
@@ -57,7 +57,7 @@ public class GlissandoConfigScreen {
     }
 
     private static Text getCategoryName(String name) {
-        return Glissando.translate("config.category.%s".formatted(name));
+        return Glissando.translate("config.category." + name);
     }
 
     private static OptionEntry createOption(Option<?> option) {
@@ -168,11 +168,11 @@ public class GlissandoConfigScreen {
                 .addListener((option, event) -> configButtonPosition.setAvailable(option.pendingValue() || !option.available()))
                 .build();
 
-            var keyboardColorPredicate = Option.<KeyboardColorPredicate>createBuilder()
-                .name(getOptionName(KEYBOARD_COLOR_PREDICATE))
+            var keyboardColorMode = Option.<KeyboardColorMode>createBuilder()
+                .name(getOptionName(KEYBOARD_COLOR_MODE))
                 .description(GlissandoNameableEnum::getOptionDesc)
-                .binding(defaults.keyboardColorPredicate, () -> config.keyboardColorPredicate, value -> config.keyboardColorPredicate = value)
-                .controller(option -> EnumControllerBuilder.create(option).enumClass(KeyboardColorPredicate.class))
+                .binding(defaults.keyboardColorMode, () -> config.keyboardColorMode, value -> config.keyboardColorMode = value)
+                .controller(option -> EnumControllerBuilder.create(option).enumClass(KeyboardColorMode.class))
                 .build();
 
             var tooltipTitleColor = Option.<Boolean>createBuilder()
@@ -193,6 +193,13 @@ public class GlissandoConfigScreen {
                 .insertEntriesAtEnd(true)
                 .build();
 
+            var solmization = Option.<Boolean>createBuilder()
+                .name(getOptionName(SOLMIZATION))
+                .description(getOptionDesc(SOLMIZATION))
+                .binding(defaults.solmization, () -> config.solmization, value -> config.solmization = value)
+                .controller(option -> BooleanControllerBuilder.create(option).coloured(true).onOffFormatter())
+                .build();
+
             var tooltips = Option.<Boolean>createBuilder()
                 .name(GENERIC_ENABLED)
                 .description(getOptionDesc(TOOLTIPS))
@@ -203,11 +210,12 @@ public class GlissandoConfigScreen {
 
                     tooltipTitleColor.setAvailable(value);
                     tooltipLineArrangement.setAvailable(value);
+                    solmization.setAvailable(value);
                 })
                 .build();
 
             return builder
-                .title(CONFIG_TITLE)
+                .title(Text.of(Glissando.MOD_NAME))
                 .categories(List.of(
                     ConfigCategory.createBuilder()
                         .name(getCategoryName(BEHAVIORS_CATEGORY))
@@ -238,11 +246,12 @@ public class GlissandoConfigScreen {
                             createOption(configButtonPosition)
                         ))
                         .group(createGroup(KEYBOARD_GROUP,
-                            createOption(keyboardColorPredicate)
+                            createOption(keyboardColorMode)
                         ))
                         .group(createGroup(TOOLTIPS_GROUP,
                             createOption(tooltips),
-                            createOption(tooltipTitleColor)
+                            createOption(tooltipTitleColor),
+                            createOption(solmization)
                         ))
                         .groupIf(tooltips.pendingValue(), tooltipLineArrangement)
                         .build()

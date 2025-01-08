@@ -1,8 +1,8 @@
 {
 	"schemaVersion": 1,
-	"id": "glissando",
+	"id": "${id}",
 	"version": "${version}",
-	"name": "Glissando",
+	"name": "${name}",
 	"description": "Tune your note blocks with ease and comfort!",
 	"authors": [
 		"axialeaa"
@@ -42,7 +42,7 @@
 		"glissando.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.16.7",
+		"fabricloader": ">=0.16.9",
 		"minecraft": "${target}",
 		"java": ">=${java_version}",
 		"fabric-api": "*",

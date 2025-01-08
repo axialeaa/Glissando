@@ -7,8 +7,8 @@ public record Rectangle(int minX, int minY, int maxX, int maxY) {
     }
 
     public boolean isCoordinateIn(double x, double y) {
-        boolean withinWidth = x >= this.minX && x < this.maxX;
-        boolean withinHeight = y >= this.minY && y < this.maxY;
+        boolean withinWidth = x >= this.minX && x <= this.maxX;
+        boolean withinHeight = y >= this.minY && y <= this.maxY;
 
         return withinWidth && withinHeight;
     }

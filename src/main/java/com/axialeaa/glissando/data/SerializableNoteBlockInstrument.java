@@ -1,5 +1,6 @@
 package com.axialeaa.glissando.data;
 
+import com.axialeaa.glissando.Glissando;
 import com.axialeaa.glissando.mixin.accessor.NoteBlockAccessor;
 import com.axialeaa.glissando.util.GlissandoConstants;
 import com.mojang.serialization.Codec;
@@ -39,7 +40,7 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
     private static final RegistryEntry<SoundEvent> DEFAULT_SOUND_EVENT = SoundEvents.UI_BUTTON_CLICK;
     private static final float DEFAULT_RANGE = 48.0F;
     private static final RegistryEntryList<Block> DEFAULT_BLOCKS = RegistryEntryList.of();
-    private static final Text DEFAULT_DESCRIPTION = Text.translatable("glissando.unknown_instrument");
+    private static final Text DEFAULT_DESCRIPTION = Glissando.translate("unknown_instrument");
     private static final int DEFAULT_OCTAVE = 3;
 
     public static final RegistryKey<Registry<SerializableNoteBlockInstrument>> REGISTRY_KEY = RegistryKey.ofRegistry(GlissandoConstants.NOTE_BLOCK_INSTRUMENT_REGISTRY);
@@ -105,10 +106,23 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
     }
 
     /**
+     * @return the octave of {@code pitch} formatted as a subscript string.
+     */
+    public String getSubscriptOctaveOf(int pitch) {
+        StringBuilder builder = new StringBuilder();
+        int octave = this.getOctaveOf(pitch);
+
+        for (char c : String.valueOf(octave).toCharArray())
+            builder.append((char) ('₀' + (c - '0')));
+
+        return builder.toString();
+    }
+
+    /**
      * Some instruments are tuned to higher octaves than others. The octave of the first F sharp is determined via {@link SerializableNoteBlockInstrument#octave}.
      * @return the octave of {@code pitch} for this instrument.
      */
-    public int getOctaveOf(int pitch) {
+    private int getOctaveOf(int pitch) {
         int startOctave = this.octave();
 
         if (pitch < FIRST_C_ORDINAL)

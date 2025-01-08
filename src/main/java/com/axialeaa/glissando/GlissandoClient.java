@@ -17,7 +17,7 @@ public class GlissandoClient implements ClientModInitializer {
     }
 
     private static void registerPack(Identifier id) {
-        Text translated = Text.translatable("resourcePack.%s.name".formatted(id));
+        Text translated = Text.translatable("resourcePack.%s.name".formatted(id), Glissando.MOD_NAME);
         ResourceManagerHelper.registerBuiltinResourcePack(id, Glissando.CONTAINER, translated, ResourcePackActivationType.NORMAL);
 
         Glissando.LOGGER.info("Registered pack {}!", id);

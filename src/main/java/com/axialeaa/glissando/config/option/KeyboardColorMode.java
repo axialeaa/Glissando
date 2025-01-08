@@ -5,18 +5,18 @@ import com.axialeaa.glissando.gui.widget.NoteKeyTextures;
 import net.minecraft.client.gui.DrawContext;
 
 @SuppressWarnings("unused")
-public enum KeyboardColorPredicate implements GlissandoNameableEnum {
+public enum KeyboardColorMode implements GlissandoNameableEnum {
 
     ALWAYS (NoteKeyTextures::drawWithColor),
     NEVER ((textures, context, x, y, pressed, hovered, color) -> textures.draw(context, x, y, pressed, hovered)),
     PRESSED ((textures, context, x, y, pressed, hovered, color) -> {
-        KeyboardColorPredicate predicate = pressed ? ALWAYS : NEVER;
-        predicate.draw(textures, context, x, y, pressed, hovered, color);
+        KeyboardColorMode mode = pressed ? ALWAYS : NEVER;
+        mode.draw(textures, context, x, y, pressed, hovered, color);
     });
 
     private final DrawConsumer consumer;
 
-    KeyboardColorPredicate(DrawConsumer consumer) {
+    KeyboardColorMode(DrawConsumer consumer) {
         this.consumer = consumer;
     }
 
@@ -26,7 +26,7 @@ public enum KeyboardColorPredicate implements GlissandoNameableEnum {
 
     @Override
     public String getOptionName() {
-        return GlissandoConfig.KEYBOARD_COLOR_PREDICATE;
+        return GlissandoConfig.KEYBOARD_COLOR_MODE;
     }
 
     @FunctionalInterface

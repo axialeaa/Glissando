@@ -1,5 +1,13 @@
 {
   "values": [
+    {
+      "id": "#c:glass_blocks",
+      "required": false
+    },
+    {
+      "id": "#c:glass_panes",
+      "required": false
+    },
     "minecraft:glass",
     "minecraft:white_stained_glass",
     "minecraft:orange_stained_glass",

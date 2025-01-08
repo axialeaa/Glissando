@@ -1,5 +1,9 @@
 {
   "values": [
+    {
+      "id": "#c:storage_blocks/iron",
+      "required": false
+    },
     "minecraft:iron_block"
   ]
 }
