@@ -35,7 +35,7 @@
     alt="Versions">
 </p>
 
-![**Glissando**'s note block interface](https://github.com/user-attachments/assets/ecb58a73-0c7f-405f-b9d6-74beedb59b27)
+![**Glissando**'s note block interface](https://github.com/user-attachments/assets/323d591e-ef6c-4451-8a90-8fb8959341a9)
 
 **Glissando** is a [Fabric][fabric] mod that attempts to fix what I personally believe to be some severe issues when it comes to the way note blocks work, allowing music-making to be more comfortable and satisfying than ever before! **Glissando**'s highly-customizable <abbr title="Graphical User Interface">GUI</abbr> fits right into this mod's goal: *as few clicks as possible*.
 
@@ -72,7 +72,7 @@ Alternatively, you can access the configuration screen via [Mod Menu][modmenu] d
 - [x] Widget tooltips
 - [x] Note coloring 
 - [x] Configuration
-- [ ] Data-driven instrument base blocks
+- [x] Data-driven instruments
 - [ ] Scale restriction
 - [ ] MIDI device support (?)
 
