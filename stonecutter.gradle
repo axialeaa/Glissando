@@ -10,3 +10,8 @@ stonecutter.registerChiseled tasks.register("chiseledDatagen", stonecutter.chise
     setGroup "fabric"
     ofTask "runDatagen"
 }
+
+stonecutter.registerChiseled tasks.register("chiseledPublishMods", stonecutter.chiseled) {
+    setGroup "publishing"
+    ofTask "publishMods"
+}
