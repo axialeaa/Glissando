@@ -3,6 +3,8 @@ package com.axialeaa.glissando.config.option;
 import com.axialeaa.glissando.config.GlissandoConfig;
 import it.unimi.dsi.fastutil.chars.CharArrayList;
 
+import java.util.Locale;
+
 @SuppressWarnings("unused")
 public enum KeyboardLayout implements GlissandoNameableEnum {
 
@@ -35,6 +37,10 @@ public enum KeyboardLayout implements GlissandoNameableEnum {
 
     public char getChar(int pitch) {
         return this.chars[pitch];
+    }
+
+    public String getFormattedChar(int pitch) {
+        return Character.valueOf(this.getChar(pitch)).toString().toUpperCase(Locale.ROOT);
     }
 
     public int getPitch(char chr) {

@@ -38,5 +38,6 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
-*/.cache/
+/.cache/
 /libs/
+/src/main/generated/.cache/

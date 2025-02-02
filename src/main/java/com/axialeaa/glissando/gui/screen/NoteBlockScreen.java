@@ -101,7 +101,7 @@ public class NoteBlockScreen extends AbstractNoteBlockScreen {
         if (this.client == null || this.client.player == null)
             return false;
 
-        return isPlayerWithinRange(this.pos, this.client.player) && SerializableNoteBlockInstrument.canOpenNoteBlockScreen(this.world, this.pos, this.instrument);
+        return isPlayerWithinRange(this.pos, this.client.player) && this.instrument.canOpenNoteBlockScreen(this.world, this.pos);
     }
 
     /**

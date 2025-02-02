@@ -1,6 +1,6 @@
 package com.axialeaa.glissando.data.provider;
 
-import com.axialeaa.glissando.data.VanillaBlockTags;
+import com.axialeaa.glissando.data.registry.VanillaBlockTags;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
@@ -59,16 +59,16 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
             if (instrument == /*$ instrument >>*/ NoteBlockInstrument .HARP)
                 continue;
 
-            TagKey<Block> tag = VanillaBlockTags.ofInstrument(instrument.asString());
-            FabricTagBuilder builder = getOrCreateTagBuilder(tag).setReplace(false);
+            TagKey<Block> tag = VanillaBlockTags.ofInstrument(instrument);
+            FabricTagBuilder builder = this.getOrCreateTagBuilder(tag).setReplace(false);
 
             populate(builder, instrument);
         }
     }
 
-    private static void populate(FabricTagBuilder builder,  /*$ instrument >>*/ NoteBlockInstrument instrument) {
-        populateTags(builder, instrument);
-        populateBlocks(builder, instrument);
+    private static void populate(FabricTagBuilder builder, /*$ instrument >>*/ NoteBlockInstrument instrument) {
+        populateTagReferences(builder, instrument);
+        populateDirectReferences(builder, instrument);
     }
 
     private static List<TagKey<Block>> getTagsForInstrument(/*$ instrument >>*/ NoteBlockInstrument instrument) {
@@ -153,12 +153,12 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
         };
     }
 
-    private static void populateTags(FabricTagBuilder builder, /*$ instrument >>*/ NoteBlockInstrument instrument) {
+    private static void populateTagReferences(FabricTagBuilder builder, /*$ instrument >>*/ NoteBlockInstrument instrument) {
         for (TagKey<Block> tag : getTagsForInstrument(instrument))
             builder.addOptionalTag(tag);
     }
 
-    private static void populateBlocks(FabricTagBuilder builder,  /*$ instrument >>*/ NoteBlockInstrument instrument) {
+    private static void populateDirectReferences(FabricTagBuilder builder,  /*$ instrument >>*/ NoteBlockInstrument instrument) {
         for (RegistryKey<Block> key : INSTRUMENT_TO_BLOCKS_MAP.get(instrument))
             builder.add(key);
     }

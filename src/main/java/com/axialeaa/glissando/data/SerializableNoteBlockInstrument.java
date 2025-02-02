@@ -1,6 +1,8 @@
 package com.axialeaa.glissando.data;
 
 import com.axialeaa.glissando.Glissando;
+import com.axialeaa.glissando.data.registry.VanillaNoteBlockInstrumentTags;
+import com.axialeaa.glissando.data.registry.VanillaNoteBlockInstruments;
 import com.axialeaa.glissando.mixin.accessor.NoteBlockAccessor;
 import com.axialeaa.glissando.util.GlissandoConstants;
 import com.mojang.serialization.Codec;
@@ -133,12 +135,14 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
 
     /**
      * @return a note block instrument associated with the blocks above and below the note block. If no instrument can be found, it will default to {@link VanillaNoteBlockInstruments#HARP}.
+     * @implNote HAVE YOU RUN DATAGEN?? YOU ABSOLUTE BUFFOON???
      */
     public static SerializableNoteBlockInstrument get(World world, BlockPos pos) {
-        BlockState upState = world.getBlockState(pos.up());
-        boolean air = upState.isAir();
+        BlockState blockState = world.getBlockState(pos.up());
+        boolean air = blockState.isAir();
 
-        BlockState blockState = air ? world.getBlockState(pos.down()) : upState;
+        if (air)
+            blockState = world.getBlockState(pos.down());
 
         for (SerializableNoteBlockInstrument instrument : getRegistry(world)) {
             if (air != instrument.isTop(world) && blockState.isIn(instrument.blocks))
@@ -153,8 +157,8 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
     /**
      * @return true if the note block screen can be opened.
      */
-    public static boolean canOpenNoteBlockScreen(World world, BlockPos pos, SerializableNoteBlockInstrument instrument) {
-        if (!instrument.isTunable(world))
+    public boolean canOpenNoteBlockScreen(World world, BlockPos pos) {
+        if (!this.isTunable(world))
             return false;
 
         BlockState blockState = world.getBlockState(pos);
@@ -162,13 +166,11 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
         if (!(blockState.getBlock() instanceof NoteBlock))
             return false;
 
-        if (instrument.isTop(world))
+        if (this.isTop(world))
             return true;
         else {
-            BlockPos up = pos.up();
-            BlockState upState = world.getBlockState(up);
-
-            return upState.isAir();
+            blockState = world.getBlockState(pos.up());
+            return blockState.isAir();
         }
     }
 
@@ -215,7 +217,7 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
         private Text description = DEFAULT_DESCRIPTION;
         private int octave = DEFAULT_OCTAVE;
 
-        public Builder setSoundEvent(RegistryEntry<SoundEvent> soundEvent) {
+        public Builder setSoundEvent(@NotNull RegistryEntry<SoundEvent> soundEvent) {
             this.soundEvent = soundEvent;
             return this;
         }
@@ -226,20 +228,12 @@ public record SerializableNoteBlockInstrument(RegistryEntry<SoundEvent> soundEve
             return this;
         }
 
-        public final Builder setBlocks(@NotNull Registerable<SerializableNoteBlockInstrument> registerable, TagKey<Block> tagKey) {
-            return setBlocks(registerable.getRegistryLookup(RegistryKeys.BLOCK), tagKey);
-        }
-
-        public final Builder setBlocks(RegistryEntryLookup<Block> lookup, TagKey<Block> tagKey) {
-            return setBlocks(lookup.getOrThrow(tagKey));
-        }
-
         public final Builder setBlocks(RegistryEntryList<Block> blocks) {
             this.blocks = blocks;
             return this;
         }
 
-        public Builder setDescription(Text description) {
+        public Builder setDescription(@NotNull Text description) {
             this.description = description;
             return this;
         }

@@ -1,9 +1,9 @@
 package com.axialeaa.glissando;
 
-import com.axialeaa.glissando.data.VanillaBlockTags;
-import com.axialeaa.glissando.data.VanillaNoteBlockInstrumentTags;
+import com.axialeaa.glissando.data.registry.VanillaBlockTags;
+import com.axialeaa.glissando.data.registry.VanillaNoteBlockInstrumentTags;
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
-import com.axialeaa.glissando.data.VanillaNoteBlockInstruments;
+import com.axialeaa.glissando.data.registry.VanillaNoteBlockInstruments;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
@@ -18,8 +18,8 @@ import com.axialeaa.glissando.packet.TuneNoteBlockC2SPayload;
 
 public class Glissando implements ModInitializer {
 
-	public static final String MOD_ID = /*$ mod_id*/ "glissando";
-	public static final String MOD_NAME = /*$ mod_name*/ "Glissando";
+	public static final String MOD_ID = /*$ mod_id >>*/ "glissando" ;
+	public static final String MOD_NAME = /*$ mod_name >>*/ "Glissando" ;
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 

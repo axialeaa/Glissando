@@ -20,7 +20,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 
 import java.awt.*;
-import java.util.OptionalInt;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
@@ -32,9 +31,6 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractNoteBlockScreen extends Screen {
 
-    /**
-     * An {@link OptionalInt} representing the pitch of the latest-focused widget, if one exists.
-     */
     @Nullable
     protected NoteKeyWidget selectedWidget = null;
 

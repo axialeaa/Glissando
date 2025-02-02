@@ -15,3 +15,10 @@ stonecutter.registerChiseled tasks.register("chiseledPublishMods", stonecutter.c
     setGroup "publishing"
     ofTask "publishMods"
 }
+
+// For updates only changing stuff about old packet payload syntax
+stonecutter.registerChiseled tasks.register("publishModsBelow1.20.6", stonecutter.chiseled) {
+    versions { br, o -> stonecutter.eval(o.version, "<1.20.6") }
+    setGroup "publishing"
+    ofTask "publishMods"
+}

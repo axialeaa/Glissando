@@ -1,8 +1,8 @@
 package com.axialeaa.glissando.data.provider;
 
-import com.axialeaa.glissando.data.VanillaNoteBlockInstrumentTags;
+import com.axialeaa.glissando.data.registry.VanillaNoteBlockInstrumentTags;
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
-import com.axialeaa.glissando.data.VanillaNoteBlockInstruments;
+import com.axialeaa.glissando.data.registry.VanillaNoteBlockInstruments;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.registry.RegistryKey;
@@ -18,6 +18,7 @@ public class InstrumentTagProvider extends FabricTagProvider<SerializableNoteBlo
         VanillaNoteBlockInstruments.CUSTOM_HEAD,
         VanillaNoteBlockInstruments.DRAGON,
         VanillaNoteBlockInstruments.PIGLIN,
+        VanillaNoteBlockInstruments.SKELETON,
         VanillaNoteBlockInstruments.WITHER_SKELETON,
         VanillaNoteBlockInstruments.ZOMBIE
     );
@@ -28,8 +29,8 @@ public class InstrumentTagProvider extends FabricTagProvider<SerializableNoteBlo
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        FabricTagBuilder top = getOrCreateTagBuilder(VanillaNoteBlockInstrumentTags.TOP);
-        FabricTagBuilder untunable = getOrCreateTagBuilder(VanillaNoteBlockInstrumentTags.UNTUNABLE);
+        FabricTagBuilder top = this.getOrCreateTagBuilder(VanillaNoteBlockInstrumentTags.TOP);
+        FabricTagBuilder untunable = this.getOrCreateTagBuilder(VanillaNoteBlockInstrumentTags.UNTUNABLE);
 
         for (RegistryKey<SerializableNoteBlockInstrument> key : TOP_INSTRUMENT_KEYS) {
             top.add(key);

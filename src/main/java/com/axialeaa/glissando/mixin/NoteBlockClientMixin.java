@@ -34,7 +34,7 @@ public class NoteBlockClientMixin extends BlockMixin {
 	) {
 		SerializableNoteBlockInstrument instrument = SerializableNoteBlockInstrument.get(world, pos);
 
-		if (!SerializableNoteBlockInstrument.canOpenNoteBlockScreen(world, pos, instrument))
+		if (!instrument.canOpenNoteBlockScreen(world, pos))
 			return;
 
 		if (world.isClient && world instanceof ClientWorld clientWorld)
@@ -50,7 +50,7 @@ public class NoteBlockClientMixin extends BlockMixin {
 
 		SerializableNoteBlockInstrument instrument = SerializableNoteBlockInstrument.get(world, pos);
 
-		if (SerializableNoteBlockInstrument.canOpenNoteBlockScreen(world, pos, instrument) && world instanceof ClientWorld clientWorld)
+		if (instrument.canOpenNoteBlockScreen(world, pos) && world instanceof ClientWorld clientWorld)
 			screenOpener.openScreen(new NoteBlockScreen(clientWorld, pos, instrument));
 
 		super.onPlacedImpl(world, pos, state, placer, itemStack, original);

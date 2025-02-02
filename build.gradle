@@ -1,7 +1,7 @@
 plugins {
-	id 'fabric-loom' version '1.9-SNAPSHOT'
-	id 'maven-publish'
-	id "me.modmuss50.mod-publish-plugin" version "0.8.3"
+	id("fabric-loom") version "1.9-SNAPSHOT"
+	id("maven-publish")
+	id("me.modmuss50.mod-publish-plugin") version "0.8.3"
 }
 
 def mcVersion = stonecutter.current.version
@@ -15,12 +15,12 @@ base {
 
 repositories {
 	maven {
-		name 'Xander Maven'
-		url 'https://maven.isxander.dev/releases'
+		name "Xander Maven"
+		url "https://maven.isxander.dev/releases"
 	}
 	maven {
-		name 'Terraformers'
-		url 'https://maven.terraformersmc.com/'
+		name "Terraformers"
+		url "https://maven.terraformersmc.com/"
 	}
 }
 
@@ -46,18 +46,17 @@ publishMods {
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:$mcVersion"
-	mappings "net.fabricmc:yarn:${property("yarn_mappings")}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${property("loader_version")}"
-
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}"
-	modImplementation "dev.isxander:yet-another-config-lib:${property("yacl_version")}-fabric"
+	minecraft("com.mojang:minecraft:$mcVersion")
+	mappings("net.fabricmc:yarn:${property("yarn_mappings")}:v2")
+	modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
+	modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
+	modImplementation("dev.isxander:yet-another-config-lib:${property("yacl_version")}-fabric")
 	modImplementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
 }
 
 stonecutter {
-	swap("mod_id", "\"${property("mod_id")}\";")
-	swap("mod_name", "\"${property("mod_name")}\";")
+	swap("mod_id", "\"${property("mod_id")}\"")
+	swap("mod_name", "\"${property("mod_name")}\"")
 
 	swap("text_codec", eval(mcVersion, ">=1.20.4") ? "TextCodecs.CODEC" : "Codecs.TEXT")
 	swap("button", eval(mcVersion, ">=1.20.4") ? "TextIconButtonWidget" : "TexturedButtonWidget")
@@ -81,7 +80,7 @@ stonecutter {
 def javaVersion = stonecutter.eval(mcVersion, ">=1.20.6") ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
 def javaVersionNumber = javaVersion.ordinal() + 1
 
-tasks.register('copyBuild', Copy) {
+tasks.register("copyBuild", Copy) {
 	from("${layout.buildDirectory.get()}/libs")
 	into("$rootDir/libs/${project.property("mod_version")}")
 }
@@ -136,24 +135,23 @@ if (stonecutter.current.isActive) {
 		group = "fabric"
 		dependsOn(tasks.named("runClient"))
 	}
+}
 
-	loom {
-		runs {
-			client {
-				programArgs(["--username", "axialeaa", "--uuid", "dabdffa7-fdd2-4798-9f94-a518c7856163"])
-			}
+loom {
+	runs {
+		client {
+			programArgs(["--username", "axialeaa", "--uuid", "dabdffa7-fdd2-4798-9f94-a518c7856163"])
 		}
-		runConfigs.all {
-			ideConfigGenerated = true
-			vmArgs("-Dmixin.debug.export=true")
-			runDir "../../run"
-		}
-		sourceSets {
-			main {
-				resources {
-					srcDir(project.file("src/main/generated"))
-					exclude(".cache")
-				}
+	}
+	runConfigs.all {
+		ideConfigGenerated = true
+		vmArgs("-Dmixin.debug.export=true")
+		runDir "../../run"
+	}
+	sourceSets {
+		main {
+			resources {
+				srcDir(project.file("src/main/generated"))
 			}
 		}
 	}

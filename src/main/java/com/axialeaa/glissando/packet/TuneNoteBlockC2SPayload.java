@@ -84,23 +84,20 @@ public record TuneNoteBlockC2SPayload(BlockPos pos, int pitch, boolean play) imp
                 ServerPlayerEntity player = ctx.player();
                 MinecraftServer server = /*$ payload_server >>*/ ctx.server();
 
-                Runnable runnable = () -> tuneToPitch(player, payload);
+                BlockPos pos = payload.pos;
+                int pitch = payload.pitch;
+                boolean play = payload.play;
             //?} else {
             /*(server, player, handler, buf, responseSender) -> {
-                Runnable runnable = () -> tuneToPitch(player, buf);
+                // Saving these as local variables first is absolutely imperative because otherwise it'll try to
+                // read from a payload that has long since been discarded, rejecting the packet and throwing a log error.
+                // This is only necessary before 1.20.5.
+                BlockPos pos = buf.readBlockPos();
+                int pitch = buf.readInt();
+                boolean play = buf.readBoolean();
             *///?}
-                server.execute(runnable);
+                server.execute(() -> tuneToPitch(player, pos, pitch, play));
             });
-    }
-
-    public static void tuneToPitch(ServerPlayerEntity player,
-                                   //? if >=1.20.5 {
-                                    TuneNoteBlockC2SPayload payload) {
-        tuneToPitch(player, payload.pos, payload.pitch, payload.play);
-                                   //?} else {
-                                   /*PacketByteBuf buf) {
-        tuneToPitch(player, buf.readBlockPos(), buf.readInt(), buf.readBoolean());
-        *///?}
     }
 
     /**
@@ -114,7 +111,7 @@ public record TuneNoteBlockC2SPayload(BlockPos pos, int pitch, boolean play) imp
         ServerWorld world = player.getServerWorld();
         SerializableNoteBlockInstrument instrument = SerializableNoteBlockInstrument.get(world, pos);
 
-        if (!SerializableNoteBlockInstrument.canOpenNoteBlockScreen(world, pos, instrument))
+        if (!instrument.canOpenNoteBlockScreen(world, pos))
             return;
 
         BlockState blockState = world.getBlockState(pos).with(NoteBlock.NOTE, pitch);

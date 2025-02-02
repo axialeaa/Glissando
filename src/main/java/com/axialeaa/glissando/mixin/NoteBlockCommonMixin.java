@@ -33,7 +33,7 @@ public class NoteBlockCommonMixin {
 	@ModifyExpressionValue(method = "onUse", at = @At(value = "FIELD", target = "Lnet/minecraft/world/World;isClient:Z"))
 	private boolean shouldOpenNoteBlockScreen(boolean original, @Local(argsOnly = true) World world, @Local(argsOnly = true) BlockPos pos) {
 		SerializableNoteBlockInstrument instrument = SerializableNoteBlockInstrument.get(world, pos);
-		return original || SerializableNoteBlockInstrument.canOpenNoteBlockScreen(world, pos, instrument);
+		return original || instrument.canOpenNoteBlockScreen(world, pos);
 	}
 
 	@Contract("false, _, _, _ -> false")

@@ -4,8 +4,10 @@ import com.axialeaa.glissando.Glissando;
 import com.axialeaa.glissando.config.GlissandoConfig;
 import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
 import com.axialeaa.glissando.util.Note;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public enum TooltipType implements GlissandoNameableEnum {
 
@@ -19,13 +21,17 @@ public enum TooltipType implements GlissandoNameableEnum {
         this.factory = factory;
     }
 
-    public Text getTextContent(int pitch, @NotNull SerializableNoteBlockInstrument instrument) {
-        return this.factory.getTextContent(pitch, instrument);
+    public MutableText getTextContent(int pitch, @NotNull SerializableNoteBlockInstrument instrument) {
+        return this.factory.getTextContent(pitch, instrument).copy();
     }
 
     @Override
     public String getOptionName() {
         return GlissandoConfig.TOOLTIP_TYPE;
+    }
+
+    public static boolean isEmpty(@Nullable TooltipType tooltipType) {
+        return tooltipType == null || tooltipType == EMPTY;
     }
 
     @FunctionalInterface

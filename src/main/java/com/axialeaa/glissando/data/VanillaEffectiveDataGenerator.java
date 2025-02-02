@@ -3,6 +3,7 @@ package com.axialeaa.glissando.data;
 import com.axialeaa.glissando.data.provider.BlockTagProvider;
 import com.axialeaa.glissando.data.provider.InstrumentTagProvider;
 import com.axialeaa.glissando.data.provider.NoteBlockInstrumentProvider;
+import com.axialeaa.glissando.data.registry.VanillaNoteBlockInstruments;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.minecraft.registry.RegistryBuilder;

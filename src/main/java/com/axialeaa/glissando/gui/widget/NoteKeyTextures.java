@@ -27,10 +27,10 @@ import net.minecraft.client.gl.ShaderProgramKeys;
 public record NoteKeyTextures(Identifier released, Identifier pressed, Identifier outline, Identifier outlineHovered, int width, int height, WidgetHoverArea hoverArea) {
 
     public static final NoteKeyTextures
-        NATURAL = NoteKeyTextures.create("natural", NATURAL_KEY_WIDTH, NATURAL_KEY_HEIGHT, WidgetHoverArea.NATURAL),
-        NATURAL_LEFT = NoteKeyTextures.create("natural_left", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, WidgetHoverArea.NATURAL_LEFT),
-        NATURAL_RIGHT = NoteKeyTextures.create("natural_right", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, WidgetHoverArea.NATURAL_RIGHT),
-        ACCIDENTAL = NoteKeyTextures.create("accidental", ACCIDENTAL_KEY_WIDTH, ACCIDENTAL_KEY_HEIGHT, WidgetHoverArea.ACCIDENTAL);
+        NATURAL = create("natural", NATURAL_KEY_WIDTH, NATURAL_KEY_HEIGHT, WidgetHoverArea.NATURAL),
+        NATURAL_LEFT = create("natural_left", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, WidgetHoverArea.NATURAL_LEFT),
+        NATURAL_RIGHT = create("natural_right", NATURAL_KEY_WIDTH, KEYBOARD_HEIGHT, WidgetHoverArea.NATURAL_RIGHT),
+        ACCIDENTAL = create("accidental", ACCIDENTAL_KEY_WIDTH, ACCIDENTAL_KEY_HEIGHT, WidgetHoverArea.ACCIDENTAL);
 
     public static NoteKeyTextures create(String name, int width, int height, WidgetHoverArea hoverArea) {
         String path = "textures/gui/sprites/note_block/%s.png";
