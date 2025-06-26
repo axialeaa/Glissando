@@ -35,7 +35,7 @@
 
 Check out [the wiki][wiki] for a more in-depth overview of **Glissando**'s features!
 
-> [NOTE!]
+> [!NOTE]
 > **Glissando** is currently under some major construction! I will update it when I can, but it may not be soon. I'm not lying when I say that more than half the codebase is being totally reworked xD
 
 <h2 align=center>📝 Getting Started 📝</h2>
