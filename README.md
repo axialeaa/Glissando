@@ -35,6 +35,9 @@
 
 Check out [the wiki][wiki] for a more in-depth overview of **Glissando**'s features!
 
+> [NOTE!]
+> **Glissando** is currently under some major construction! I will update it when I can, but it may not be soon. I'm not lying when I say that more than half the codebase is being totally reworked xD
+
 <h2 align=center>📝 Getting Started 📝</h2>
 
 **Glissando**'s production operates on [Stonecutter][stonecutter], allowing for easy multi-version scheming. Every release will be available for all the same game versions as the latest release of [YetAnotherConfigLib][yacl], the API used to build **Glissando**'s configuration screen.
