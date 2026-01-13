@@ -1,8 +1,0 @@
-{
-  "blocks": "#minecraft:note_block_instruments/xylophone",
-  "description": {
-    "translate": "minecraft.note_block_instrument.xylophone"
-  },
-  "octave": 5,
-  "sound_event": "minecraft:block.note_block.xylophone"
-}

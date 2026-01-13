@@ -1,0 +1,13 @@
+{
+  "description": {
+    "translate": "minecraft.note_block_instrument.basedrum"
+  },
+  "formation": {
+    "type": "glissando:simple",
+    "predicate": {
+      "blocks": "#glissando:note_block_instruments/basedrum"
+    }
+  },
+  "octave": 0,
+  "sound_event": "minecraft:block.note_block.basedrum"
+}

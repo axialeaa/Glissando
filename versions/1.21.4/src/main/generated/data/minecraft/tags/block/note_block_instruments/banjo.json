@@ -1,9 +1,0 @@
-{
-  "values": [
-    {
-      "id": "#c:storage_blocks/wheat",
-      "required": false
-    },
-    "minecraft:hay_block"
-  ]
-}

@@ -1,9 +1,0 @@
-{
-  "values": [
-    {
-      "id": "#c:storage_blocks/bone_meal",
-      "required": false
-    },
-    "minecraft:bone_block"
-  ]
-}

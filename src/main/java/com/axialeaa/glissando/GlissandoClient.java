@@ -1,26 +1,22 @@
 package com.axialeaa.glissando;
 
-import com.axialeaa.glissando.config.GlissandoConfig;
-import com.axialeaa.glissando.util.GlissandoConstants;
+import com.axialeaa.glissando.block_entity.NoteBlockEntity;
+import com.axialeaa.glissando.block_entity.NoteBlockEntityRenderer;
+import com.axialeaa.glissando.data.registry.GlissandoParticleTypes;
+import com.axialeaa.glissando.item.component.CustomDiscComponent;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
+import net.minecraft.client.particle.WhiteSmokeParticle;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 
 public class GlissandoClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        registerPack(GlissandoConstants.UPSCALE_RESOURCE_PACK);
-        GlissandoConfig.load();
-    }
-
-    private static void registerPack(Identifier id) {
-        Text translated = Text.translatable("resourcePack.%s.name".formatted(id), Glissando.MOD_NAME);
-        ResourceManagerHelper.registerBuiltinResourcePack(id, Glissando.CONTAINER, translated, ResourcePackActivationType.NORMAL);
-
-        Glissando.LOGGER.info("Registered pack {}!", id);
+        ParticleFactoryRegistry.getInstance().register(GlissandoParticleTypes.INSTRUMENT_FORMED, WhiteSmokeParticle.Factory::new);
+        ComponentTooltipAppenderRegistry.addFirst(CustomDiscComponent.TYPE);
+        BlockEntityRendererFactories.register(NoteBlockEntity.TYPE, NoteBlockEntityRenderer::new);
     }
 
 }

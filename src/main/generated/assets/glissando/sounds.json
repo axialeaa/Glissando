@@ -1,0 +1,15 @@
+{
+  "internal/internal": {
+    "category": "neutral",
+    "sounds": [
+      "glissando:internal/internal"
+    ]
+  },
+  "music_disc_scratch": {
+    "category": "neutral",
+    "sounds": [
+      "glissando:music_disc/scratch"
+    ],
+    "subtitle": "glissando.subtitles.music_disc_scratch"
+  }
+}

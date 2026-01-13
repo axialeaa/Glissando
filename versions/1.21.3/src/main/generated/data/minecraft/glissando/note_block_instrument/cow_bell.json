@@ -1,7 +1,0 @@
-{
-  "blocks": "#minecraft:note_block_instruments/cow_bell",
-  "description": {
-    "translate": "minecraft.note_block_instrument.cow_bell"
-  },
-  "sound_event": "minecraft:block.note_block.cow_bell"
-}

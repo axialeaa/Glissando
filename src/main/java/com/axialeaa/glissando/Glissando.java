@@ -1,59 +1,93 @@
 package com.axialeaa.glissando;
 
-import com.axialeaa.glissando.data.registry.VanillaBlockTags;
-import com.axialeaa.glissando.data.registry.VanillaNoteBlockInstrumentTags;
-import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
-import com.axialeaa.glissando.data.registry.VanillaNoteBlockInstruments;
+import com.axialeaa.glissando.block_entity.NoteBlockEntity;
+import com.axialeaa.glissando.data.instrument_formation.InstrumentFormationType;
+import com.axialeaa.glissando.data.registry.*;
+import com.axialeaa.glissando.data.DataNoteBlockInstrument;
+import com.axialeaa.glissando.config.ServerConfigHolder;
+import com.axialeaa.glissando.item.component.CustomDiscComponent;
+import com.axialeaa.glissando.item.MusicDiscItem;
+import com.axialeaa.glissando.item.component.RecordingComponent;
+import com.axialeaa.glissando.payload.*;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.text.Text;
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.registry.Registries;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.axialeaa.glissando.packet.TuneNoteBlockC2SPayload;
+import java.io.File;
+import java.util.function.Consumer;
 
 public class Glissando implements ModInitializer {
 
-	public static final String MOD_ID = /*$ mod_id >>*/ "glissando" ;
-	public static final String MOD_NAME = /*$ mod_name >>*/ "Glissando" ;
-
+	public static final String MOD_ID = "glissando";
+	public static final String MOD_NAME = "Glissando";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
-	public static final FabricLoader LOADER = FabricLoader.getInstance();
-	public static final ModContainer CONTAINER = LOADER.getModContainer(MOD_ID).orElseThrow(RuntimeException::new);
+	@Nullable
+	public static GlissandoSyncedConfig syncedConfig;
+	public static GlissandoClientConfig clientConfig = new GlissandoClientConfig();
 
-	public static final boolean MOD_MENU_LOADED = LOADER.isModLoaded("modmenu");
-
-	@Override
+    @Override
 	public void onInitialize() {
 		LOGGER.info("{} initialized! I-vory much enjoy this news, and it means a lot on a large scale.", MOD_NAME);
 
-		VanillaBlockTags.init();
-		VanillaNoteBlockInstruments.init();
-		VanillaNoteBlockInstrumentTags.init();
+		clientConfig.file = new File(FabricLoader.getInstance().getConfigDir().toFile(), MOD_ID + "_client.json");
+		clientConfig.load();
 
+		GlissandoBlockTags.loadClass();
+		GlissandoNoteBlockInstruments.loadClass();
+		GlissandoNoteBlockInstrumentTags.loadClass();
+		GlissandoJukeboxSongs.loadClass();
+		InstrumentFormationType.loadClass();
+
+		RegistryUtils.of(Registries.DATA_COMPONENT_TYPE, CustomDiscComponent.PATH, CustomDiscComponent.TYPE);
+		RegistryUtils.of(Registries.DATA_COMPONENT_TYPE, RecordingComponent.PATH, RecordingComponent.TYPE);
+		RegistryUtils.of(Registries.BLOCK_ENTITY_TYPE, NoteBlockEntity.PATH, NoteBlockEntity.TYPE);
+		RegistryUtils.of(Registries.ITEM, MusicDiscItem.PATH, MusicDiscItem.REGISTRY_INSTANCE);
+		RegistryUtils.of(Registries.SOUND_EVENT, GlissandoSoundEvents.MUSIC_DISC_SCRATCH_PATH, GlissandoSoundEvents.MUSIC_DISC_SCRATCH);
+		RegistryUtils.of(Registries.PARTICLE_TYPE, GlissandoParticleTypes.INSTRUMENT_FORMED_PATH, GlissandoParticleTypes.INSTRUMENT_FORMED);
+		RegistryUtils.of(Registries.RECIPE_SERIALIZER, GlissandoRecipes.CUSTOM_DISC_CLONING_PATH, GlissandoRecipes.CUSTOM_DISC_CLONING);
+
+		AnimateNoteBlockS2CPayload.register();
+		KickScreenPlayerS2CPayload.register();
+		OpenScreenS2CPayload.register();
+		SpawnInstrumentFormedParticlesS2CPayload.register();
+		SyncConfigPayloads.register();
 		TuneNoteBlockC2SPayload.register();
-		DynamicRegistries.registerSynced(SerializableNoteBlockInstrument.REGISTRY_KEY, SerializableNoteBlockInstrument.CODEC);
+		EntitleCustomMusicDisc.register();
+
+		DynamicRegistries.registerSynced(DataNoteBlockInstrument.REGISTRY_KEY, DataNoteBlockInstrument.CODEC);
+
+		GlissandoEvents.register();
+	}
+
+	public static void printDebugLog(Consumer<Logger> logAction) { // takes in a consumer so that live string validation still works
+		if (clientConfig.debugLogging.get())
+			logAction.accept(LOGGER);
+	}
+
+	public static GlissandoSyncedConfig getServerConfig(ServerWorld world) {
+		return getServerConfig(world.getServer());
+	}
+
+	public static GlissandoSyncedConfig getServerConfig(MinecraftServer server) {
+		return ((ServerConfigHolder) server).getConfig();
 	}
 
 	public static Identifier id(String path) {
-		return id(MOD_ID, path);
+		return Identifier.of(MOD_ID, path);
 	}
 
-	public static Identifier vanillaId(String path) {
-		return id("minecraft", path);
-	}
-
-	public static Identifier id(String namespace, String path) {
-		return /*$ identifier*/ Identifier.of(namespace, path);
-	}
-
-	public static Text translate(String name, Object... args) {
-		return Text.translatable(MOD_ID + "." + name, args);
+	public static <T extends CustomPayload> CustomPayload.Id<T> payloadId(String path) {
+		return new CustomPayload.Id<>(id(path));
 	}
 
 }

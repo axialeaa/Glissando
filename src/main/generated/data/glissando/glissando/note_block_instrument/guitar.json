@@ -1,0 +1,13 @@
+{
+  "description": {
+    "translate": "minecraft.note_block_instrument.guitar"
+  },
+  "formation": {
+    "type": "glissando:simple",
+    "predicate": {
+      "blocks": "#glissando:note_block_instruments/guitar"
+    }
+  },
+  "octave": 2,
+  "sound_event": "minecraft:block.note_block.guitar"
+}

@@ -1,45 +1,75 @@
 package com.axialeaa.glissando.gui.screen;
 
-import com.axialeaa.glissando.config.GlissandoConfig;
-import com.axialeaa.glissando.config.GlissandoConfigScreen;
+import com.axialeaa.glissando.Glissando;
+import com.axialeaa.glissando.block_entity.NoteBlockEntity;
+import com.axialeaa.glissando.config.gui.screen.MainConfigurationScreen;
 import com.axialeaa.glissando.config.option.InteractionMode;
-import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
-import com.axialeaa.glissando.gui.widget.NoteKeyWidget;
-import net.minecraft.block.BlockState;
+import com.axialeaa.glissando.data.DataNoteBlockInstrument;
+import com.axialeaa.glissando.gui.widget.ResetSelectionWidget;
+import com.axialeaa.glissando.gui.widget.note_key.NoteKeyWidget;
+import com.axialeaa.glissando.util.Note;
 import net.minecraft.block.NoteBlock;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
+import com.axialeaa.glissando.payload.TuneNoteBlockC2SPayload;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
-import com.axialeaa.glissando.packet.TuneNoteBlockC2SPayload;
+import static com.axialeaa.glissando.config.gui.widget.WidgetHelper.*;
 
 /**
  * The "normal" note block screen opened when interacting with a note block.
  */
-public class NoteBlockScreen extends AbstractNoteBlockScreen {
+public class NoteBlockScreen extends KeyboardScreen {
 
-    private final ClientWorld world;
-    private final BlockPos pos;
+    private static final Identifier CONFIG_BUTTON_TEXTURE = Glissando.id("config/config_button/config_button");
 
-    public NoteBlockScreen(ClientWorld world, BlockPos pos, @NotNull SerializableNoteBlockInstrument instrument) {
-        super("note_block_screen", instrument);
+    private final NoteBlockEntity blockEntity;
+    private final DataNoteBlockInstrument instrument;
 
-        this.world = world;
-        this.pos = pos;
+    public NoteBlockScreen(NoteBlockEntity blockEntity, DataNoteBlockInstrument instrument) {
+        super(Text.translatable("glissando.screen.note_block.title", instrument.description().getString()));
+
+        this.blockEntity = blockEntity;
+        this.instrument = instrument;
     }
 
     @Override
-    protected NoteKeyWidget createNewWidget(int x, int y, int pitch) {
-        return new NoteKeyWidget(x, y, pitch, this, false, this.pos);
+    protected NoteKeyWidget createNewWidget(int x, int y, int pitch, Note note) {
+        return new NoteKeyWidget(x, y, pitch, note, this, false, this.blockEntity.getPos());
     }
 
     @Override
-    protected Screen getConfigScreen() {
-        return GlissandoConfigScreen.create(this);
+    public int getDefaultSelectedWidgetPitch() {
+        return this.blockEntity.getCachedState().get(NoteBlock.NOTE);
+    }
+
+    @Override
+    public void removed() {
+        InteractionMode mode = Glissando.clientConfig.interactionMode.get();
+
+        if (mode == InteractionMode.SOCIAL || this.selectedWidget == null)
+            return;
+
+        short pitch = (short) this.getSelectedWidgetPitch();
+
+        if (this.blockEntity.getCachedState().get(NoteBlock.NOTE) != pitch)
+            TuneNoteBlockC2SPayload.send(this.blockEntity.getPos(), pitch, mode == InteractionMode.RECLUSIVE);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        this.setInstrument(this.instrument);
+
+        this.addResetSelectionButton();
+        this.addDrawableChild(createCenteredDoneButton(this));
+        this.addDrawableChild(createPositionedScreenChangeButton(
+            Text.translatable("glissando.screen.config.title"),
+            CONFIG_BUTTON_TEXTURE,
+            new MainConfigurationScreen(this),
+            this.width,
+            this.height
+        ));
     }
 
     @Override
@@ -48,74 +78,26 @@ public class NoteBlockScreen extends AbstractNoteBlockScreen {
     }
 
     @Override
-    public void close() {
-        super.close();
-
-        InteractionMode mode = GlissandoConfig.get().interactionMode;
-
-        if (!mode.isReclusive())
-            return;
-
-        BlockState blockState = this.world.getBlockState(this.pos);
-        Optional<Integer> optional = blockState.getOrEmpty(NoteBlock.NOTE);
-
-        if (this.selectedWidget == null || optional.isEmpty())
-            return;
-
-        int pitch = this.getSelectedWidgetPitch();
-
-        if (optional.get() != pitch)
-            TuneNoteBlockC2SPayload.sendNew(this.pos, pitch, mode == InteractionMode.RECLUSIVE);
-    }
-
-    @Override
-    protected void init() {
-        super.init();
-
-        BlockState blockState = this.world.getBlockState(this.pos);
-        Optional<Integer> pitch = blockState.getOrEmpty(NoteBlock.NOTE);
-
-        this.selectedWidget = pitch.map(this::getWidgetFromPitch).orElseThrow();
-    }
-
-    @Override
     public void tick() {
-        if (!this.canEdit())
-            this.close();
-
-        SerializableNoteBlockInstrument instrument = SerializableNoteBlockInstrument.get(this.world, this.pos);
-
-        if (this.instrument == instrument)
-            return;
-
-        this.instrument = instrument;
-
-        for (NoteKeyWidget widget : this.widgets)
+        for (NoteKeyWidget widget : this.noteKeyWidgets)
             widget.updateTooltip();
     }
 
-    /**
-     * @return true if this note block screen has a valid note block to edit. Fails if it's too far away or not a note block anymore.
-     */
-    private boolean canEdit() {
-        if (this.client == null || this.client.player == null)
-            return false;
+    private void addResetSelectionButton() {
+        if (this.selectedWidget == null)
+            return;
 
-        return isPlayerWithinRange(this.pos, this.client.player) && this.instrument.canOpenNoteBlockScreen(this.world, this.pos);
-    }
+        int x = this.selectedWidget.getX(), y = this.selectedWidget.getY();
+        Note note = this.selectedWidget.note;
 
-    /**
-     * @param pos The position of the note block.
-     * @param player The client player.
-     * @return true if the {@code player} is too far away from the note block to tune it.
-     * @see NoteBlockScreen#canEdit()
-     */
-    private static boolean isPlayerWithinRange(BlockPos pos, ClientPlayerEntity player) {
-        return
-            //? if >=1.20.6 {
-            player.canInteractWithBlockAt(pos, 4.0);
-            //?} else
-            /*player.squaredDistanceTo((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5) <= 64.0;*/
+        boolean accidental = note.isAccidental();
+
+        if (!accidental)
+            x += COMMON_SPACING;
+
+        y += accidental ? -(ResetSelectionWidget.HEIGHT + COMMON_SPACING) : this.selectedWidget.getHeight() + COMMON_SPACING;
+
+        this.addDrawableChild(new ResetSelectionWidget(x, y, this, this.selectedWidget, accidental));
     }
 
 }

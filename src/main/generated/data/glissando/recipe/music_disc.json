@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:gunpowder",
+    "K": "minecraft:dried_kelp"
+  },
+  "pattern": [
+    " K ",
+    "KGK",
+    " K "
+  ],
+  "result": {
+    "count": 1,
+    "id": "glissando:music_disc"
+  }
+}

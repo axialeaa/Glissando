@@ -1,0 +1,12 @@
+{
+  "description": {
+    "translate": "minecraft.note_block_instrument.bit"
+  },
+  "formation": {
+    "type": "glissando:simple",
+    "predicate": {
+      "blocks": "#glissando:note_block_instruments/bit"
+    }
+  },
+  "sound_event": "minecraft:block.note_block.bit"
+}

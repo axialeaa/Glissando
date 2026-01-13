@@ -1,58 +1,37 @@
 package com.axialeaa.glissando.config.option;
 
-import com.axialeaa.glissando.Glissando;
-import com.axialeaa.glissando.config.GlissandoConfig;
-import com.axialeaa.glissando.data.SerializableNoteBlockInstrument;
+import com.axialeaa.glissando.data.DataNoteBlockInstrument;
 import com.axialeaa.glissando.util.Note;
+import com.axialeaa.glissando.util.SimpleEnumStringIdentifiable;
+import com.mojang.serialization.Codec;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringIdentifiable;
+import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public enum TooltipType implements GlissandoNameableEnum {
+public enum TooltipType implements SimpleEnumStringIdentifiable {
 
-    EMPTY (TooltipTextFactory.EMPTY),
-    NOTE (TooltipTextFactory.NOTE),
-    PITCH (TooltipTextFactory.PITCH);
+    EMPTY((pitch, noteTranslation, instrument) -> Text.empty()),
+    NOTE((pitch, noteTranslation, instrument) -> Text.translatable("glissando.tooltip.note", noteTranslation)),
+    SOLMIZATED((pitch, noteTranslation, instrument) -> Text.translatable("glissando.tooltip.solmizated", noteTranslation)),
+    PITCH((pitch, noteTranslation, instrument) -> Text.translatable("glissando.tooltip.pitch", pitch));
 
-    private final TooltipTextFactory factory;
+    private final TriFunction<Integer, Text, DataNoteBlockInstrument, Text> factory;
 
-    TooltipType(TooltipTextFactory factory) {
+    public static final Codec<TooltipType> CODEC = StringIdentifiable.createCodec(TooltipType::values);
+
+    TooltipType(TriFunction<Integer, Text, DataNoteBlockInstrument, Text> factory) {
         this.factory = factory;
     }
 
-    public MutableText getTextContent(int pitch, @NotNull SerializableNoteBlockInstrument instrument) {
-        return this.factory.getTextContent(pitch, instrument).copy();
-    }
-
-    @Override
-    public String getOptionName() {
-        return GlissandoConfig.TOOLTIP_TYPE;
+    public MutableText getTextContent(int pitch, @NotNull DataNoteBlockInstrument instrument) {
+        return this.factory.apply(pitch, Note.byPitch(pitch).getTranslation(pitch, instrument), instrument).copy();
     }
 
     public static boolean isEmpty(@Nullable TooltipType tooltipType) {
         return tooltipType == null || tooltipType == EMPTY;
-    }
-
-    @FunctionalInterface
-    public interface TooltipTextFactory {
-
-        TooltipTextFactory EMPTY = (pitch, instrument) -> Text.empty();
-
-        TooltipTextFactory NOTE = (pitch, instrument) -> {
-            Note note = Note.byPitch(pitch);
-            String name = note.getTranslatedName(pitch, instrument).getString();
-
-            return Glissando.translate("tooltip.note", name);
-        };
-
-        TooltipTextFactory PITCH = (pitch, instrument) -> {
-            String line = Glissando.translate("tooltip.pitch").getString();
-            return Text.of(line.formatted(pitch));
-        };
-
-        Text getTextContent(int pitch, @NotNull SerializableNoteBlockInstrument instrument);
-
     }
 
 }

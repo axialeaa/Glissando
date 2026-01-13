@@ -1,0 +1,13 @@
+{
+  "description": {
+    "translate": "minecraft.note_block_instrument.xylophone"
+  },
+  "formation": {
+    "type": "glissando:simple",
+    "predicate": {
+      "blocks": "#glissando:note_block_instruments/xylophone"
+    }
+  },
+  "octave": 5,
+  "sound_event": "minecraft:block.note_block.xylophone"
+}

@@ -1,26 +1,26 @@
 plugins {
-	id("fabric-loom") version "1.9-SNAPSHOT"
-	id("maven-publish")
-	id("me.modmuss50.mod-publish-plugin") version "0.8.3"
+	id 'fabric-loom' version "${loom_version}"
+	id 'maven-publish'
+	id "me.modmuss50.mod-publish-plugin" version "0.8.4"
 }
 
-def mcVersion = stonecutter.current.version
+def mcVersion = project.build_version
 
-version = "${property("mod_version")}+$mcVersion"
-group = property("maven_group")
+version = "$project.mod_version+$mcVersion"
+group = project.maven_group
 
 base {
-	archivesName = property("mod_id")
+	archivesName = project.mod_id
 }
 
 repositories {
 	maven {
-		name "Xander Maven"
-		url "https://maven.isxander.dev/releases"
+		name = 'Terraformers'
+		url = 'https://maven.terraformersmc.com/'
 	}
 	maven {
-		name "Terraformers"
-		url "https://maven.terraformersmc.com/"
+		name = "Ladysnake Mods"
+		url = 'https://maven.ladysnake.org/releases'
 	}
 }
 
@@ -28,113 +28,81 @@ publishMods {
 	file = remapJar.archiveFile
 	changelog = rootProject.file("CHANGELOG.md").text
 	type = STABLE
-	displayName = "${property("mod_name")} ${property("mod_version")} ($mcVersion) - ${property("update_name")}"
+	displayName = "$mod_name $mod_version ($mcVersion) - $update_name"
 	modLoaders.add("fabric")
-	version = property("mod_version")
+	version = mod_version
+
+	github {
+		accessToken = providers.gradleProperty("secrets.github_token")
+		repository = repository_url
+		commitish = "master"
+		tagName = mod_version
+	}
 
 	modrinth {
 		accessToken = providers.gradleProperty("secrets.modrinth_token")
-		projectId = property("modrinth_project_id")
+		projectId = modrinth_project_id
 
-		for (String version : property("modrinth_versions").toString().split(' '))
+		for (String version : modrinth_versions.toString().split(' '))
 			minecraftVersions.add(version)
 
 		requires("fabric-api")
-		requires("yacl")
 		optional("modmenu")
+	}
+
+	discord {
+		webhookUrl = providers.gradleProperty("secrets.discord_webhook_url")
+		username = "$mod_name Update Tracker"
+		content = changelog.map { "# $mod_name $mod_version ($mcVersion) - $update_name\n" + it + "\n-# ||<@&1201276927428804741>||" }
+
+		style {
+			look = "MODERN"
+		}
 	}
 }
 
 dependencies {
-	minecraft("com.mojang:minecraft:$mcVersion")
-	mappings("net.fabricmc:yarn:${property("yarn_mappings")}:v2")
-	modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
-	modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
-	modImplementation("dev.isxander:yet-another-config-lib:${property("yacl_version")}-fabric")
-	modImplementation("com.terraformersmc:modmenu:${property("modmenu_version")}")
+	minecraft "com.mojang:minecraft:$mcVersion"
+	mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+	modImplementation "com.terraformersmc:modmenu:${modmenu_version}"
+
+	modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}"
+	modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
 }
 
-stonecutter {
-	swap("mod_id", "\"${property("mod_id")}\"")
-	swap("mod_name", "\"${property("mod_name")}\"")
-
-	swap("text_codec", eval(mcVersion, ">=1.20.4") ? "TextCodecs.CODEC" : "Codecs.TEXT")
-	swap("button", eval(mcVersion, ">=1.20.4") ? "TextIconButtonWidget" : "TexturedButtonWidget")
-	swap("packet_interface", eval(mcVersion, ">=1.20.5") ? "CustomPayload" : "FabricPacket")
-	swap("on_use_with_item", eval(mcVersion, ">=1.20.6") ? "\"onUseWithItem\"" : "\"onUse\"")
-	swap("convention_tag_package_ver", eval(mcVersion, ">=1.20.6") ? "v2" : "v1")
-	swap("identifier", eval(mcVersion, ">=1.21.1") ? "Identifier.of(namespace, path);" : "new Identifier(namespace, path);")
-	swap("payload_server", eval(mcVersion, ">=1.21.1") ? "ctx.server();" : "player.server;")
-	swap("instrument", eval(mcVersion, ">=1.21.1") ? "NoteBlockInstrument" : "Instrument")
-	swap("shader_program", eval(mcVersion, ">=1.21.3") ? "ShaderProgramKeys.POSITION_TEX_COLOR" : "GameRenderer::getPositionTexColorProgram")
-	swap("get_wrapper", eval(mcVersion, ">=1.21.3") ? "getOrThrow" : "getWrapperOrThrow")
-	swap("get_registry", eval(mcVersion, ">=1.21.3") ? "getOrThrow" : "get")
-	swap("bool_packet_codec", eval(mcVersion, ">=1.21.4") ? "BOOLEAN" : "BOOL")
-
-	def getStateWithInstrumentWorldParam = eval(mcVersion, ">=1.21.3") ? "WorldView" : "WorldAccess"
-
-	swap("get_state_with_instrument_world_param", getStateWithInstrumentWorldParam)
-	swap("get_state_with_instrument_world_param_string", "\"$getStateWithInstrumentWorldParam\"")
-}
-
-def javaVersion = stonecutter.eval(mcVersion, ">=1.20.6") ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
+def javaVersion = JavaVersion.VERSION_21
 def javaVersionNumber = javaVersion.ordinal() + 1
 
-tasks.register("copyBuild", Copy) {
-	from("${layout.buildDirectory.get()}/libs")
-	into("$rootDir/libs/${project.property("mod_version")}")
-}
-
-tasks.build.finalizedBy("copyBuild")
-
 processResources {
-	inputs.property("id", project.property("mod_id"))
-	inputs.property("name", project.property("mod_name"))
-	inputs.property("version", project.property("mod_version"))
-	inputs.property("target", project.property("target_version"))
+	inputs.property("id", project.mod_id)
+	inputs.property("name", project.mod_name)
+	inputs.property("version", project.mod_version)
+	inputs.property("target", project.target_version)
 	inputs.property("java_version", javaVersionNumber)
 
 	def map = [
-		"id": project.property("mod_id"),
-		"name": project.property("mod_name"),
-		"version": project.property("mod_version"),
-		"target": project.property("target_version"),
-		"java_version": javaVersionNumber
+			"id": inputs.properties.id,
+			"name": inputs.properties.name,
+			"version": inputs.properties.version,
+			"target": inputs.properties.target,
+			"java_version": inputs.properties.java_version
 	]
 
 	filesMatching("fabric.mod.json") {
 		expand map
 	}
-
-	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
-clean {
-	delete("$projectDir/src/main/generated")
-}
-
-if (stonecutter.eval(mcVersion, ">=1.21.4")) {
-	fabricApi {
-		configureDataGeneration() {
-			client = true
-		}
-	}
-}
-else {
-	fabricApi {
-		configureDataGeneration()
+fabricApi {
+	configureDataGeneration() {
+		client = true
 	}
 }
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.release = javaVersionNumber
-}
-
-if (stonecutter.current.isActive) {
-	rootProject.tasks.register("runActiveClient") {
-		group = "fabric"
-		dependsOn(tasks.named("runClient"))
-	}
 }
 
 loom {
@@ -143,18 +111,8 @@ loom {
 			programArgs(["--username", "axialeaa", "--uuid", "dabdffa7-fdd2-4798-9f94-a518c7856163"])
 		}
 	}
-	runConfigs.all {
-		ideConfigGenerated = true
-		vmArgs("-Dmixin.debug.export=true")
-		runDir "../../run"
-	}
-	sourceSets {
-		main {
-			resources {
-				srcDir(project.file("src/main/generated"))
-			}
-		}
-	}
+
+	accessWidenerPath = file("src/main/resources/${project.mod_id}.accesswidener")
 }
 
 java {
@@ -163,8 +121,6 @@ java {
 	sourceCompatibility = javaVersion
 	targetCompatibility = javaVersion
 }
-
-tasks.sourcesJar.duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
 jar {
 	from("LICENSE") {
@@ -175,7 +131,7 @@ jar {
 // configure the maven publication
 publishing {
 	publications {
-		create("mavenJava", MavenPublication) {
+		mavenJava(MavenPublication) {
 			from components.java
 		}
 	}

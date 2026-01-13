@@ -1,0 +1,10 @@
+{
+  "formation": {
+    "type": "glissando:simple",
+    "direction": "up",
+    "predicate": {
+      "blocks": "#glissando:note_block_instruments/creeper"
+    }
+  },
+  "sound_event": "minecraft:block.note_block.imitate.creeper"
+}

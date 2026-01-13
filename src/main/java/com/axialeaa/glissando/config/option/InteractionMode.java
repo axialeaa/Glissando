@@ -1,19 +1,14 @@
 package com.axialeaa.glissando.config.option;
 
-import com.axialeaa.glissando.config.GlissandoConfig;
+import com.axialeaa.glissando.util.SimpleEnumStringIdentifiable;
+import com.mojang.serialization.Codec;
+import net.minecraft.util.StringIdentifiable;
 
 @SuppressWarnings("unused")
-public enum InteractionMode implements GlissandoNameableEnum {
+public enum InteractionMode implements SimpleEnumStringIdentifiable {
 
     SILENT, SOCIAL, RECLUSIVE;
 
-    @Override
-    public String getOptionName() {
-        return GlissandoConfig.INTERACTION_MODE;
-    }
-
-    public boolean isReclusive() {
-        return this != SOCIAL;
-    }
+    public static final Codec<InteractionMode> CODEC = StringIdentifiable.createCodec(InteractionMode::values);
 
 }

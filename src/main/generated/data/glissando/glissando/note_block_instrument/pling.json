@@ -1,0 +1,12 @@
+{
+  "description": {
+    "translate": "minecraft.note_block_instrument.pling"
+  },
+  "formation": {
+    "type": "glissando:simple",
+    "predicate": {
+      "blocks": "#glissando:note_block_instruments/pling"
+    }
+  },
+  "sound_event": "minecraft:block.note_block.pling"
+}

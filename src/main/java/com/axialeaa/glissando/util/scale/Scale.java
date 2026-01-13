@@ -5,8 +5,6 @@ import com.google.common.collect.Maps;
 
 import java.util.*;
 
-import static com.axialeaa.glissando.util.GlissandoConstants.*;
-
 public enum Scale {
 
     IONIAN          (2, 2, 1, 2, 2, 2, 1), // major
@@ -22,6 +20,8 @@ public enum Scale {
     PENTA_MAJOR     (2, 2, 3, 2, 3),
     PENTA_MINOR     (3, 2, 2, 3, 1),
     BLUES           (3, 2, 1, 1, 3, 2);
+
+    public static final int NOTES_IN_OCTAVE = 12;
 
     private final int[] steps;
     private final EnumMap<Note, Note[]> notesForKeyMap = Maps.newEnumMap(Note.class);

@@ -1,0 +1,5 @@
+accessWidener v2 named
+
+accessible method net/minecraft/predicate/BlockPredicate testState (Lnet/minecraft/block/BlockState;)Z
+accessible method net/minecraft/predicate/BlockPredicate testNbt (Lnet/minecraft/world/WorldView;Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/predicate/NbtPredicate;)Z
+accessible method net/minecraft/predicate/BlockPredicate testComponents (Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/predicate/component/ComponentsPredicate;)Z

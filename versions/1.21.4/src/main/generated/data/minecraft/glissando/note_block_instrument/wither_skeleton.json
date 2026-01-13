@@ -1,4 +1,0 @@
-{
-  "blocks": "#minecraft:note_block_instruments/wither_skeleton",
-  "sound_event": "minecraft:block.note_block.imitate.wither_skeleton"
-}

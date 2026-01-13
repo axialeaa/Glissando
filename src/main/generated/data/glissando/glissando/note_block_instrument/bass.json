@@ -1,0 +1,13 @@
+{
+  "description": {
+    "translate": "minecraft.note_block_instrument.bass"
+  },
+  "formation": {
+    "type": "glissando:simple",
+    "predicate": {
+      "blocks": "#glissando:note_block_instruments/bass"
+    }
+  },
+  "octave": 1,
+  "sound_event": "minecraft:block.note_block.bass"
+}
